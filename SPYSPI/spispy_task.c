@@ -86,11 +86,11 @@ void vSPISPYTask( void *pvParameters ){
 	USART_buffer_struct_t * FTDI_USART = USART_InterruptDriver_Initialize(&USARTC0, BAUD9600, 32);
 	for (;;)
 	{
-		if( xQueueReceive(xQueueMOSI, &receivedChar, MAX_DELAY ) == pdPASS )
+		if( xQueueReceive(xQueueMOSI, &receivedChar, portMAX_DELAY ) == pdPASS )
 		//xQueueReceive(xQueueMOSI, &receivedChar, 0);
 		{
-			USART_Buffer_PutString(FTDI_USART,"MOSI:0x",DONT_BLOCK);
-			USART_Buffer_PutInt(FTDI_USART,receivedChar,16,DONT_BLOCK);
+			USART_Buffer_PutString(FTDI_USART,"MOSI:0x",10);
+			USART_Buffer_PutInt(FTDI_USART,receivedChar,16,10);
 		}
 	}
 }

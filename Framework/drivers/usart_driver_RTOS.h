@@ -31,9 +31,6 @@ typedef enum {
 	BAUD19200 = 2,
 } Baudrate_enum;
 
-#define DONT_BLOCK 0
-#define MAX_DELAY portMAX_DELAY
-
 /*! \brief Struct used when interrupt driven driver is used.
 *  Struct containing pointer to a usart, a buffer and a location to store Data
 *  register interrupt level temporary.

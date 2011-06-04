@@ -122,9 +122,8 @@ USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudra
 			port_struct = &PORTD;
 			break;
 		default:
-			break;
 			//use default, TODO: report error here with LED
-
+			break;
 	}
 
 	/* (TX0) as output. */
