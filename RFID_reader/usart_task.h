@@ -20,6 +20,18 @@
 
 #include "usart_driver_RTOS.h"
 
+
+typedef struct USARTTaskParameters
+{
+	/* \brief Pointer to USART buffer to use. */
+	USART_buffer_struct_t * usartBuffer;
+	/* \brief Led for debugging. Could be null */
+	xQueueHandle debugLed;
+	/* \brief Command buffer size */
+	short commandsBufferSize;
+} USARTTaskParameters_struct_t;
+
+
 /* Prototyping of functions. Documentation is found in source file. */
 void vUSARTTask( void *pvParameters );
 

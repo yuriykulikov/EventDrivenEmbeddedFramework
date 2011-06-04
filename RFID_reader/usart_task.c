@@ -81,40 +81,48 @@
 
 void vUSARTTask( void *pvParameters )
 {
-	USART_buffer_struct_t * usart_buffer_t = (USART_buffer_struct_t*) pvParameters;
-	char receivedChar;
-	char str [127];
+	//do a cast t local variable, because eclipse does not provide suggestions otherwise
+	USARTTaskParameters_struct_t * parameters = (USARTTaskParameters_struct_t *)pvParameters;
+	//store pointer to usart for convenience
+	USART_buffer_struct_t * usart_buffer_t = parameters->usartBuffer;
+	char commandsBufferSize=parameters->commandsBufferSize;
+
+	char receivedChar='#';
+	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
+
 	/* Task loops forever*/
 	for (;;)
 	{
-		/* Continously send*/
-		USART_Buffer_PutString(usart_buffer_t, "g",200);
+		//Continuously send
+		//USART_Buffer_PutString(usart_buffer_t, "g",200);
+		//We could have blocked on the queue instead, but this is better for debug
 		vTaskDelay(500);
+
 
 		//Empty the string first
 		strcpy(str,"");
 		//Read string from queue, while data is available and put it into string
-		while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,DONT_BLOCK)){
-			//strcpy(str,"req_blink");
-			strcat(str,&receivedChar);
-			//strncat(str,&receivedChar,60);
-			//strlcat(str,&receivedChar, 30);
+		while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,0))
+		{
+			strncat(str,&receivedChar,1);
+			//TODO need some checking in case of a really big string coming out
 		}
-/*		//now check the string for content
+		USART_Buffer_PutString(usart_buffer_t, str,200);
+		//now check the string for content
 		if (strcmp(str,"req_blink")==0)
 		{
-			LED_queue_put(getQueueLed(),RED,500);
-			LED_queue_put(getQueueLed(),ORANGE,500);
-			LED_queue_put(getQueueLed(),PINK,500);
-			LED_queue_put(getQueueLed(),WHITE,500);
-			USART_Buffer_PutString(usart_buffer_t,"resp_blink not implemented",200);
+			LED_queue_put(parameters->debugLed,RED,500);
+			LED_queue_put(parameters->debugLed,ORANGE,500);
+			LED_queue_put(parameters->debugLed,PINK,500);
+			LED_queue_put(parameters->debugLed,WHITE,500);
+			USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
 		}
 		if (strcmp(str,"req_r_tags")==0)
 		{
 			//Put response to the queue, ,might wait up to 200ms if there are no place in queue
 			USART_Buffer_PutString(usart_buffer_t,
 					"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
-		}*/
+		}
 
 	}
 
