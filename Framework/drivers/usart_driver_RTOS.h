@@ -1,34 +1,21 @@
 /* This file has been prepared for Doxygen automatic documentation generation.*/
 /*! \file *********************************************************************
  *
- * \brief  XMEGA USART driver header file.
+ * \brief  XMEGA USART driver for FreeRTOS header file.
  *
  *      This file contains the function prototypes and enumerator definitions
  *      for various configuration parameters for the XMEGA USART driver.
  *
- *      The driver is not intended for size and/or speed critical code, since
- *      most functions are just a few lines of code, and the function call
- *      overhead would decrease code performance. The driver is intended for
- *      rapid prototyping and documentation purposes for getting started with
- *      the XMEGA ADC module.
+ *		Functions can be used with or without the kernel running. All operations are
+ *		thread safe.
  *
- *      For size and/or speed critical code, it is recommended to copy the
- *      function contents directly into your application instead of making
- *      a function call.
- *
- * \par Application note:
- *      AVR1307: Using the XMEGA USART
- *
- * \par Documentation
- *      For comprehensive code documentation, supported compilers, compiler
- *      settings and supported devices see readme.html
+ *      The driver is not intended for size and/or speed critical code, focusing
+ *      on the ease of understanding and flexibility instead.
+ *      This file is based on the driver provided by Atmel Corporation and drivers
+ *      provided by FreeRTOS.org
  *
  * \author
- *      Atmel Corporation: http://www.atmel.com \n
- *      Support email: avr@atmel.com
- *
- * $Revision: 1694 $
- * $Date: 2008-07-29 14:21:58 +0200 (ti, 29 jul 2008) $  \n
+ * Yuriy Kulikov
  *
  * Copyright (c) 2008, Atmel Corporation All rights reserved.
  *
@@ -85,7 +72,6 @@ typedef struct UsartStructDefenition
 	/* \brief Data buffer. */
 	xQueueHandle xQueueRX;
 	xQueueHandle xQueueTX;
-	//USART_Buffer_t buffer;
 } USART_buffer_struct_t;
 
 /* Macros. */
@@ -180,15 +166,19 @@ typedef struct UsartStructDefenition
  *  \param _usart     The USART module.
  */
 #define USART_IsRXComplete(_usart) (((_usart)->STATUS & USART_RXCIF_bm) != 0)
+
 /* Functions for interrupt driven driver. */
-USART_buffer_struct_t USART_InterruptDriver_Initialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize);
+
+/*! \brief This function is a "constructor", it allocates memory,
+ *  makes all initialization according to input values, enables interrupts and all.
+ *  \return pointer to the serial
+ */
+USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize);
 
 void USART_Buffer_PutByte(USART_buffer_struct_t * usart_buffer_t, uint8_t data, int ticksToWait );
 void USART_Buffer_PutString(USART_buffer_struct_t * usart_buffer_t, const char *string, int ticksToWait );
 void USART_Buffer_PutInt(USART_buffer_struct_t * usart_buffer_t, int16_t Int,int16_t radix, int ticksToWait );
-
 int8_t USART_Buffer_GetByte(USART_buffer_struct_t * usart_buffer_t, char * receivedChar, int ticksToWait );
-signed char USART_DataRegEmpty(USART_buffer_struct_t * usart_struct);
-signed char USART_RXComplete(USART_buffer_struct_t * usart_buffer_t);
+
 #endif
 

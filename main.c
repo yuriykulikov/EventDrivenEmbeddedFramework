@@ -49,12 +49,12 @@ int main( void )
 	 */
 
 
-	USART_buffer_struct_t FTDI_USART;
-	FTDI_USART = USART_InterruptDriver_Initialize(&USARTC0, BAUD9600, 64);
+	USART_buffer_struct_t * usartFTDI;
+	usartFTDI = USART_InterruptDriver_Initialize(&USARTC0, BAUD9600, 64);
 	/* Report itself. */
-	USART_Buffer_PutString(&FTDI_USART, "XMEGA ready",DONT_BLOCK);
+	USART_Buffer_PutString(usartFTDI, "XMEGA ready",DONT_BLOCK);
 	/* Start USART task */
-	xTaskCreate(vUSARTTask, ( signed char * ) "USARTTSK", 1000,&FTDI_USART, configNORMAL_PRIORITY, NULL );
+	xTaskCreate(vUSARTTask, ( signed char * ) "USARTTSK", 1000,usartFTDI, configNORMAL_PRIORITY, NULL );
 	/* Start LED task for testing purposes */
 	xQueueHandle debugLed = startDebugLedTask(configLOW_PRIORITY);
 	xTaskCreate(BlinkingLedTask, ( signed char * ) "BLINK", configMINIMAL_STACK_SIZE, debugLed, configLOW_PRIORITY, NULL );
