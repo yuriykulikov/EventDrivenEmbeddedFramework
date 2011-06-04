@@ -58,6 +58,7 @@
 #include "task.h"
 #include "queue.h"
 #include "port_driver.h"
+#include "usart.h"
 #include "usart_driver_RTOS.h"
 //Structures, representing uart and its buffer. for internal use.
 //Allocated dynamically
