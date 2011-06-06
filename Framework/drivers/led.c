@@ -56,7 +56,7 @@ void LED_queue_put (xQueueHandle queue,Color_enum Color, uint16_t Duration)
 	 * all higher priority tasks get blocked, delayed, suspended - whatever.*/
 	xQueueSendToBack(queue,&newLedEvent,0);
 }
-
+//TODO use timer.c to control LED
 void vDebugLedTask( void *pvParameters )
 {
 	xQueueHandle ledQueueHandle = (xQueueHandle) pvParameters;
