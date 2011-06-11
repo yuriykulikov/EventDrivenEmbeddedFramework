@@ -19,25 +19,7 @@ See example.c for a simpler example.
 #include <string.h>
 
 
-/* The following declarations would normally go in a separate .h file: */
-
-#include "cexcept.h"
-
-enum exception_flavor { okay, oops, screwup, barf };
-
-struct exception {
-  enum exception_flavor flavor;
-  const char *msg;
-  union {
-    int oops;
-    long screwup;
-    char barf[8];
-  } info;
-};
-
-define_exception_type(struct exception);
-
-/* End of separate .h file. */
+#include "exceptions.h"
 
 
 struct thread_state {
