@@ -111,10 +111,10 @@ void vUSARTTask( void *pvParameters )
 		//now check the string for content
 		if (strcmp(str,"req_blink")==0)
 		{
-			LED_queue_put(parameters->debugLed,RED,500);
-			LED_queue_put(parameters->debugLed,ORANGE,500);
-			LED_queue_put(parameters->debugLed,PINK,500);
-			LED_queue_put(parameters->debugLed,WHITE,500);
+			ledGroupEventQueuePut(parameters->debugLed,RED,500);
+			ledGroupEventQueuePut(parameters->debugLed,ORANGE,500);
+			ledGroupEventQueuePut(parameters->debugLed,PINK,500);
+			ledGroupEventQueuePut(parameters->debugLed,WHITE,500);
 			USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
 		}
 		if (strcmp(str,"req_r_tags")==0)
