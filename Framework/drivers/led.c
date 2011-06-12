@@ -3,10 +3,11 @@
  *
  * \brief  XMEGA board-specific functions and tasks source.
  *
- *      This file contains an application that connects cell phone via SPI
+ *      This file contains functions to use led events. Led event is a bitmask to be lit,
+ *      and time for which it should stay.
  *     
  * \author
- *      Universität Erlangen-Nürnberg
+ *      Universitaet Erlangen-Nuernberg
  *		LS Informationstechnik (Kommunikationselektronik)
  *		Yuriy Kulikov
  *      Support email: Yuriy.Kulikov.87@googlemail.com
@@ -23,83 +24,67 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
-//#include "semphr.h"
 /* File headers. */
 #include "led.h"
-#include "port_driver.h"
+#include "ledGroup.h"
 
-
-/*
- * Low level simple non-RTOS function
- */
-void LED_set(Color_enum Color)
-{
-	PORTLED.OUTSET=LED_gm;
-	PORTLED.OUTTGL=Color;
-}
-/*
- * Low level simple non-RTOS function
- */
-void LED_toggle(Color_enum Color)
-{
-	PORTLED.OUTTGL=Color;
-}
-/*-----------------------------------------------------------*/
-void LED_queue_put (xQueueHandle queue,Color_enum Color, uint16_t Duration)
+void ledGroupEventQueuePut (LedGroupEventQueue * ledGroupEventQueue,uint8_t bitmask, uint16_t duration)
 {
 	//Create new empty LED structure
-	LED_event_struct_t newLedEvent;
+	//This is a local variable, it will exist only until the function return.
+	LedGroupEvent newLedEvent;
 	//Set value according to parameters
-	newLedEvent.Color=Color;
-	newLedEvent.Duration=Duration;
+	newLedEvent.bitmask=bitmask;
+	newLedEvent.duration=duration;
 	/* Send  event data to queue. After this LEDTask will be unblocked as soon as
 	 * all higher priority tasks get blocked, delayed, suspended - whatever.*/
-	xQueueSendToBack(queue,&newLedEvent,0);
+	xQueueSendToBack(ledGroupEventQueue->queueHandle,&newLedEvent,0);
 }
-
-void vDebugLedTask( void *pvParameters )
+//TODO use timer.c to control LED
+void ledQueueProcessorTask( void *pvParameters )
 {
-	xQueueHandle ledQueueHandle = (xQueueHandle) pvParameters;
+	LedGroupEventQueue * ledGroupEventQueue = (LedGroupEventQueue *) pvParameters;
+	LedGroupEvent newLedEvent;
 	/* Cycle for ever*/
 	while(true)
 	{
-		LED_event_struct_t newLedEvent;
-		//Check while there are new events on the queue. Wait for debugLed.ConstantDelay time each time
-		while(xQueueReceive(ledQueueHandle, &newLedEvent, portMAX_DELAY ) == pdPASS )
+		//Check while there are new events on the queue. Block if nothing.
+		while(xQueueReceive(ledGroupEventQueue->queueHandle, &newLedEvent, portMAX_DELAY ) == pdPASS )
 		{
-			//TODO grab mutex
-			LED_set(newLedEvent.Color);
-			vTaskDelay(newLedEvent.Duration);
-			LED_set(NONE);
+			ledGroupSet(ledGroupEventQueue->ledGroup, newLedEvent.bitmask);
+			vTaskDelay(newLedEvent.duration);
+			ledGroupSet(ledGroupEventQueue->ledGroup, NONE);
 		}
-		//TODO release mutex
 	}
 }
 
 /* Creates a queue and spawns a task */
-xQueueHandle startDebugLedTask (char cPriority)
+LedGroupEventQueue * startLedQueueProcessorTask (LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle)
 {
-
-	/* This configures pins 0,1,2 on PORTC for totempole and pull-up, no slew rate and no invertion. */
-	PORT_ConfigurePins( &PORTLED,LED_gm,false,false,PORT_OPC_PULLUP_gc,PORT_ISC_BOTHEDGES_gc );
-	/* Configure PORTLED pins outputs. */
-	PORT_SetDirection( &PORTLED, LED_gm );
-
 	/* Create Queue for LED events */
-	xQueueHandle xQueueLED=xQueueCreate(8, sizeof(LED_event_struct_t));
+	LedGroupEventQueue * ledGroupEventQueue = pvPortMalloc(sizeof(LedGroupEventQueue));
+	ledGroupEventQueue->queueHandle=xQueueCreate(8, sizeof(LedGroupEvent));
+	ledGroupEventQueue->ledGroup=ledGroup;
 	/* Spawn task. */
-	xTaskCreate(vDebugLedTask, ( signed char * ) "LED", configMINIMAL_STACK_SIZE, xQueueLED, cPriority, NULL );
-	return xQueueLED;
+	xTaskCreate(ledQueueProcessorTask, ( signed char * ) "LED", configMINIMAL_STACK_SIZE, ledGroupEventQueue, cPriority, taskHandle );
+	return ledGroupEventQueue;
 };
 
+/* Pass pointer to LedGroupEventQueue to vTaskCreate as a parameter */
 void BlinkingLedTask( void *pvParameters )
 {
-	xQueueHandle ledQueueHandle = (xQueueHandle) pvParameters;
+	LedGroupEventQueue * ledGroupEventQueue = (LedGroupEventQueue *) pvParameters;
 	while(true)
 	{
-		if (xQueueIsQueueEmptyFromISR(ledQueueHandle)){
-			LED_queue_put(ledQueueHandle,GREEN,500);
+		if (xQueueIsQueueEmptyFromISR(ledGroupEventQueue->queueHandle)){
+			ledGroupEventQueuePut(ledGroupEventQueue,GREEN,500);
 		}
 		vTaskDelay(1000);
 	}
+}
+/* Starts the blinking led task */
+xTaskHandle startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority){
+	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
+	xTaskCreate(BlinkingLedTask, ( signed char * ) "BLINK", configMINIMAL_STACK_SIZE, ledGroupEventQueue, configLOW_PRIORITY, taskHandle );
+	return taskHandle;
 }
