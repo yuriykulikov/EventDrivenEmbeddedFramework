@@ -62,6 +62,9 @@
 #include "led.h"
 #include "usart_driver_RTOS.h"
 
+#include "exceptions.h"
+
+/* Task header file */
 #include "usart_task.h"
 #include <string.h>
 
@@ -86,45 +89,73 @@ void vUSARTTask( void *pvParameters )
 	//store pointer to usart for convenience
 	USART_buffer_struct_t * usart_buffer_t = parameters->usartBuffer;
 	char commandsBufferSize=parameters->commandsBufferSize;
-
 	char receivedChar='#';
 	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
+
+	//Declare and initialize exception context
+	struct exception_context *the_exception_context;
+	init_exception_context(the_exception_context);
+	//Declare exception itself
+	struct exception e;
 
 	/* Task loops forever*/
 	for (;;)
 	{
-		//Continuously send
-		//USART_Buffer_PutString(usart_buffer_t, "g",200);
-		//We could have blocked on the queue instead, but this is better for debug
-		vTaskDelay(500);
+		 Try {
+			//Continuously send
+			//USART_Buffer_PutString(usart_buffer_t, "g",200);
+			//We could have blocked on the queue instead, but this is better for debug
+			vTaskDelay(500);
 
 
-		//Empty the string first
-		strcpy(str,"");
-		//Read string from queue, while data is available and put it into string
-		while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,0))
-		{
-			strncat(str,&receivedChar,1);
-			//TODO need some checking in case of a really big string coming out
-		}
-		USART_Buffer_PutString(usart_buffer_t, str,200);
-		//now check the string for content
-		if (strcmp(str,"req_blink")==0)
-		{
-			LED_queue_put(parameters->debugLed,RED,500);
-			LED_queue_put(parameters->debugLed,ORANGE,500);
-			LED_queue_put(parameters->debugLed,PINK,500);
-			LED_queue_put(parameters->debugLed,WHITE,500);
-			USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
-		}
-		if (strcmp(str,"req_r_tags")==0)
-		{
-			//Put response to the queue, ,might wait up to 200ms if there are no place in queue
-			USART_Buffer_PutString(usart_buffer_t,
-					"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
-		}
-
-	}
-
+			//Empty the string first
+			strcpy(str,"");
+			//Read string from queue, while data is available and put it into string
+			while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,0))
+			{
+				strncat(str,&receivedChar,1);
+				if (strlen(str)>=commandsBufferSize){
+					struct exception e;
+					e.type = error;
+					e.msg = "Command exceeded buffer size";
+					Throw e;
+				}
+			}
+			USART_Buffer_PutString(usart_buffer_t, str,200);
+			//now check the string for content
+			if (strcmp(str,"req_blink")==0)
+			{
+				LED_queue_put(parameters->debugLed,RED,500);
+				LED_queue_put(parameters->debugLed,ORANGE,500);
+				LED_queue_put(parameters->debugLed,PINK,500);
+				LED_queue_put(parameters->debugLed,WHITE,500);
+				USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
+			}
+			if (strcmp(str,"req_r_tags")==0)
+			{
+				//Put response to the queue, ,might wait up to 200ms if there are no place in queue
+				USART_Buffer_PutString(usart_buffer_t,
+						"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
+			}
+			if (strcmp(str,"throw")==0){
+				struct exception e;
+				e.type = warning;
+				e.msg = "demo warning message";
+				Throw e;
+			}
+		} Catch (e) {
+			switch (e.type) {
+				case warning:
+					USART_Buffer_PutString(usart_buffer_t, "caught warning:",0);
+					USART_Buffer_PutString(usart_buffer_t, e.msg,0);
+					break;
+				case error:
+					USART_Buffer_PutString(usart_buffer_t, "caught error:",0);
+					USART_Buffer_PutString(usart_buffer_t, e.msg,0);
+					break;
+				default:
+					USART_Buffer_PutString(usart_buffer_t, "caught something else\n",0);
+			}//end of switch
+		}//end of catch block
+	}//end of task's infinite loop
 }
-
