@@ -21,6 +21,9 @@
 #include "usart_driver_RTOS.h"
 #include "exceptions.h"
 
+/*
+ * This struct is used to pass arguments to the task
+ */
 typedef struct USARTTaskParameters
 {
 	/* \brief Pointer to USART buffer to use. */
@@ -33,5 +36,5 @@ typedef struct USARTTaskParameters
 
 
 /* Prototyping of functions. Documentation is found in source file. */
-void vUSARTTask( void *pvParameters );
+xTaskHandle startUSARTTask (USART_buffer_struct_t * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority);
 

@@ -107,14 +107,14 @@ void vUSARTTask( void *pvParameters )
 			//We could have blocked on the queue instead, but this is better for debug
 			vTaskDelay(500);
 
-
 			//Empty the string first
 			strcpy(str,"");
 			//Read string from queue, while data is available and put it into string
 			while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,0))
 			{
 				strncat(str,&receivedChar,1);
-				if (strlen(str)>=commandsBufferSize){
+				if (strlen(str)>=commandsBufferSize)
+				{
 					struct exception e;
 					e.type = error;
 					e.msg = "Command exceeded buffer size";
@@ -125,11 +125,14 @@ void vUSARTTask( void *pvParameters )
 			//now check the string for content
 			if (strcmp(str,"req_blink")==0)
 			{
-				LED_queue_put(parameters->debugLed,RED,500);
-				LED_queue_put(parameters->debugLed,ORANGE,500);
-				LED_queue_put(parameters->debugLed,PINK,500);
-				LED_queue_put(parameters->debugLed,WHITE,500);
-				USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
+				if((parameters->debugLed)!=NULL)
+				{
+					LED_queue_put(parameters->debugLed,RED,500);
+					LED_queue_put(parameters->debugLed,ORANGE,500);
+					LED_queue_put(parameters->debugLed,PINK,500);
+					LED_queue_put(parameters->debugLed,WHITE,500);
+					USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
+				}
 			}
 			if (strcmp(str,"req_r_tags")==0)
 			{
@@ -137,7 +140,8 @@ void vUSARTTask( void *pvParameters )
 				USART_Buffer_PutString(usart_buffer_t,
 						"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
 			}
-			if (strcmp(str,"throw")==0){
+			if (strcmp(str,"throw")==0)
+			{
 				struct exception e;
 				e.type = warning;
 				e.msg = "demo warning message";
@@ -159,3 +163,14 @@ void vUSARTTask( void *pvParameters )
 		}//end of catch block
 	}//end of task's infinite loop
 }
+
+xTaskHandle startUSARTTask (USART_buffer_struct_t * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority){
+	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
+	USARTTaskParameters_struct_t * vUSARTTaskParameters = pvPortMalloc(sizeof(USARTTaskParameters_struct_t));
+	vUSARTTaskParameters->usartBuffer=usartBuffer;
+	vUSARTTaskParameters->debugLed=debugLed;
+	vUSARTTaskParameters->commandsBufferSize=commandsBufferSize;
+	xTaskCreate(vUSARTTask, (signed char*)"USARTTSK", 1000,(void*)vUSARTTaskParameters, cPriority, taskHandle);
+	return taskHandle;
+}
+
