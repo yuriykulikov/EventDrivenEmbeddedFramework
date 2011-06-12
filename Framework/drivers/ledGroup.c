@@ -1,6 +1,10 @@
 /*
  * ledGroup.c
- *
+ *  Led group is a group of leds :-)
+ *  An example could be and RGB led - which is a group of 3 leds. Or a led bar, consisting of 8 leds.
+ *  The idea is that a after initialization each led of the group is addressable with a bitmask or its numbers.
+ *  This allows to map real leds to different ports and pins, meanwhile the algorithm (sliding light or progress bar)
+ *  remains unchanged and easy.
  *  Created on: 12.06.2011
  *      Author: Yuriy
  */
@@ -51,9 +55,10 @@ short ledGroupAdd(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isA
 /*
  * Sets leds shining according to the bitmask. If you have 8 leds and want
  * leds 1,5 and 8 shining, pass bitmask '10010001'=0x91.
- * It is possible to use Color_enum instead of the bitmask
+ * It is possible to use Color_enum instead of the bitmask for RGB leds -
+ * in this case R G and B lesa should added in this order - R G B
  */
-void ledSet(LedGroup * ledGroup , uint8_t bitmask)
+void ledGroupSet(LedGroup * ledGroup , uint8_t bitmask)
 {
 	for (int i=0; i<(ledGroup->amountOfLedsInGroup);i++){
 		/* bitmask>>i shifts bitmask to the left, effectively placing bit

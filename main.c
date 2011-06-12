@@ -32,7 +32,7 @@ LedGroup * ledRGB;
 /* BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
 ISR (BADISR_vect){
 	//stop execution and report error
-	while(true) ledSet(ledRGB, ORANGE);
+	while(true) ledGroupSet(ledRGB, ORANGE);
 }
 int main( void )
 {
@@ -88,7 +88,7 @@ int main( void )
 	vTaskStartScheduler();
 
 	/* stop execution and report error */
-	while(true) ledSet(ledRGB, PINK);
+	while(true) ledGroupSet(ledRGB, PINK);
 	return 0;
 }
 /* Prototype */
@@ -113,7 +113,7 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTask
 void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName )
 {
 	/* stop execution and report error */
-	while(true) ledSet(ledRGB, RED);
+	while(true) ledGroupSet(ledRGB, RED);
 }
 void vApplicationTickHook( void );
 /* This function is called during the tick interrupt. configUSE_TICK_HOOK should be defined as 1.*/

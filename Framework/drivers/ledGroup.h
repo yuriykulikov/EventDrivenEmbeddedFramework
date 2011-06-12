@@ -42,6 +42,6 @@ typedef enum {
 
 LedGroup * ledGroupInitialize (short amountOfLedsInGroup);
 short ledGroupAdd(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isActiveLow);
-void ledSet(LedGroup * ledGroup , uint8_t bitmask);
+void ledGroupSet(LedGroup * ledGroup , uint8_t bitmask);
 
 #endif /* LEDGROUP_H_ */

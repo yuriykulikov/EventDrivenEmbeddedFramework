@@ -3,10 +3,11 @@
  *
  * \brief  XMEGA board-specific functions and tasks source.
  *
- *      This file contains an application that connects cell phone via SPI
+ *      This file contains functions to use led events. Led event is a bitmask to be lit,
+ *      and time for which it should stay.
  *     
  * \author
- *      Universität Erlangen-Nürnberg
+ *      Universitaet Erlangen-Nuernberg
  *		LS Informationstechnik (Kommunikationselektronik)
  *		Yuriy Kulikov
  *      Support email: Yuriy.Kulikov.87@googlemail.com
@@ -50,9 +51,9 @@ void ledQueueProcessorTask( void *pvParameters )
 		//Check while there are new events on the queue. Block if nothing.
 		while(xQueueReceive(ledGroupEventQueue->queueHandle, &newLedEvent, portMAX_DELAY ) == pdPASS )
 		{
-			ledSet(ledGroupEventQueue->ledGroup, newLedEvent.bitmask);
+			ledGroupSet(ledGroupEventQueue->ledGroup, newLedEvent.bitmask);
 			vTaskDelay(newLedEvent.duration);
-			ledSet(ledGroupEventQueue->ledGroup, NONE);
+			ledGroupSet(ledGroupEventQueue->ledGroup, NONE);
 		}
 	}
 }
