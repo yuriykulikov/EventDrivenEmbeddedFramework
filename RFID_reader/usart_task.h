@@ -19,7 +19,7 @@
  *****************************************************************************/
 
 #include "usart_driver_RTOS.h"
-
+#include "exceptions.h"
 
 typedef struct USARTTaskParameters
 {
