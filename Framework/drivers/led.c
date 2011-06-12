@@ -83,6 +83,8 @@ void BlinkingLedTask( void *pvParameters )
 	}
 }
 /* Starts the blinking led task */
-void startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority, xTaskHandle taskHandle){
+xTaskHandle startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority){
+	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
 	xTaskCreate(BlinkingLedTask, ( signed char * ) "BLINK", configMINIMAL_STACK_SIZE, ledGroupEventQueue, configLOW_PRIORITY, taskHandle );
+	return taskHandle;
 }

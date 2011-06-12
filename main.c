@@ -63,7 +63,7 @@ int main( void )
 	ledGroupEventQueuePut(ledRGBEventQueue,BLUE,700);
 	ledGroupEventQueuePut(ledRGBEventQueue,SKY,700);
 	ledGroupEventQueuePut(ledRGBEventQueue,WHITE,700);
-	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY,NULL);
+	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY);
 
 	/* Start USART task */
 	USARTTaskParameters_struct_t vUSARTTaskParameters = {usartFTDI, ledRGBEventQueue,127};
