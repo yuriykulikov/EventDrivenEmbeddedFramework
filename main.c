@@ -55,8 +55,7 @@ int main( void )
 	/* Start LED task for testing purposes */
 	xQueueHandle debugLed = startDebugLedTask(configLOW_PRIORITY);
 	/* Start USART task */
-	USARTTaskParameters_struct_t vUSARTTaskParameters = {usartFTDI, debugLed,127};
-	xTaskCreate(vUSARTTask, ( signed char * ) "USARTTSK", 1000,(void*)&vUSARTTaskParameters, configNORMAL_PRIORITY, NULL );
+	startUSARTTask(usartFTDI, debugLed, 128, configNORMAL_PRIORITY);
 
 	xTaskCreate(BlinkingLedTask, ( signed char * ) "BLINK", configMINIMAL_STACK_SIZE, debugLed, configLOW_PRIORITY, NULL );
 	/* Start SPISPY task */

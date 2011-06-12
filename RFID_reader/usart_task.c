@@ -111,10 +111,12 @@ void vUSARTTask( void *pvParameters )
 		//now check the string for content
 		if (strcmp(str,"req_blink")==0)
 		{
-			LED_queue_put(parameters->debugLed,RED,500);
-			LED_queue_put(parameters->debugLed,ORANGE,500);
-			LED_queue_put(parameters->debugLed,PINK,500);
-			LED_queue_put(parameters->debugLed,WHITE,500);
+			if((parameters->debugLed)!=NULL){
+				LED_queue_put(parameters->debugLed,RED,500);
+				LED_queue_put(parameters->debugLed,ORANGE,500);
+				LED_queue_put(parameters->debugLed,PINK,500);
+				LED_queue_put(parameters->debugLed,WHITE,500);
+			}
 			USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
 		}
 		if (strcmp(str,"req_r_tags")==0)
@@ -128,3 +130,12 @@ void vUSARTTask( void *pvParameters )
 
 }
 
+xTaskHandle startUSARTTask (USART_buffer_struct_t * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority){
+	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
+	USARTTaskParameters_struct_t * vUSARTTaskParameters = pvPortMalloc(sizeof(USARTTaskParameters_struct_t));
+	vUSARTTaskParameters->usartBuffer=usartBuffer;
+	vUSARTTaskParameters->debugLed=debugLed;
+	vUSARTTaskParameters->commandsBufferSize=commandsBufferSize;
+	xTaskCreate(vUSARTTask, (signed char*)"USARTTSK", 1000,(void*)vUSARTTaskParameters, cPriority, taskHandle);
+	return taskHandle;
+}
