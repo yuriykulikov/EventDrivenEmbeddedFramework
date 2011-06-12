@@ -131,8 +131,8 @@ void vUSARTTask( void *pvParameters )
 					ledGroupEventQueuePut(parameters->debugLed,ORANGE,500);
 					ledGroupEventQueuePut(parameters->debugLed,PINK,500);
 					ledGroupEventQueuePut(parameters->debugLed,WHITE,500);
-					USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
 				}
+				USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
 			}
 			if (strcmp(str,"req_r_tags")==0)
 			{
