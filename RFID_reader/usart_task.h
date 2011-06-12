@@ -27,7 +27,7 @@
 typedef struct USARTTaskParameters
 {
 	/* \brief Pointer to USART buffer to use. */
-	USART_buffer_struct_t * usartBuffer;
+	UsartBuffer * usartBuffer;
 	/* \brief Led for debugging. Could be null */
 	xQueueHandle debugLed;
 	/* \brief Command buffer size */
@@ -36,5 +36,5 @@ typedef struct USARTTaskParameters
 
 
 /* Prototyping of functions. Documentation is found in source file. */
-xTaskHandle startUSARTTask (USART_buffer_struct_t * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority);
+xTaskHandle startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority);
 

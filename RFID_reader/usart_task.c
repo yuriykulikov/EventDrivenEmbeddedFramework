@@ -82,12 +82,12 @@
  *  have been successfully sent and received.
 */
 
-void vUSARTTask( void *pvParameters )
+void usartTask( void *pvParameters )
 {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	USARTTaskParameters_struct_t * parameters = (USARTTaskParameters_struct_t *)pvParameters;
 	//store pointer to usart for convenience
-	USART_buffer_struct_t * usart_buffer_t = parameters->usartBuffer;
+	UsartBuffer * usartBuffer = parameters->usartBuffer;
 	char commandsBufferSize=parameters->commandsBufferSize;
 	char receivedChar='#';
 	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
@@ -110,7 +110,7 @@ void vUSARTTask( void *pvParameters )
 			//Empty the string first
 			strcpy(str,"");
 			//Read string from queue, while data is available and put it into string
-			while (USART_Buffer_GetByte(usart_buffer_t, &receivedChar,0))
+			while (usartBufferGetByte(usartBuffer, &receivedChar,0))
 			{
 				strncat(str,&receivedChar,1);
 				if (strlen(str)>=commandsBufferSize)
@@ -121,7 +121,7 @@ void vUSARTTask( void *pvParameters )
 					Throw e;
 				}
 			}
-			USART_Buffer_PutString(usart_buffer_t, str,200);
+			usartBufferPutString(usartBuffer, str,200);
 			//now check the string for content
 			if (strcmp(str,"req_blink")==0)
 			{
@@ -132,12 +132,12 @@ void vUSARTTask( void *pvParameters )
 					ledGroupEventQueuePut(parameters->debugLed,PINK,500);
 					ledGroupEventQueuePut(parameters->debugLed,WHITE,500);
 				}
-				USART_Buffer_PutString(usart_buffer_t,"resp_blink",200);
+				usartBufferPutString(usartBuffer,"resp_blink",200);
 			}
 			if (strcmp(str,"req_r_tags")==0)
 			{
 				//Put response to the queue, ,might wait up to 200ms if there are no place in queue
-				USART_Buffer_PutString(usart_buffer_t,
+				usartBufferPutString(usartBuffer,
 						"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
 			}
 			if (strcmp(str,"throw")==0)
@@ -150,27 +150,27 @@ void vUSARTTask( void *pvParameters )
 		} Catch (e) {
 			switch (e.type) {
 				case warning:
-					USART_Buffer_PutString(usart_buffer_t, "caught warning:",0);
-					USART_Buffer_PutString(usart_buffer_t, e.msg,0);
+					usartBufferPutString(usartBuffer, "caught warning:",0);
+					usartBufferPutString(usartBuffer, e.msg,0);
 					break;
 				case error:
-					USART_Buffer_PutString(usart_buffer_t, "caught error:",0);
-					USART_Buffer_PutString(usart_buffer_t, e.msg,0);
+					usartBufferPutString(usartBuffer, "caught error:",0);
+					usartBufferPutString(usartBuffer, e.msg,0);
 					break;
 				default:
-					USART_Buffer_PutString(usart_buffer_t, "caught something else\n",0);
+					usartBufferPutString(usartBuffer, "caught something else\n",0);
 			}//end of switch
 		}//end of catch block
 	}//end of task's infinite loop
 }
 
-xTaskHandle startUSARTTask (USART_buffer_struct_t * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority){
+xTaskHandle startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority){
 	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
 	USARTTaskParameters_struct_t * vUSARTTaskParameters = pvPortMalloc(sizeof(USARTTaskParameters_struct_t));
 	vUSARTTaskParameters->usartBuffer=usartBuffer;
 	vUSARTTaskParameters->debugLed=debugLed;
 	vUSARTTaskParameters->commandsBufferSize=commandsBufferSize;
-	xTaskCreate(vUSARTTask, (signed char*)"USARTTSK", 1000,(void*)vUSARTTaskParameters, cPriority, taskHandle);
+	xTaskCreate(usartTask, (signed char*)"USARTTSK", 1000,(void*)vUSARTTaskParameters, cPriority, taskHandle);
 	return taskHandle;
 }
 

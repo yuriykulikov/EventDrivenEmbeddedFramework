@@ -83,14 +83,14 @@ void vSPISPYTask( void *pvParameters ){
 	( void ) pvParameters;
 	char receivedChar;
 	//TODO replace with factory getter
-	USART_buffer_struct_t * FTDI_USART = USART_InterruptDriver_Initialize(&USARTC0, BAUD9600, 32);
+	UsartBuffer * FTDI_USART = usartBufferInitialize(&USARTC0, BAUD9600, 32);
 	for (;;)
 	{
 		if( xQueueReceive(xQueueMOSI, &receivedChar, portMAX_DELAY ) == pdPASS )
 		//xQueueReceive(xQueueMOSI, &receivedChar, 0);
 		{
-			USART_Buffer_PutString(FTDI_USART,"MOSI:0x",10);
-			USART_Buffer_PutInt(FTDI_USART,receivedChar,16,10);
+			usartBufferPutString(FTDI_USART,"MOSI:0x",10);
+			usartBufferPutInt(FTDI_USART,receivedChar,16,10);
 		}
 	}
 }

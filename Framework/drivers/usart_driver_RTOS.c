@@ -61,31 +61,31 @@
 #include "usart.h"
 #include "usart_driver_RTOS.h"
 //Structures, representing uart and its buffer. for internal use.
-//Allocated dynamically
-USART_buffer_struct_t * pUsartBufferC;
-USART_buffer_struct_t * pUsartBufferD;
-USART_buffer_struct_t * pUsartBufferE;
+//Memory allocated dynamically
+UsartBuffer * usartBufferC;
+UsartBuffer * usartBufferD;
+UsartBuffer * usartBufferE;
 
-signed char USART_RXComplete(USART_buffer_struct_t *);
-signed char USART_DataRegEmpty(USART_buffer_struct_t *);
+signed char USART_RXComplete(UsartBuffer *);
+signed char USART_DataRegEmpty(UsartBuffer *);
 /*! \brief Receive complete interrupt service routine.
  *
  *  Receive complete interrupt service routine.
  *  Calls the common receive complete handler with pointer to the correct USART
  *  as argument.
  */
-ISR(USARTC0_RXC_vect){ if( USART_RXComplete(pUsartBufferC) ) taskYIELD(); }
-ISR(USARTD0_RXC_vect){ if( USART_RXComplete(pUsartBufferD) ) taskYIELD(); }
-ISR(USARTE0_RXC_vect){ if( USART_RXComplete(pUsartBufferE) ) taskYIELD(); }
+ISR(USARTC0_RXC_vect){ if( USART_RXComplete(usartBufferC) ) taskYIELD(); }
+ISR(USARTD0_RXC_vect){ if( USART_RXComplete(usartBufferD) ) taskYIELD(); }
+ISR(USARTE0_RXC_vect){ if( USART_RXComplete(usartBufferE) ) taskYIELD(); }
 /*! \brief Data register empty  interrupt service routine.
  *
  *  Data register empty  interrupt service routine.
  *  Calls the common data register empty complete handler with pointer to the
  *  correct USART as argument.
  */
-ISR(USARTC0_DRE_vect){USART_DataRegEmpty(pUsartBufferC);}
-ISR(USARTD0_DRE_vect){USART_DataRegEmpty(pUsartBufferD);}
-ISR(USARTE0_DRE_vect){USART_DataRegEmpty(pUsartBufferE);}
+ISR(USARTC0_DRE_vect){USART_DataRegEmpty(usartBufferC);}
+ISR(USARTD0_DRE_vect){USART_DataRegEmpty(usartBufferD);}
+ISR(USARTE0_DRE_vect){USART_DataRegEmpty(usartBufferE);}
 
 /*! \brief Initializes buffer and selects what USART module to use.
  *
@@ -96,30 +96,30 @@ ISR(USARTE0_DRE_vect){USART_DataRegEmpty(pUsartBufferE);}
  *  \param usart                Pointer to the USART module to use.
  *  \return usart_buffer        The USART_buffer_struct_t instance which can be used to read and write.
  */
-USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize)
+UsartBuffer * usartBufferInitialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize)
 {
 	//We use only low level interrupts, but leave local variable in case we change the mind
 	USART_DREINTLVL_t dreIntLevel = USART_DREINTLVL_LO_gc;
-	PORT_t * port_struct;
-	USART_buffer_struct_t * pUsartBuffer;
+	PORT_t * port;
+	UsartBuffer * usartBuffer;
 	//switch by pointer to usart structure, which will be used. Usually it is not a good idea to
 	//switch by pointer, but in our case pointers are defined by hardware
 	switch ((int)usart) {
 		case (int)&USARTC0:
 			//Allocate memory for usart structure and store the pointer
-			pUsartBuffer = ( USART_buffer_struct_t * ) pvPortMalloc( sizeof( USART_buffer_struct_t ) );
+			usartBuffer = ( UsartBuffer * ) pvPortMalloc( sizeof( UsartBuffer ) );
 			//copy pointer pUsartBuffer to global pUsartBufferC, which is use to handle interrups
-			pUsartBufferC = pUsartBuffer;
+			usartBufferC = usartBuffer;
 			//Since usart is on the port C, we will need to use PORTC
-			port_struct = &PORTC;
+			port = &PORTC;
 			break;
 		case (int)&USARTD0:
 			//Allocate memory for usart structure and store the pointer
-			pUsartBuffer = ( USART_buffer_struct_t * ) pvPortMalloc( sizeof( USART_buffer_struct_t ) );
+			usartBuffer = ( UsartBuffer * ) pvPortMalloc( sizeof( UsartBuffer ) );
 			//copy pointer pUsartBuffer to global pUsartBufferD, which is use to handle interrups
-			pUsartBufferD = pUsartBuffer;
+			usartBufferD = usartBuffer;
 			//Since usart is on the port D, we will need to use PORTC
-			port_struct = &PORTD;
+			port = &PORTD;
 			break;
 		default:
 			//use default, TODO: report error here with LED
@@ -127,42 +127,42 @@ USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudra
 	}
 
 	/* (TX0) as output. */
-	port_struct->DIRSET = PIN3_bm;
+	port->DIRSET = PIN3_bm;
 	/* (RX0) as input. */
-	port_struct->DIRCLR = PIN2_bm;
+	port->DIRCLR = PIN2_bm;
 	//totempole and pullup
-	PORT_ConfigurePins( port_struct,PIN3_bm,false,false,PORT_OPC_PULLUP_gc,PORT_ISC_BOTHEDGES_gc );
+	PORT_ConfigurePins( port,PIN3_bm,false,false,PORT_OPC_PULLUP_gc,PORT_ISC_BOTHEDGES_gc );
 	/* Initialize buffers. Create a queue (allocate memory) and store queue handle in usart_struct
 	 * On XMEGA port create all queues before vStartTaskScheduler() to ensure that heap size is enough */
 	/* Store pointer to USART module */
-	pUsartBuffer->usart = usart;
+	usartBuffer->usart = usart;
 	/*Store DRE level so we will know which level to enable when we put data and want it to be sent. */
-	pUsartBuffer->dreIntLevel = dreIntLevel;
+	usartBuffer->dreIntLevel = dreIntLevel;
 	/* \brief  Receive buffer size: 2,4,8,16,32,64,128 bytes. */
-	pUsartBuffer->xQueueRX = xQueueCreate(bufferSize,sizeof(char));
-	pUsartBuffer->xQueueTX = xQueueCreate(bufferSize,sizeof(char));
+	usartBuffer->xQueueRX = xQueueCreate(bufferSize,sizeof(char));
+	usartBuffer->xQueueTX = xQueueCreate(bufferSize,sizeof(char));
 
 	/* USARTD0, 8 Data bits, No Parity, 1 Stop bit. */
-	USART_Format_Set(pUsartBuffer->usart, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, false);
+	USART_Format_Set(usartBuffer->usart, USART_CHSIZE_8BIT_gc, USART_PMODE_DISABLED_gc, false);
 	/* Enable RXC interrupt. */
-	USART_RxdInterruptLevel_Set(pUsartBuffer->usart, USART_RXCINTLVL_LO_gc);
+	USART_RxdInterruptLevel_Set(usartBuffer->usart, USART_RXCINTLVL_LO_gc);
 
 	//http://prototalk.net/forums/showthread.php?t=188
 	switch (baudrate) {
 		case BAUD9600:
-			USART_Baudrate_Set(pUsartBuffer->usart, 3317 , -4);
+			USART_Baudrate_Set(usartBuffer->usart, 3317 , -4);
 			break;
 		default:
 			//9600
-			USART_Baudrate_Set(pUsartBuffer->usart, 3317 , -4);
+			USART_Baudrate_Set(usartBuffer->usart, 3317 , -4);
 			break;
 	}
 
 	/* Enable both RX and TX. */
-	USART_Rx_Enable(pUsartBuffer->usart);
-	USART_Tx_Enable(pUsartBuffer->usart);
+	USART_Rx_Enable(usartBuffer->usart);
+	USART_Tx_Enable(usartBuffer->usart);
 	//return the buffer struct, to be used for reading and writing
-	return pUsartBuffer;
+	return usartBuffer;
 }
 
 /*! \brief Put data (5-8 bit character).
@@ -174,7 +174,7 @@ USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudra
  *  \param data       The data to send.
  *  \param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
  */
-void USART_Buffer_PutByte(USART_buffer_struct_t * usart_buffer_t, uint8_t data, int ticksToWait )
+void usartBufferPutByte(UsartBuffer * usart_buffer_t, uint8_t data, int ticksToWait )
 {
 	uint8_t tempCTRLA;
 	/* If we successfully loaded byte to queue */
@@ -197,9 +197,9 @@ void USART_Buffer_PutByte(USART_buffer_struct_t * usart_buffer_t, uint8_t data, 
  *	\param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is data in queue.
  *  \return					  Success.
  */
-inline int8_t USART_Buffer_GetByte(USART_buffer_struct_t * usart_buffer_t, char * receivedChar, int ticksToWait )
+inline int8_t usartBufferGetByte(UsartBuffer * usartBuffer, char * receivedChar, int ticksToWait )
 {
-	return xQueueReceive(usart_buffer_t->xQueueRX, receivedChar, ticksToWait);
+	return xQueueReceive(usartBuffer->xQueueRX, receivedChar, ticksToWait);
 }
 /*! \brief Put data (5-8 bit character).
  *
@@ -210,10 +210,10 @@ inline int8_t USART_Buffer_GetByte(USART_buffer_struct_t * usart_buffer_t, char 
  *  \param string       The string to send.
  *  \param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
  */
-inline void USART_Buffer_PutString(USART_buffer_struct_t * usart_buffer_t, const char *string, int ticksToWait )
+inline void usartBufferPutString(UsartBuffer * usartBuffer, const char *string, int ticksToWait )
 {
 	//send the whole string. Note that if buffer is full, USART_TXBuffer_PutByte will do nothing
-	while (*string) USART_Buffer_PutByte(usart_buffer_t,*string++, ticksToWait );
+	while (*string) usartBufferPutByte(usartBuffer,*string++, ticksToWait );
 }
 /*! \brief Put data (5-8 bit character).
  *
@@ -225,10 +225,10 @@ inline void USART_Buffer_PutString(USART_buffer_struct_t * usart_buffer_t, const
  *  \param radix	Integer basis - 10 for decimal, 16 for hex
  *  \param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
  */
-void USART_Buffer_PutInt(USART_buffer_struct_t * usart_buffer_t, int16_t Int,int16_t radix, int ticksToWait )
+void usartBufferPutInt(UsartBuffer * usartBuffer, int16_t Int,int16_t radix, int ticksToWait )
 {
 	char * str="big string for some itoa uses";
-	USART_Buffer_PutString(usart_buffer_t,itoa(Int,str,radix), ticksToWait );
+	usartBufferPutString(usartBuffer,itoa(Int,str,radix), ticksToWait );
 }
 
 /*! \brief RX Complete Interrupt Service Routine.
@@ -239,7 +239,7 @@ void USART_Buffer_PutInt(USART_buffer_struct_t * usart_buffer_t, int16_t Int,int
  *  \param usart_struct      The USART_struct_t struct instance.
  *  \return xHigherPriorityTaskWoken boolean which is used to yield
  */
-inline signed char USART_RXComplete(USART_buffer_struct_t * usart_buffer_t)
+inline signed char USART_RXComplete(UsartBuffer * usartBuffer)
 {
 	/* We have to check is we have woke higher priority task, because we post to
 	 * queue and high priority task might be blocked waiting for items appear on
@@ -249,8 +249,8 @@ inline signed char USART_RXComplete(USART_buffer_struct_t * usart_buffer_t)
 	/* Get the character and post it on the queue of Rxed characters.
 	If the post causes a task to wake force a context switch as the woken task
 	may have a higher priority than the task we have interrupted. */
-	cChar = usart_buffer_t->usart->DATA;
-	xQueueSendToBackFromISR( usart_buffer_t->xQueueRX, &cChar, &xHigherPriorityTaskWoken );
+	cChar = usartBuffer->usart->DATA;
+	xQueueSendToBackFromISR( usartBuffer->xQueueRX, &cChar, &xHigherPriorityTaskWoken );
 	return xHigherPriorityTaskWoken;
 }
 
@@ -262,21 +262,21 @@ inline signed char USART_RXComplete(USART_buffer_struct_t * usart_buffer_t)
  *
  *  \param usart_struct      The USART_struct_t struct instance.
  */
-inline signed char USART_DataRegEmpty(USART_buffer_struct_t * usart_struct)
+inline signed char USART_DataRegEmpty(UsartBuffer * usartBuffer)
 {
 	signed char cChar, cTaskWoken;
-		if( xQueueReceiveFromISR( usart_struct->xQueueTX, &cChar, &cTaskWoken ) == pdTRUE )
+		if( xQueueReceiveFromISR( usartBuffer->xQueueTX, &cChar, &cTaskWoken ) == pdTRUE )
 		{
 			/* Send the next character queued for Tx. */
-			usart_struct->usart->DATA = cChar;
+			usartBuffer->usart->DATA = cChar;
 		}
 		else
 		{
 			/* Queue empty, nothing to send. */
 		    /* Disable DRE interrupts. */
-			uint8_t tempCTRLA = usart_struct->usart->CTRLA;
+			uint8_t tempCTRLA = usartBuffer->usart->CTRLA;
 			tempCTRLA = (tempCTRLA & ~USART_DREINTLVL_gm) | USART_DREINTLVL_OFF_gc;
-			usart_struct->usart->CTRLA = tempCTRLA;
+			usartBuffer->usart->CTRLA = tempCTRLA;
 		}
 	return cTaskWoken;
 }

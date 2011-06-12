@@ -44,7 +44,7 @@ typedef struct UsartStructDefenition
 	/* \brief Data buffer. */
 	xQueueHandle xQueueRX;
 	xQueueHandle xQueueTX;
-} USART_buffer_struct_t;
+} UsartBuffer;
 
 /* Functions for interrupt driven driver. */
 
@@ -52,12 +52,12 @@ typedef struct UsartStructDefenition
  *  makes all initialization according to input values, enables interrupts and all.
  *  \return pointer to the serial
  */
-USART_buffer_struct_t * USART_InterruptDriver_Initialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize);
+UsartBuffer * usartBufferInitialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize);
 
-void USART_Buffer_PutByte(USART_buffer_struct_t * usart_buffer_t, uint8_t data, int ticksToWait );
-void USART_Buffer_PutString(USART_buffer_struct_t * usart_buffer_t, const char *string, int ticksToWait );
-void USART_Buffer_PutInt(USART_buffer_struct_t * usart_buffer_t, int16_t Int,int16_t radix, int ticksToWait );
-int8_t USART_Buffer_GetByte(USART_buffer_struct_t * usart_buffer_t, char * receivedChar, int ticksToWait );
+void usartBufferPutByte(UsartBuffer * usart_buffer_t, uint8_t data, int ticksToWait );
+void usartBufferPutString(UsartBuffer * usart_buffer_t, const char *string, int ticksToWait );
+void usartBufferPutInt(UsartBuffer * usart_buffer_t, int16_t Int,int16_t radix, int ticksToWait );
+int8_t usartBufferGetByte(UsartBuffer * usart_buffer_t, char * receivedChar, int ticksToWait );
 
 #endif
 

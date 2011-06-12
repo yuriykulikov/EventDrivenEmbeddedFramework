@@ -4,6 +4,21 @@
  * \brief  XMEGA firmware for prototype SPI board source
  *
  *      This file contains example application
+ *-----------------------------------------------------------------------------
+ *      Naming conventions
+ *      Code provided by Atmel is written in C convention, like this:
+ *      CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_RC32M_gc );
+ *
+ *      Code provided by Real Time Engineers (FreeRTOS.org) is
+ *      provided in Hungarian convention using CamelCase:
+ *      vTaskStartScheduler();
+ *
+ *      My code, since I  am more a Java guy, is in CamelCase.
+ *      Although, giving that there are no classes, I cannot name
+ *      functions starting with action, like we do in Java - thing.doSomeStuff()
+ *      Instead, first comes comes the thing to which action is related:
+ *      ledGroupEventQueuePut(ledRGBEventQueue,BLUE,700);
+ *-------------------------------------------------------------------------------
  *     
  * \author
  *      Universität Erlangen-Nurnberg
@@ -50,9 +65,9 @@ int main( void )
 	 */
 
 	//---------Use USART on PORTC----------------------------
-	USART_buffer_struct_t * usartFTDI = USART_InterruptDriver_Initialize(&USARTC0, BAUD9600, 128);
+	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTC0, BAUD9600, 128);
 	// Report itself
-	USART_Buffer_PutString(usartFTDI, "XMEGA ready",10);
+	usartBufferPutString(usartFTDI, "XMEGA ready",10);
 	//---------Start LED task for testing purposes-----------
 	ledRGB = ledGroupInitialize(3);
 	ledGroupAdd(ledRGB, &PORTA, 0x20,1 );//R
@@ -65,16 +80,14 @@ int main( void )
 	ledGroupEventQueuePut(ledRGBEventQueue,WHITE,700);
 	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY);
 
-	/* Start USART task */
-	startUSARTTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY);
+	// Start USART task
+	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY);
 
-	/* Start SPISPY task */
+	// Start SPISPY task
 	//vStartSPISPYTask(configNORMAL_PRIORITY);
 
 
-	/* Enable PMIC interrupt level low. */
-
-
+	// Enable PMIC interrupt level low
 	PMIC_EnableLowLevel();
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. If it has returned, probably there is
