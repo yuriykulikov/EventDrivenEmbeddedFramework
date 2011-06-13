@@ -85,13 +85,12 @@
 void usartTask( void *pvParameters )
 {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
-	USARTTaskParameters_struct_t * parameters = (USARTTaskParameters_struct_t *)pvParameters;
+	UsartTaskParameters * parameters = (UsartTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
 	UsartBuffer * usartBuffer = parameters->usartBuffer;
 	char commandsBufferSize=parameters->commandsBufferSize;
 	char receivedChar='#';
 	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
-
 	//Declare and initialize exception context
 	struct exception_context *the_exception_context;
 	init_exception_context(the_exception_context);
@@ -164,13 +163,11 @@ void usartTask( void *pvParameters )
 	}//end of task's infinite loop
 }
 
-xTaskHandle startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority){
-	xTaskHandle taskHandle = pvPortMalloc(sizeof(int));
-	USARTTaskParameters_struct_t * vUSARTTaskParameters = pvPortMalloc(sizeof(USARTTaskParameters_struct_t));
-	vUSARTTaskParameters->usartBuffer=usartBuffer;
-	vUSARTTaskParameters->debugLed=debugLed;
-	vUSARTTaskParameters->commandsBufferSize=commandsBufferSize;
-	xTaskCreate(usartTask, (signed char*)"USARTTSK", 1000,(void*)vUSARTTaskParameters, cPriority, taskHandle);
-	return taskHandle;
+void startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle){
+	UsartTaskParameters * usartTaskParameters = pvPortMalloc(sizeof(UsartTaskParameters));
+	usartTaskParameters->usartBuffer=usartBuffer;
+	usartTaskParameters->debugLed=debugLed;
+	usartTaskParameters->commandsBufferSize=commandsBufferSize;
+	xTaskCreate(usartTask, (signed char*)"USARTTSK", 1000,(void*)usartTaskParameters, cPriority, taskHandle);
 }
 

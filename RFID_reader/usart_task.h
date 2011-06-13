@@ -32,9 +32,8 @@ typedef struct USARTTaskParameters
 	xQueueHandle debugLed;
 	/* \brief Command buffer size */
 	short commandsBufferSize;
-} USARTTaskParameters_struct_t;
+} UsartTaskParameters;
 
 
 /* Prototyping of functions. Documentation is found in source file. */
-xTaskHandle startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority);
-
+void startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle);

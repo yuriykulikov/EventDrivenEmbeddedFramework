@@ -78,10 +78,10 @@ int main( void )
 	ledGroupEventQueuePut(ledRGBEventQueue,BLUE,700);
 	ledGroupEventQueuePut(ledRGBEventQueue,SKY,700);
 	ledGroupEventQueuePut(ledRGBEventQueue,WHITE,700);
-	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY);
+	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
 
 	// Start USART task
-	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY);
+	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
 
 	// Start SPISPY task
 	//vStartSPISPYTask(configNORMAL_PRIORITY);
