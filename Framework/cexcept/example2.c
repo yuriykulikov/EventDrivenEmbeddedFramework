@@ -25,13 +25,13 @@ See example.c for a simpler example.
  * This function may throw an exception, that is why it should be called within a try block,
  * passing exception context to it as an argument.
  */
-void functionThatMayThrowAnException(USART_buffer_struct_t * usartBuffer, struct exception_context *the_exception_context)
+void functionThatMayThrowAnException(UsartBuffer * usartBuffer, struct exception_context *the_exception_context)
 {
 	//this is a local variable, memory is allocated for it on the stack
 	struct exception e;
 
 	static int count = 0;
-	USART_Buffer_PutString(usartBuffer,"Enter functionThatMayThrowAnException",200);
+	usartBufferPutString(usartBuffer,"Enter functionThatMayThrowAnException",200);
 	++count;
 
 	if (count == 2) {
@@ -49,15 +49,15 @@ void functionThatMayThrowAnException(USART_buffer_struct_t * usartBuffer, struct
 		e.msg = "demo error message";
 		Throw e;
 	}
-	USART_Buffer_PutString(usartBuffer,"Return from functionThatMayThrowAnException",200);
+	usartBufferPutString(usartBuffer,"Return from functionThatMayThrowAnException",200);
 }
 
 /* Bar may throw an exception, that is why it should be called within a try block,
  * passing exception context to it as an argument.
  */
-void bar(USART_buffer_struct_t * usartBuffer, struct exception_context *the_exception_context)
+void bar(UsartBuffer * usartBuffer, struct exception_context *the_exception_context)
 {
-	USART_Buffer_PutString(usartBuffer, "enter bar\n",200);
+	usartBufferPutString(usartBuffer, "enter bar\n",200);
 	struct exception e;
 	Try {
 		functionThatMayThrowAnException(usartBuffer, the_exception_context);
@@ -67,20 +67,20 @@ void bar(USART_buffer_struct_t * usartBuffer, struct exception_context *the_exce
 				//Ignore it
 				break;
 			case null:
-				USART_Buffer_PutString(usartBuffer,"Caught null exception in bar:",200);
-				USART_Buffer_PutString(usartBuffer,e.msg,200);
+				usartBufferPutString(usartBuffer,"Caught null exception in bar:",200);
+				usartBufferPutString(usartBuffer,e.msg,200);
 				break;
 			//anything else - rethrow the exception
 			default: Throw e;
 		}
 	}
-	USART_Buffer_PutString(usartBuffer, "return from bar\n",200);
+	usartBufferPutString(usartBuffer, "return from bar\n",200);
 }
 
 /* This is the main function, which could be called within thread's loop.
  * Thread loop should not be inside the Try block!
  */
-void foo(USART_buffer_struct_t * usartBuffer)
+void foo(UsartBuffer * usartBuffer)
 {
 	//Declare and initialize exception context
 	struct exception_context *the_exception_context;
@@ -92,23 +92,23 @@ void foo(USART_buffer_struct_t * usartBuffer)
 			bar(usartBuffer, the_exception_context);/* no exceptions */
 			bar(usartBuffer, the_exception_context);/* exception will be caught by bar(), looks okay to us */
 			bar(usartBuffer, the_exception_context);/* bar() will rethrow the exception */
-			USART_Buffer_PutString(usartBuffer,"we won't get here\n",200);
+			usartBufferPutString(usartBuffer,"we won't get here\n",200);
 		}
 		Catch (e) {
 			switch (e.type) {
 				case warning:
-					USART_Buffer_PutString(usartBuffer,"Caught warning exception in foo:",200);
-					USART_Buffer_PutString(usartBuffer,e.msg,200);
+					usartBufferPutString(usartBuffer,"Caught warning exception in foo:",200);
+					usartBufferPutString(usartBuffer,e.msg,200);
 					break;
 				case outOfHeap:
-					USART_Buffer_PutString(usartBuffer,"Caught outOfHeap exception in foo:",200);
-					USART_Buffer_PutString(usartBuffer,e.msg,200);
+					usartBufferPutString(usartBuffer,"Caught outOfHeap exception in foo:",200);
+					usartBufferPutString(usartBuffer,e.msg,200);
 					break;
 				case error:
-					USART_Buffer_PutString(usartBuffer,"Caught something bad in foo:",200);
-					USART_Buffer_PutString(usartBuffer,e.msg,200);
+					usartBufferPutString(usartBuffer,"Caught something bad in foo:",200);
+					usartBufferPutString(usartBuffer,e.msg,200);
 				default:
-					USART_Buffer_PutString(usartBuffer,"Caught undefined exception in foo:",200);
+					usartBufferPutString(usartBuffer,"Caught undefined exception in foo:",200);
 			}
 		}
 }

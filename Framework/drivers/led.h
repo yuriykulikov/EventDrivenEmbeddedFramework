@@ -49,5 +49,5 @@ typedef struct LedGroupEventQueueDefenition
 
 void ledGroupEventQueuePut (LedGroupEventQueue * ledGroupEventQueue,uint8_t bitmask, uint16_t duration);
 LedGroupEventQueue * startLedQueueProcessorTask (LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle);
-xTaskHandle startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority);
+void startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority, xTaskHandle taskHandle);
 #endif
