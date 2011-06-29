@@ -37,7 +37,11 @@
 #define configQUEUE_REGISTRY_SIZE	0
 
 /* Debug */
-#define configCHECK_FOR_STACK_OVERFLOW 1//0
+#define configCHECK_FOR_STACK_OVERFLOW			1//0
+#define configGENERATE_RUN_TIME_STATS			0//0
+#define portGET_RUN_TIME_COUNTER_VALUE			0//0
+#define INCLUDE_uxTaskGetStackHighWaterMark		1
+#define INCLUDE_xTaskGetCurrentTaskHandle 		1
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0 //1
