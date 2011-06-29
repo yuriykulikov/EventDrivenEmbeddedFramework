@@ -108,7 +108,7 @@ UsartBuffer * usartBufferInitialize(USART_t * usart, Baudrate_enum baudrate ,cha
 		case (int)&USARTC0:
 			//Allocate memory for usart structure and store the pointer
 			usartBuffer = ( UsartBuffer * ) pvPortMalloc( sizeof( UsartBuffer ) );
-			//copy pointer pUsartBuffer to global pUsartBufferC, which is use to handle interrups
+			//copy pointer pUsartBuffer to global pUsartBufferC, which is use to handle interrupts
 			usartBufferC = usartBuffer;
 			//Since usart is on the port C, we will need to use PORTC
 			port = &PORTC;
@@ -116,10 +116,18 @@ UsartBuffer * usartBufferInitialize(USART_t * usart, Baudrate_enum baudrate ,cha
 		case (int)&USARTD0:
 			//Allocate memory for usart structure and store the pointer
 			usartBuffer = ( UsartBuffer * ) pvPortMalloc( sizeof( UsartBuffer ) );
-			//copy pointer pUsartBuffer to global pUsartBufferD, which is use to handle interrups
+			//copy pointer pUsartBuffer to global pUsartBufferD, which is use to handle interrupts
 			usartBufferD = usartBuffer;
-			//Since usart is on the port D, we will need to use PORTC
+			//Since usart is on the port D, we will need to use PORTD
 			port = &PORTD;
+			break;
+		case (int)&USARTE0:
+			//Allocate memory for usart structure and store the pointer
+			usartBuffer = ( UsartBuffer * ) pvPortMalloc( sizeof( UsartBuffer ) );
+			//copy pointer pUsartBuffer to global pUsartBufferD, which is use to handle interrupts
+			usartBufferE = usartBuffer;
+			//Since usart is on the port E, we will need to use PORTE
+			port = &PORTE;
 			break;
 		default:
 			//use default, TODO: report error here with LED
