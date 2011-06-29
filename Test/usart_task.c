@@ -133,18 +133,18 @@ void usartTask( void *pvParameters )
 				}
 				usartBufferPutString(usartBuffer,"resp_blink",200);
 			}
-			if (strcmp(str,"req_r_tags")==0)
-			{
-				//Put response to the queue, ,might wait up to 200ms if there are no place in queue
-				usartBufferPutString(usartBuffer,
-						"resp_r_tags 3 0x2608198818111987 -20 0x1122334455667788 -25 0x7766554433221100 -30",200);
-			}
 			if (strcmp(str,"throw")==0)
 			{
 				struct exception e;
 				e.type = warning;
 				e.msg = "demo warning message";
 				Throw e;
+			}
+			if (strcmp(str,"req_watermark")==0)
+			{
+				int stackWaterMark = uxTaskGetStackHighWaterMark(xTaskGetCurrentTaskHandle());
+				usartBufferPutString(usartBuffer,"\nstack Water Mark: \n",200);
+				usartBufferPutInt(usartBuffer,stackWaterMark, 10, 1000);
 			}
 		} Catch (e) {
 			switch (e.type) {
