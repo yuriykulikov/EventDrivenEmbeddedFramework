@@ -40,7 +40,6 @@
 
 #include "led.h"
 #include "ledGroup.h"
-#include "spispy_task.h"
 #include "usart_task.h"
 // This is global, because used in hooks
 LedGroup * ledRGB;
@@ -82,10 +81,6 @@ int main( void )
 
 	// Start USART task
 	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
-
-	// Start SPISPY task
-	//vStartSPISPYTask(configNORMAL_PRIORITY);
-
 
 	// Enable PMIC interrupt level low
 	PMIC_EnableLowLevel();

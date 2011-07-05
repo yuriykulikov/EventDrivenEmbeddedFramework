@@ -140,12 +140,6 @@ void usartTask( void *pvParameters )
 				e.msg = "demo warning message";
 				Throw e;
 			}
-			if (strcmp(str,"req_watermark")==0)
-			{
-				int stackWaterMark = uxTaskGetStackHighWaterMark(xTaskGetCurrentTaskHandle());
-				usartBufferPutString(usartBuffer,"\nstack Water Mark: \n",200);
-				usartBufferPutInt(usartBuffer,stackWaterMark, 10, 1000);
-			}
 		} Catch (e) {
 			switch (e.type) {
 				case warning:
