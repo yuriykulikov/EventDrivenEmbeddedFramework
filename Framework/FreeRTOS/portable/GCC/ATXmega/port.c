@@ -42,12 +42,37 @@
  * define as 0 if 128K or less. Devices with more memory have 24-bit program
  * counter, while devices with 128K or less have only 16-bit program counter.
  */
-#if defined (__AVR_ATxmega192D3__)|(__AVR_ATxmega192A3__)
-	#define AVRPROGRAMMEMORYMORETHAN128K 1
-#elif defined (__AVR_ATxmega128D3__)|(__AVR_ATxmega128A3__)
-	#define AVRPROGRAMMEMORYMORETHAN128K 0
+#if defined (__AVR_ATxmega16A4__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega16D4__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega32A4__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega32D4__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega64A1__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega64A3__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega64D3__)
+	#define PROGRAMCOUNTER_24BIT 0
+#elif defined (__AVR_ATxmega128A1__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega128A3__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega128D3__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega192A3__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega192D3__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega256A3__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega256A3B__)
+	#define PROGRAMCOUNTER_24BIT 1
+#elif defined (__AVR_ATxmega256D3__)
 #else
-	#error "specify amount of memory for you device"
+	#error "device name should be defined in the project settings"
 #endif
 
 /*-----------------------------------------------------------
@@ -120,16 +145,16 @@ extern volatile tskTCB * volatile pxCurrentTCB;
 					"push	r29						\n\t"	\
 					"push	r30						\n\t"	\
 					"push	r31						\n\t"	\
-					"in	r16, 0x38					\n\t"	\
-					"push	r16						\n\t"	\
-					"in	r16, 0x39					\n\t"	\
-					"push	r16						\n\t"	\
-					"in	r16, 0x3a					\n\t"	\
-					"push	r16						\n\t"	\
-					"in	r16, 0x3b					\n\t"	\
-					"push	r16						\n\t"	\
-					"in	r16, 0x3c					\n\t"	\
-					"push	r16						\n\t"	\
+					";in	r16, 0x38				\n\t"	\
+					";push	r16						\n\t"	\
+					";in	r16, 0x39				\n\t"	\
+					";push	r16						\n\t"	\
+					";in	r16, 0x3a				\n\t"	\
+					";push	r16						\n\t"	\
+					";in	r16, 0x3b				\n\t"	\
+					";push	r16						\n\t"	\
+					";in	r16, 0x3c				\n\t"	\
+					";push	r16						\n\t"	\
 					"lds	r26, pxCurrentTCB		\n\t"	\
 					"lds	r27, pxCurrentTCB + 1	\n\t"	\
 					"in		r0, 0x3d				\n\t"	\
@@ -150,16 +175,16 @@ extern volatile tskTCB * volatile pxCurrentTCB;
 					"out	__SP_L__, r28			\n\t"	\
 					"ld		r29, x+					\n\t"	\
 					"out	__SP_H__, r29			\n\t"	\
-					"pop	r16						\n\t"	\
-					"out	0x3c, r16				\n\t"	\
-					"pop	r16						\n\t"	\
-					"out	0x3b, r16				\n\t"	\
-					"pop	r16						\n\t"	\
-					"out	0x3a, r16				\n\t"	\
-					"pop	r16						\n\t"	\
-					"out	0x39, r16				\n\t"	\
-					"pop	r16						\n\t"	\
-					"out	0x38, r16				\n\t"	\
+					";pop	r16						\n\t"	\
+					";out	0x3c, r16				\n\t"	\
+					";pop	r16						\n\t"	\
+					";out	0x3b, r16				\n\t"	\
+					";pop	r16						\n\t"	\
+					";out	0x3a, r16				\n\t"	\
+					";pop	r16						\n\t"	\
+					";out	0x39, r16				\n\t"	\
+					";pop	r16						\n\t"	\
+					";out	0x38, r16				\n\t"	\
 					"pop	r31						\n\t"	\
 					"pop	r30						\n\t"	\
 					"pop	r29						\n\t"	\
@@ -247,7 +272,7 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
 	/* The only difference between ports for different xmegas is size of
 	 * program counter. 16-bit for devices with 128K of program memory or less.
 	 * 24-bit for other xmegas. */
-#if AVRPROGRAMMEMORYMORETHAN128K == 1
+#if PROGRAMCOUNTER_24BIT == 1
 	*pxTopOfStack = ( portSTACK_TYPE ) ( usAddress & ( uint32_t ) 0x000000ff );
 	pxTopOfStack--;
 	usAddress >>= 8;
@@ -340,16 +365,16 @@ portSTACK_TYPE *pxPortInitialiseStack( portSTACK_TYPE *pxTopOfStack, pdTASK_CODE
 	 * Corresponing registars are saved and restored in saveCONTEXT and restoreCONTEXT
 	 * TODO  See datasheet for explanation
 	 */
-	*pxTopOfStack = ( portSTACK_TYPE ) 0x38;	/* 38 RAMPD */
-	pxTopOfStack--;
-	*pxTopOfStack = ( portSTACK_TYPE ) 0x39;	/* 39 RAMPX */
-	pxTopOfStack--;
-	*pxTopOfStack = ( portSTACK_TYPE ) 0x3a;	/* 3a RAMPY */
-	pxTopOfStack--;
-	*pxTopOfStack = ( portSTACK_TYPE ) 0x3b;	/* 3b RAMPZ */
-	pxTopOfStack--;
-	*pxTopOfStack = ( portSTACK_TYPE ) 0x3c;	/* 3c EIND */
-	pxTopOfStack--;
+	//*pxTopOfStack = ( portSTACK_TYPE ) 0x38;	/* 38 RAMPD */
+	//pxTopOfStack--;
+	//*pxTopOfStack = ( portSTACK_TYPE ) 0x39;	/* 39 RAMPX */
+	//pxTopOfStack--;
+	//*pxTopOfStack = ( portSTACK_TYPE ) 0x3a;	/* 3a RAMPY */
+	//pxTopOfStack--;
+	//*pxTopOfStack = ( portSTACK_TYPE ) 0x3b;	/* 3b RAMPZ */
+	//pxTopOfStack--;
+	//*pxTopOfStack = ( portSTACK_TYPE ) 0x3c;	/* 3c EIND */
+	//pxTopOfStack--;
 
 
 	/*lint +e950 +e611 +e923 */
