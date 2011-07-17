@@ -64,14 +64,14 @@ int main( void )
 	 */
 
 	//---------Use USART on PORTC----------------------------
-	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTC0, BAUD9600, 128);
+	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTE0, BAUD9600, 128);
 	// Report itself
 	usartBufferPutString(usartFTDI, "XMEGA ready",10);
 	//---------Start LED task for testing purposes-----------
 	ledRGB = ledGroupInitialize(3);
-	ledGroupAdd(ledRGB, &PORTA, 0x20,1 );//R
-	ledGroupAdd(ledRGB, &PORTA, 0x10,1 );//G
-	ledGroupAdd(ledRGB, &PORTA, 0x08,1 );//B
+	ledGroupAdd(ledRGB, &PORTF, 0x04,1 );//R
+	ledGroupAdd(ledRGB, &PORTF, 0x08,1 );//G
+	ledGroupAdd(ledRGB, &PORTF, 0x02,1 );//B
 
 	LedGroupEventQueue * ledRGBEventQueue = startLedQueueProcessorTask(ledRGB,configLOW_PRIORITY, NULL);
 	ledGroupEventQueuePut(ledRGBEventQueue,BLUE,700);
