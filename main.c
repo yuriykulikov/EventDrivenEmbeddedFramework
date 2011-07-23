@@ -42,6 +42,8 @@
 
 #include "led.h"
 #include "ledGroup.h"
+
+#include "spi_task.h"
 #include "usart_task.h"
 // This is global, because used in hooks
 LedGroup * ledRGB;
@@ -93,6 +95,15 @@ int main( void )
 
 	// Start USART task
 	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
+
+	// Initialize SPI slave on port D
+	Slave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
+	startSpiSlaveTask(spiSlaveD, usartFTDI, configLOW_PRIORITY, NULL);
+
+	// Initialize SPI master on port C
+	Master * spiMasterC = SpiMaster_init(&SPIC, false, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV4_gc);
+	MasterDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
+	startSpiMasterTask(spiMasterCdefault, usartFTDI,configLOW_PRIORITY, NULL);
 
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. If it has returned, probably there is
