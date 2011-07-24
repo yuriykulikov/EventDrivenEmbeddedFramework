@@ -65,25 +65,18 @@ int main( void )
 
 	//---------Use USART on PORTC----------------------------
 	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTE0, BAUD9600, 128);
-	// Report itself
-	usartBufferPutString(usartFTDI, "XMEGA ready",10);
 	//---------Start LED task for testing purposes-----------
 	ledRGB = ledGroupInitialize(3);
 	ledGroupAdd(ledRGB, &PORTF, 0x04,1 );//R
 	ledGroupAdd(ledRGB, &PORTF, 0x08,1 );//G
 	ledGroupAdd(ledRGB, &PORTF, 0x02,1 );//B
-
+	ledGroupSet(ledRGB, BLUE);
 	LedGroupEventQueue * ledRGBEventQueue = startLedQueueProcessorTask(ledRGB,configLOW_PRIORITY, NULL);
-	ledGroupEventQueuePut(ledRGBEventQueue,BLUE,700);
-	ledGroupEventQueuePut(ledRGBEventQueue,SKY,700);
-	ledGroupEventQueuePut(ledRGBEventQueue,WHITE,700);
 	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
 
 	// Start USART task
 	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
 
-	// Enable PMIC interrupt level low
-	PMIC_EnableLowLevel();
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. If it has returned, probably there is
 	 * not enough space in heap to allocate memory for the idle task, which means that all heap space is
@@ -91,7 +84,7 @@ int main( void )
 	 * XMEGA port uses heap_1.c which doesn't support memory free. It is unlikely that XMEGA port will need to
 	 * dynamically create tasks or queues. To ensure stable work, create ALL tasks and ALL queues before
 	 * vTaskStartScheduler call. In this case we can be sure that heap size is enough.
-	 * Interrupts would be enabled by calling sei();*/
+	 * Interrupts would be enabled by calling PMIC_EnableLowLevel();*/
 	vTaskStartScheduler();
 
 	/* stop execution and report error */
