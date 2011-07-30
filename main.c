@@ -62,7 +62,9 @@ int main( void )
 	 * (which will be executed after scheduler has started) if fast startup is needed.
 	 * Interrupts are not enabled until the call of vTaskStartScheduler();
 	 */
-
+	// Enable the Round-Robin Scheduling scheme.Round-Robin scheme ensures that no low-level
+	// interrupts are “starved”, as the priority changes continuously
+	PMIC_EnableRoundRobin();
 	//---------Use USART on PORTC----------------------------
 	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTE0, BAUD9600, 128);
 	//---------Start LED task for testing purposes-----------
