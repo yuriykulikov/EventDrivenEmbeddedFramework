@@ -456,30 +456,44 @@ static void prvSetupTimerInterrupt( void )
 	//set period of counter
 	TCC0.PER = configCPU_CLOCK_HZ / configTICK_RATE_HZ/64-1;
 
-	//enable interrupt and set low level
+	//enable interrupt and set level
+#if configKERNEL_INTERRUPT_PRIORITY==1
 	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_LO_gc);
-    //enable low level interrupts
-    PMIC_EnableLowLevel();
+#elif configKERNEL_INTERRUPT_PRIORITY==2
+	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_MED_gc);
+#elif configKERNEL_INTERRUPT_PRIORITY==3
+	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_HI_gc);
+#endif
+
+
+	//enable all interrupt levels. Some levels will be disabled when entering a critical section
+	PMIC_EnableLowLevel();
+	PMIC_EnableMediumLevel();
+	PMIC_EnableHighLevel();
 }
 /*-----------------------------------------------------------*/
 
 unsigned portBASE_TYPE uxPortSetInterruptMaskFromISR()
 {
+	// first save interrupt control register
 	unsigned portBASE_TYPE uxSavedStatReg = PMIC.CTRL;
 	unsigned portBASE_TYPE uxNewStatReg = 0;
-	switch(configMAX_SYSCALL_INTERRUPT_PRIORITY)
-	{
-		case PMIC_HILVLEN_bm:
-			uxNewStatReg |= PMIC_HILVLEN_bm;
-		case PMIC_MEDLVLEN_bm:		
-			uxNewStatReg |= PMIC_MEDLVLEN_bm;
-		case PMIC_LOLVLEN_bm:
-			uxNewStatReg |= PMIC_LOLVLEN_bm;
-			break;
-		default:
-			uxNewStatReg = 0;
-	}
+// Prober bits to be set for configMAX_SYSCALL_INTERRUPT_PRIORITY are selected in compile-time
+// It will allow execution of interrupts with the level higher than configMAX_SYSCALL_INTERRUPT_PRIORITY
+// within a critical section
+#ifndef configMAX_SYSCALL_INTERRUPT_PRIORITY
+	#error "configMAX_SYSCALL_INTERRUPT_PRIORITY is not defined"
+	#endif
+#if configMAX_SYSCALL_INTERRUPT_PRIORITY==3
+	uxNewStatReg |= PMIC_HILVLEN_bm|PMIC_MEDLVLEN_bm|PMIC_LOLVLEN_bm;
+#elif configMAX_SYSCALL_INTERRUPT_PRIORITY==2
+	uxNewStatReg |= PMIC_MEDLVLEN_bm|PMIC_LOLVLEN_bm;
+#elif configMAX_SYSCALL_INTERRUPT_PRIORITY==1
+	uxNewStatReg |= PMIC_LOLVLEN_bm;
+#endif
+	// Now clear these bits in the interrupt control register
 	PMIC.CTRL &= ~(uxNewStatReg);
+	// Return saved value to be restored after the context switch
 	return uxSavedStatReg;
 }
 
