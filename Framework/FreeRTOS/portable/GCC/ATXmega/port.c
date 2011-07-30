@@ -433,12 +433,15 @@ void vPortYield( void )
 void vPortYieldFromTick( void ) __attribute__ ( ( naked ) );
 void vPortYieldFromTick( void )
 {
+	unsigned portBASE_TYPE uxSavedStatReg;
 	portSAVE_CONTEXT();
+	uxSavedStatReg = portSET_INTERRUPT_MASK_FROM_ISR();
 	vTaskIncrementTick();
 	vTaskSwitchContext();
+	portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedStatReg);
 	portRESTORE_CONTEXT();
 
-	asm volatile ( "ret" );
+	asm volatile ( "reti" );
 }
 /*-----------------------------------------------------------*/
 
@@ -459,6 +462,32 @@ static void prvSetupTimerInterrupt( void )
     PMIC_EnableLowLevel();
 }
 /*-----------------------------------------------------------*/
+
+unsigned portBASE_TYPE uxPortSetInterruptMaskFromISR()
+{
+	unsigned portBASE_TYPE uxSavedStatReg = PMIC.CTRL;
+	unsigned portBASE_TYPE uxNewStatReg = 0;
+	switch(configMAX_SYSCALL_INTERRUPT_PRIORITY)
+	{
+		case PMIC_HILVLEN_bm:
+			uxNewStatReg |= PMIC_HILVLEN_bm;
+		case PMIC_MEDLVLEN_bm:		
+			uxNewStatReg |= PMIC_MEDLVLEN_bm;
+		case PMIC_LOLVLEN_bm:
+			uxNewStatReg |= PMIC_LOLVLEN_bm;
+			break;
+		default:
+			uxNewStatReg = 0;
+	}
+	PMIC.CTRL &= ~(uxNewStatReg);
+	return uxSavedStatReg;
+}
+
+
+void vPortClearInterruptMaskFromISR( unsigned portBASE_TYPE uxSavedStatReg)
+{
+	PMIC.CTRL = uxSavedStatReg;
+}
 
 #if configUSE_PREEMPTION == 1
 

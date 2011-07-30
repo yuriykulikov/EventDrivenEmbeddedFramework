@@ -36,6 +36,9 @@
 #define configIDLE_SHOULD_YIELD		1
 #define configQUEUE_REGISTRY_SIZE	0
 
+#define configKERNEL_INTERRUPT_PRIORITY 1
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY 2
+
 /* Debug */
 #define configCHECK_FOR_STACK_OVERFLOW			1//0
 #define configGENERATE_RUN_TIME_STATS			0//0
@@ -54,7 +57,7 @@ to exclude the API function. */
 #define INCLUDE_uxTaskPriorityGet		0
 #define INCLUDE_vTaskDelete				0//1
 #define INCLUDE_vTaskCleanUpResources	0
-#define INCLUDE_vTaskSuspend			0
+#define INCLUDE_vTaskSuspend			1
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
 
