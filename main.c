@@ -117,9 +117,3 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTask
 	/* stop execution and report error */
 	while(true) ledGroupSet(ledRGB, RED);
 }
-void vApplicationTickHook( void );
-/* This function is called during the tick interrupt. configUSE_TICK_HOOK should be defined as 1.*/
-void vApplicationTickHook( void )
-{
-/* Tick hook could be used to implement timer functionality*/
-}

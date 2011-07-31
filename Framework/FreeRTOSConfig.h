@@ -36,6 +36,11 @@
 #define configIDLE_SHOULD_YIELD		1
 #define configQUEUE_REGISTRY_SIZE	0
 
+// timers.c
+#define configUSE_TIMERS				1
+#define configTIMER_TASK_PRIORITY		configLOW_PRIORITY
+#define configTIMER_QUEUE_LENGTH		16
+#define configTIMER_TASK_STACK_DEPTH	configMINIMAL_STACK_SIZE
 /** Multi-level interrupts support. XMEGA has three interrupt levels.
  * 1	PMIC_LOWLVLEN_bm
  * 2	PMIC_MEDLVLEN_bm
