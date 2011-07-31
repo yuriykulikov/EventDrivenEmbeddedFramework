@@ -445,24 +445,25 @@ void vPortYieldFromTick( void )
 }
 /*-----------------------------------------------------------*/
 
-
 /*
  * Setup timer 1 compare match A to generate a tick interrupt.
  */
 static void prvSetupTimerInterrupt( void )
 {
-    //select the clock source and pre-scale by 64
-	TC0_ConfigClockSource(&TCC0,TC_CLKSEL_DIV64_gc);
+	//Use TCC0 as a tick counter. If this is to be changed, change ISR as well
+	TC0_t * tickTimer = &TCC0;
+	//select the clock source and pre-scale by 64
+	TC0_ConfigClockSource(tickTimer,TC_CLKSEL_DIV64_gc);
 	//set period of counter
-	TCC0.PER = configCPU_CLOCK_HZ / configTICK_RATE_HZ/64-1;
+	tickTimer->PER = configCPU_CLOCK_HZ / configTICK_RATE_HZ/64-1;
 
 	//enable interrupt and set level
 #if configKERNEL_INTERRUPT_PRIORITY==1
-	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_LO_gc);
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_LO_gc);
 #elif configKERNEL_INTERRUPT_PRIORITY==2
-	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_MED_gc);
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_MED_gc);
 #elif configKERNEL_INTERRUPT_PRIORITY==3
-	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_HI_gc);
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_HI_gc);
 #endif
 
 
@@ -506,7 +507,6 @@ void vPortClearInterruptMaskFromISR( unsigned portBASE_TYPE uxSavedStatReg)
 #if configUSE_PREEMPTION == 1
 
 	/*
-	 * Note that for RTOS Real Time Counter is used. 
 	 * Tick ISR for preemptive scheduler.  We can use a naked attribute as
 	 * the context is saved at the start of vPortYieldFromTick().  The tick
 	 * count is incremented after the context is saved.
