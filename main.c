@@ -33,9 +33,11 @@
 /* Scheduler include files. */
 #include "FreeRTOS.h"
 #include "task.h"
+#include "timers.h"
 /* Atmel drivers */
 #include "clksys_driver.h"
 #include "pmic_driver.h"
+#include "wdt_driver.h"
 /* File headers. */
 
 #include "led.h"
@@ -48,6 +50,13 @@ ISR (BADISR_vect){
 	//stop execution and report error
 	while(true) ledGroupSet(ledRGB, ORANGE);
 }
+
+// Define a callback function that will be reset the WDT
+void watchdogTimerCallback( xTimerHandle xTimer )
+{
+	WDT_Reset();
+}
+
 int main( void )
 {
 	/*  Enable internal 32 MHz ring oscillator and wait until it's
@@ -57,6 +66,9 @@ int main( void )
 	CLKSYS_Prescalers_Config( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
 	do {} while ( CLKSYS_IsReady( OSC_RC32MRDY_bm ) == 0 );
 	CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_RC32M_gc );
+
+	//Enable watchdog timer, which will be reset by timer
+	WDT_EnableAndSetTimeout( WDT_PER_1KCLK_gc );
 	/* Do all configuration and create all tasks and queues before scheduler is started.
 	 * It is possible to put initialization of peripherals like displays into task functions
 	 * (which will be executed after scheduler has started) if fast startup is needed.
@@ -65,6 +77,9 @@ int main( void )
 	// Enable the Round-Robin Scheduling scheme.Round-Robin scheme ensures that no low-level
 	// interrupts are “starved”, as the priority changes continuously
 	PMIC_EnableRoundRobin();
+
+	//Create and start the timer, which will reset Watch Dog Timer
+	xTimerStart(xTimerCreate((signed char*)"WDT",500, pdTRUE, 0, watchdogTimerCallback), 0);
 	//---------Use USART on PORTC----------------------------
 	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTE0, BAUD9600, 128);
 	//---------Start LED task for testing purposes-----------

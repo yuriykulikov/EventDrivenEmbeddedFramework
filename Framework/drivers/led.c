@@ -74,6 +74,9 @@ LedGroupEventQueue * startLedQueueProcessorTask (LedGroup * ledGroup, char cPrio
 void BlinkingLedTask( void *pvParameters )
 {
 	LedGroupEventQueue * ledGroupEventQueue = (LedGroupEventQueue *) pvParameters;
+	//First blink with SKY, so we see resets
+	ledGroupEventQueuePut(ledGroupEventQueue,SKY,500);
+	vTaskDelay(1000);
 	while(true)
 	{
 		if (xQueueIsQueueEmptyFromISR(ledGroupEventQueue->queueHandle)){
