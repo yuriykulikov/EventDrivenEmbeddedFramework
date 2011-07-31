@@ -433,37 +433,80 @@ void vPortYield( void )
 void vPortYieldFromTick( void ) __attribute__ ( ( naked ) );
 void vPortYieldFromTick( void )
 {
+	unsigned portBASE_TYPE uxSavedStatReg;
 	portSAVE_CONTEXT();
+	uxSavedStatReg = portSET_INTERRUPT_MASK_FROM_ISR();
 	vTaskIncrementTick();
 	vTaskSwitchContext();
+	portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedStatReg);
 	portRESTORE_CONTEXT();
 
-	asm volatile ( "ret" );
+	asm volatile ( "reti" );
 }
 /*-----------------------------------------------------------*/
-
 
 /*
  * Setup timer 1 compare match A to generate a tick interrupt.
  */
 static void prvSetupTimerInterrupt( void )
 {
-    //select the clock source and pre-scale by 64
-	TC0_ConfigClockSource(&TCC0,TC_CLKSEL_DIV64_gc);
+	//Use TCC0 as a tick counter. If this is to be changed, change ISR as well
+	TC0_t * tickTimer = &TCC0;
+	//select the clock source and pre-scale by 64
+	TC0_ConfigClockSource(tickTimer,TC_CLKSEL_DIV64_gc);
 	//set period of counter
-	TCC0.PER = configCPU_CLOCK_HZ / configTICK_RATE_HZ/64-1;
+	tickTimer->PER = configCPU_CLOCK_HZ / configTICK_RATE_HZ/64-1;
 
-	//enable interrupt and set low level
-	TC0_SetOverflowIntLevel(&TCC0,TC_OVFINTLVL_LO_gc);
-    //enable low level interrupts
-    PMIC_EnableLowLevel();
+	//enable interrupt and set level
+#if configKERNEL_INTERRUPT_PRIORITY==1
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_LO_gc);
+#elif configKERNEL_INTERRUPT_PRIORITY==2
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_MED_gc);
+#elif configKERNEL_INTERRUPT_PRIORITY==3
+	TC0_SetOverflowIntLevel(tickTimer,TC_OVFINTLVL_HI_gc);
+#endif
+
+
+	//enable all interrupt levels. Some levels will be disabled when entering a critical section
+	PMIC_EnableLowLevel();
+	PMIC_EnableMediumLevel();
+	PMIC_EnableHighLevel();
 }
 /*-----------------------------------------------------------*/
+
+unsigned portBASE_TYPE uxPortSetInterruptMaskFromISR()
+{
+	// first save interrupt control register
+	unsigned portBASE_TYPE uxSavedStatReg = PMIC.CTRL;
+	unsigned portBASE_TYPE uxNewStatReg = 0;
+// Prober bits to be set for configMAX_SYSCALL_INTERRUPT_PRIORITY are selected in compile-time
+// It will allow execution of interrupts with the level higher than configMAX_SYSCALL_INTERRUPT_PRIORITY
+// within a critical section
+#ifndef configMAX_SYSCALL_INTERRUPT_PRIORITY
+	#error "configMAX_SYSCALL_INTERRUPT_PRIORITY is not defined"
+	#endif
+#if configMAX_SYSCALL_INTERRUPT_PRIORITY==3
+	uxNewStatReg |= PMIC_HILVLEN_bm|PMIC_MEDLVLEN_bm|PMIC_LOLVLEN_bm;
+#elif configMAX_SYSCALL_INTERRUPT_PRIORITY==2
+	uxNewStatReg |= PMIC_MEDLVLEN_bm|PMIC_LOLVLEN_bm;
+#elif configMAX_SYSCALL_INTERRUPT_PRIORITY==1
+	uxNewStatReg |= PMIC_LOLVLEN_bm;
+#endif
+	// Now clear these bits in the interrupt control register
+	PMIC.CTRL &= ~(uxNewStatReg);
+	// Return saved value to be restored after the context switch
+	return uxSavedStatReg;
+}
+
+
+void vPortClearInterruptMaskFromISR( unsigned portBASE_TYPE uxSavedStatReg)
+{
+	PMIC.CTRL = uxSavedStatReg;
+}
 
 #if configUSE_PREEMPTION == 1
 
 	/*
-	 * Note that for RTOS Real Time Counter is used. 
 	 * Tick ISR for preemptive scheduler.  We can use a naked attribute as
 	 * the context is saved at the start of vPortYieldFromTick().  The tick
 	 * count is incremented after the context is saved.
