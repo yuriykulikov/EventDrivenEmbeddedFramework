@@ -108,14 +108,18 @@ void SpiMasterTask( void *pvParameters )
 	for(;;) {
 
 		vTaskDelay(2000);
-		//Transmit one byte
-		receivedChar = SpiMaster_shiftByte(master, 0xEE, portMAX_DELAY);
-		usartBufferPutString(usartBuffer, "Master received: 0x", 10);
-		usartBufferPutInt(usartBuffer,receivedChar,16,10);
-		//Transmit one more byte
-		receivedChar = SpiMaster_shiftByte(master, 0x88, portMAX_DELAY);
-		usartBufferPutString(usartBuffer, " , 0x", 10);
-		usartBufferPutInt(usartBuffer,receivedChar,16,10);
-		usartBufferPutString(usartBuffer, "\n", 10);
+		char obtainedMutex = SpiMaster_startTransmission(master, 10);
+		if (obtainedMutex) {
+			//Transmit one byte
+			receivedChar = SpiMaster_shiftByte(master, 0xEE);
+			usartBufferPutString(usartBuffer, "Master received: 0x", 10);
+			usartBufferPutInt(usartBuffer,receivedChar,16,10);
+			//Transmit one more byte
+			receivedChar = SpiMaster_shiftByte(master, 0x88);
+			usartBufferPutString(usartBuffer, " , 0x", 10);
+			usartBufferPutInt(usartBuffer,receivedChar,16,10);
+			usartBufferPutString(usartBuffer, "\n", 10);
+			SpiMaster_stopTransmission(master);
+		}
 	}
 }

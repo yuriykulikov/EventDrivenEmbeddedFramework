@@ -197,28 +197,44 @@ char SpiSlave_getByteFromQueue(Slave * slave, uint8_t * receivedByte, int ticksT
 }
 
 /**
- * Writes data to the SPI. Waits if other task is using the SPI module.
- * @param spiMaster
- * @param data
- * @param ticksToWait How much time to wait in attempt to take mutex
- * @return received value
+ * Tries to obtain the mutex and pulls SS pin low
+ * @param masterDevice
+ * @param ticks To Wait to obtain the mutex
+ * @return true if access to the bus was granted (mutex obtained)
  */
-uint8_t SpiMaster_shiftByte(MasterDevice * masterDevice, uint8_t data, int ticksToWait){
+char SpiMaster_startTransmission (MasterDevice * masterDevice, int ticksToWait) {
 	//Try to obtain mutex
 	if (xSemaphoreTake(masterDevice->master->mutex, ticksToWait)==pdTRUE) {
 		// Pull SS low
 		masterDevice->ssPort->OUTCLR=masterDevice->ssPinMask;
-		//Put first byte to initialize data transmission
-		masterDevice->master->module->DATA=data;
-		//Wait until byte is shifted
-		while(!(masterDevice->master->module->STATUS & SPI_IF_bm)) { nop(); }
-		// Pull SS high
-		masterDevice->ssPort->OUTSET = masterDevice->ssPinMask;
-		//Release mutex
-		xSemaphoreGive(masterDevice->master->mutex);
-		// Accessing the DATA register will clear the SPI_IF_bm
-		return masterDevice->master->module->DATA;
+		return pdTRUE;
 	}
-	// Function could not obtain the mutex, so return zero
-	return 0x00;
+	// Function could not obtain the mutex, so return false
+	return pdFALSE;
+}
+/**
+ * Set SS pin high and release the mutex
+ * @param masterDevice
+ */
+void SpiMaster_stopTransmission (MasterDevice * masterDevice) {
+	// Pull SS high
+	masterDevice->ssPort->OUTSET = masterDevice->ssPinMask;
+	//Release the mutex
+	xSemaphoreGive(masterDevice->master->mutex);
+}
+
+/**
+ * Shifts data with the slave device.
+ * @attention Call SpiMaster_startTransmission() before and SpiMaster_stopTransmission() after.
+ * @param spiMaster
+ * @param data
+ * @return received value
+ */
+uint8_t SpiMaster_shiftByte(MasterDevice * masterDevice, uint8_t data) {
+	//Put byte to initialize data transmission
+	masterDevice->master->module->DATA=data;
+	//Wait until byte is shifted
+	while(!(masterDevice->master->module->STATUS & SPI_IF_bm)) { nop(); }
+	// Accessing the DATA register will clear the SPI_IF_bm
+	return masterDevice->master->module->DATA;
 }

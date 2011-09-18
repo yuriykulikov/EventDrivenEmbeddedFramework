@@ -85,7 +85,9 @@ typedef struct SpiSlaveDefinition {
 Master * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2x, SPI_PRESCALER_t clockDivision);
 MasterDevice * SpiMaster_initDevice(Master *spiMaster, PORT_t *ssPort, uint8_t ssPinMask);
 
-uint8_t SpiMaster_shiftByte(MasterDevice * spiMaster, uint8_t data, int ticksToWait);
+char SpiMaster_startTransmission (MasterDevice * masterDevice, int ticksToWait);
+uint8_t SpiMaster_shiftByte(MasterDevice * spiMaster, uint8_t data);
+void SpiMaster_stopTransmission (MasterDevice * masterDevice);
 
 Slave * SpiSlave_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, uint8_t queueSize);
 
