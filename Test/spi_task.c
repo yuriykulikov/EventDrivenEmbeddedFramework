@@ -31,7 +31,7 @@ void SpiSlaveTask( void *pvParameters );
  * @param cPriority
  * @param taskHandle
  */
-void startSpiSlaveTask(Slave * slave, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle)
+void startSpiSlaveTask(SpiSlave * slave, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle)
 {
 	//Put parameters into the struct
 	SpiSlaveTaskParameters * spiSlaveTaskParameters = pvPortMalloc(sizeof(SpiSlaveTaskParameters));
@@ -53,7 +53,7 @@ void SpiSlaveTask( void *pvParameters ) {
 	SpiSlaveTaskParameters * parameters = (SpiSlaveTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
 	UsartBuffer * usartBuffer = parameters->usartBuffer;
-	Slave * slave = parameters->spiSlave;
+	SpiSlave * slave = parameters->spiSlave;
 	uint8_t receivedChar='#';
 
 	//Infinite loop
@@ -79,7 +79,7 @@ void SpiMasterTask( void *pvParameters );
  * @param cPriority
  * @param taskHandle
  */
-void startSpiMasterTask(MasterDevice * master, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle){
+void startSpiMasterTask(SpiDevice * master, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle){
 
 	//Task will receive these parameters later, they should be either allocated dynamically or be static
 	SpiMasterTaskParameters * spiMasterTaskParameters = pvPortMalloc(sizeof(SpiMasterTaskParameters));
@@ -101,7 +101,7 @@ void SpiMasterTask( void *pvParameters )
 	SpiMasterTaskParameters * parameters = (SpiMasterTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
 	UsartBuffer * usartBuffer = parameters->usartBuffer;
-	MasterDevice * master = parameters->spiMaster;
+	SpiDevice * master = parameters->spiMaster;
 	uint8_t receivedChar='#';
 
 	//Infinite loop

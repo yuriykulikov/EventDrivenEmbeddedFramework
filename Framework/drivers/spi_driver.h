@@ -58,21 +58,23 @@ typedef struct MasterDefinition {
 //	volatile uint8_t bytesTransceived;
 //	volatile uint8_t bytesToReceive;
 //	volatile uint8_t bytesReceived;
-} Master;
+} SpiMaster;
 
-/**@brief Represents particular device on the bus
+/**
+ * @brief Represents particular device on the bus
  * Holds pointer to the SPI master, and SS pin description. Initialize one for each device on SPI bus.
  * @attention  Interact with this struct only using functions.
  */
 typedef struct MasterDeviceDefinition {
 	/** Spi structure to use */
-	Master * master;
+	SpiMaster *master;
 	//SS pin description
 	PORT_t *ssPort;
 	uint8_t ssPinMask;
-} MasterDevice;
+} SpiDevice;
 
-/**@brief Represents the slave.
+/**
+ * @brief Represents the slave.
  * @attention  Interact with this struct only using functions.
  */
 typedef struct SpiSlaveDefinition {
@@ -80,17 +82,17 @@ typedef struct SpiSlaveDefinition {
 	uint8_t status;
 	/** Master out slave in commands queue */
 	xQueueHandle commandsQueue;
-} Slave;
+} SpiSlave;
 
-Master * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2x, SPI_PRESCALER_t clockDivision);
-MasterDevice * SpiMaster_initDevice(Master *spiMaster, PORT_t *ssPort, uint8_t ssPinMask);
+SpiMaster * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2x, SPI_PRESCALER_t clockDivision);
+SpiDevice * SpiMaster_initDevice(SpiMaster *master, PORT_t *ssPort, uint8_t ssPinMask);
 
-char SpiMaster_startTransmission (MasterDevice * masterDevice, int ticksToWait);
-uint8_t SpiMaster_shiftByte(MasterDevice * spiMaster, uint8_t data);
-void SpiMaster_stopTransmission (MasterDevice * masterDevice);
+char SpiMaster_startTransmission (SpiDevice *device, int ticksToWait);
+uint8_t SpiMaster_shiftByte(SpiDevice *master, uint8_t data);
+void SpiMaster_stopTransmission (SpiDevice *device);
 
-Slave * SpiSlave_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, uint8_t queueSize);
+SpiSlave * SpiSlave_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, uint8_t queueSize);
 
-char SpiSlave_getByteFromQueue(Slave * spiSlave, uint8_t * receivedByte, int ticksToWait);
+char SpiSlave_getByteFromQueue(SpiSlave *slave, uint8_t * receivedByte, int ticksToWait);
 
 #endif

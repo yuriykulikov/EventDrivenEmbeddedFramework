@@ -25,7 +25,7 @@
 typedef struct SpiSlaveTaskParametersDefinition
 {
 	/** Pointer to SpiSlave to use */
-	Slave * spiSlave;
+	SpiSlave * spiSlave;
 	/** Pointer to USART buffer to use */
 	UsartBuffer * usartBuffer;
 } SpiSlaveTaskParameters;
@@ -34,11 +34,11 @@ typedef struct SpiSlaveTaskParametersDefinition
 typedef struct SpiMasterTaskParametersDefinitio
 {
 	/** Pointer to SpiSlave to use */
-	MasterDevice * spiMaster;
+	SpiDevice * spiMaster;
 	/** Pointer to USART buffer to use. */
 	UsartBuffer * usartBuffer;
 } SpiMasterTaskParameters;
 
 
-void startSpiSlaveTask(Slave * slave, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle);
-void startSpiMasterTask(MasterDevice * master, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle);
+void startSpiSlaveTask(SpiSlave * slave, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle);
+void startSpiMasterTask(SpiDevice * master, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle);
