@@ -124,6 +124,34 @@ Master * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2
 	Master * master = ( Master * ) pvPortMalloc( sizeof( Master ) );
 	// Store module pointer first
 	master->module=module;
+	//Switch by the pointer to the hardware module to set up port and ISR-Task communication structure
+	switch ((int)module) {
+		case (int)&SPIC:
+			// SPIC interrupt vector will be triggered, connect it to the structure.
+			masterC = master;
+			// Set MOSI and SCK pins outputs;
+			PORTC.DIRSET = SPI_MOSI_bm | SPI_SCK_bm;
+			// SS should be set to the output, see SS pin section in the XMEGA SPI appnote
+			PORTC.DIRSET = SPI_SS_bm;
+			// Set Miso input
+			PORTC.DIRCLR = SPI_MISO_bm;
+			break;
+		case (int)&SPID:
+			// SPID interrupt vector will be triggered, connect it to the structure.
+			masterD = master;
+			// Set MOSI and SCK pins outputs;
+			// SS should be set to the output, see SS pin section in the XMEGA SPI appnote
+			PORTD.DIRSET = SPI_MOSI_bm | SPI_SCK_bm;
+			// SS should be set to the output, see SS pin section in the XMEGA SPI appnote
+			PORTD.DIRSET = SPI_SS_bm;
+			// Set Miso input
+			PORTD.DIRCLR = SPI_MISO_bm;
+			break;
+		// TODO add more cases for the A series devices
+		default:
+			//this should never happen
+			break;
+	}
 	// Set up Spi hardware module
 	module->CTRL = clockDivision|(clk2x ? SPI_CLK2X_bm : 0)|SPI_ENABLE_bm
 				|(lsbFirst ? SPI_DORD_bm  : 0) |SPI_MASTER_bm |mode;
@@ -135,29 +163,6 @@ Master * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2
 	//vSemaphoreCreateBinary(master->semaphore);
 	// Create mutex which will be used to prevent using module by several tasks at the same time.
 	master->mutex = xSemaphoreCreateMutex();
-	//Switch by the pointer to the hardware module to set up port and ISR-Task communication structure
-	switch ((int)module) {
-		case (int)&SPIC:
-			// SPIC interrupt vector will be triggered, connect it to the structure.
-			masterC = master;
-			// Set MOSI and SCK pins outputs;
-			PORTC.DIRSET  = SPI_MOSI_bm | SPI_SCK_bm;
-			// Set Miso input
-			PORTC.DIRCLR = SPI_MISO_bm;
-			break;
-		case (int)&SPID:
-			// SPID interrupt vector will be triggered, connect it to the structure.
-			masterD = master;
-			// Set MOSI and SCK pins outputs;
-			PORTD.DIRSET  = SPI_MOSI_bm | SPI_SCK_bm;
-			// Set Miso input
-			PORTD.DIRCLR = SPI_MISO_bm;
-			break;
-		// TODO add more cases for the A series devices
-		default:
-			//this should never happen
-			break;
-	}
 	return master;
  };
 /**
