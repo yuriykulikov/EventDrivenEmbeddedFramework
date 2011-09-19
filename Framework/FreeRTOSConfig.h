@@ -1,4 +1,3 @@
-
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
@@ -35,6 +34,8 @@
 #define configUSE_16_BIT_TICKS		1
 #define configIDLE_SHOULD_YIELD		1
 #define configQUEUE_REGISTRY_SIZE	0
+
+#define configUSE_MUTEXES			1
 
 // timers.c
 #define configUSE_TIMERS				1
