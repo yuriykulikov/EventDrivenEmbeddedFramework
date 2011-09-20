@@ -93,6 +93,16 @@ int main( void )
 	LedGroupEventQueue * ledRGBEventQueue = startLedQueueProcessorTask(ledRGB,configLOW_PRIORITY, NULL);
 	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
 
+	LedGroup *ledString = ledGroupInitialize(7);
+	ledGroupAdd(ledString, &PORTA, 0x02, 0);
+	ledGroupAdd(ledString, &PORTA, 0x04, 0);
+	ledGroupAdd(ledString, &PORTA, 0x08, 0);
+	ledGroupAdd(ledString, &PORTA, 0x10, 0);
+	ledGroupAdd(ledString, &PORTA, 0x20, 0);
+	ledGroupAdd(ledString, &PORTA, 0x40, 0);
+	ledGroupAdd(ledString, &PORTA, 0x80, 0);
+	LedGroupEventQueue *ledStringQueue = startLedQueueProcessorTask(ledString, configLOW_PRIORITY, NULL);
+
 	// Start USART task
 	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
 
