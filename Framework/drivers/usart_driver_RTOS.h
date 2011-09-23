@@ -29,7 +29,7 @@
 typedef enum {
 	BAUD9600 = 1,
 	BAUD19200 = 2,
-} Baudrate_enum;
+} Baudrate;
 
 /*! \brief Struct used when interrupt driven driver is used.
 *  Struct containing pointer to a usart, a buffer and a location to store Data
@@ -38,26 +38,22 @@ typedef enum {
 typedef struct UsartStructDefenition
 {
 	/* \brief Pointer to USART module to use. */
-	USART_t * usart;
+	USART_t * module;
 	/* \brief Data register empty interrupt level. */
 	USART_DREINTLVL_t dreIntLevel;
 	/* \brief Data buffer. */
-	xQueueHandle xQueueRX;
-	xQueueHandle xQueueTX;
-} UsartBuffer;
+	xQueueHandle RXqueue;
+	xQueueHandle TXqueue;
+} Usart;
 
 /* Functions for interrupt driven driver. */
 
-/*! \brief This function is a "constructor", it allocates memory,
- *  makes all initialization according to input values, enables interrupts and all.
- *  \return pointer to the serial
- */
-UsartBuffer * usartBufferInitialize(USART_t * usart, Baudrate_enum baudrate ,char bufferSize);
+Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize);
 
-void usartBufferPutByte(UsartBuffer * usart_buffer_t, uint8_t data, int ticksToWait );
-void usartBufferPutString(UsartBuffer * usart_buffer_t, const char *string, int ticksToWait );
-void usartBufferPutInt(UsartBuffer * usart_buffer_t, int16_t Int,int16_t radix, int ticksToWait );
-int8_t usartBufferGetByte(UsartBuffer * usart_buffer_t, char * receivedChar, int ticksToWait );
+void Usart_putByte(Usart * usart, uint8_t data, int ticksToWait );
+void Usart_putString(Usart * usart, const char *string, int ticksToWait );
+void Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait );
+int8_t Usart_getByte(Usart * usart, char * receivedChar, int ticksToWait );
 
 #endif
 

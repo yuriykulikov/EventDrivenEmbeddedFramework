@@ -92,7 +92,7 @@ int main( void ) {
 	//Create and start the timer, which will reset Watch Dog Timer
 	xTimerStart(xTimerCreate((signed char*)"WDT",500, pdTRUE, 0, watchdogTimerCallback), 0);
 	//---------Use USART on PORTC----------------------------
-	UsartBuffer * usartFTDI = usartBufferInitialize(&USARTE0, BAUD9600, 128);
+	Usart * usartFTDI = Usart_initialize(&USARTE0, BAUD9600, 128);
 	//---------Start LED task for testing purposes-----------
 	ledRGB = ledGroupInitialize(3);
 	ledGroupAdd(ledRGB, &PORTF, 0x04,1 );//R

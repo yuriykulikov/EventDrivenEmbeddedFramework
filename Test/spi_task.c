@@ -31,7 +31,7 @@ void SpiSlaveTask( void *pvParameters );
  * @param cPriority
  * @param taskHandle
  */
-void startSpiSlaveTask(SpiSlave * slave, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle)
+void startSpiSlaveTask(SpiSlave * slave, Usart * usartBuffer, char cPriority, xTaskHandle taskHandle)
 {
 	//Put parameters into the struct
 	SpiSlaveTaskParameters * spiSlaveTaskParameters = pvPortMalloc(sizeof(SpiSlaveTaskParameters));
@@ -52,7 +52,7 @@ void SpiSlaveTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	SpiSlaveTaskParameters * parameters = (SpiSlaveTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
-	UsartBuffer * usartBuffer = parameters->usartBuffer;
+	Usart * usartBuffer = parameters->usartBuffer;
 	SpiSlave * slave = parameters->spiSlave;
 	uint8_t receivedChar='#';
 
@@ -61,9 +61,9 @@ void SpiSlaveTask( void *pvParameters ) {
 		//Function will block the task
 		if (SpiSlave_getByteFromQueue(slave, &receivedChar, portMAX_DELAY) == pdPASS )
 		{
-			usartBufferPutString(usartBuffer,"Slave received: 0x",10);
-			usartBufferPutInt(usartBuffer,receivedChar,16,10);
-			usartBufferPutString(usartBuffer, "\n", 10);
+			Usart_putString(usartBuffer,"Slave received: 0x",10);
+			Usart_putInt(usartBuffer,receivedChar,16,10);
+			Usart_putString(usartBuffer, "\n", 10);
 			// report some kind of status
 			slave->status = receivedChar + 0x01;
 		}
@@ -79,7 +79,7 @@ void SpiMasterTask( void *pvParameters );
  * @param cPriority
  * @param taskHandle
  */
-void startSpiMasterTask(SpiDevice * master, UsartBuffer * usartBuffer, char cPriority, xTaskHandle taskHandle){
+void startSpiMasterTask(SpiDevice * master, Usart * usartBuffer, char cPriority, xTaskHandle taskHandle){
 
 	//Task will receive these parameters later, they should be either allocated dynamically or be static
 	SpiMasterTaskParameters * spiMasterTaskParameters = pvPortMalloc(sizeof(SpiMasterTaskParameters));
@@ -100,7 +100,7 @@ void SpiMasterTask( void *pvParameters )
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	SpiMasterTaskParameters * parameters = (SpiMasterTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
-	UsartBuffer * usartBuffer = parameters->usartBuffer;
+	Usart * usartBuffer = parameters->usartBuffer;
 	SpiDevice * master = parameters->spiMaster;
 	uint8_t receivedChar='#';
 
@@ -112,13 +112,13 @@ void SpiMasterTask( void *pvParameters )
 		if (obtainedMutex) {
 			//Transmit one byte
 			receivedChar = SpiMaster_shiftByte(master, 0xEE);
-			usartBufferPutString(usartBuffer, "Master received: 0x", 10);
-			usartBufferPutInt(usartBuffer,receivedChar,16,10);
+			Usart_putString(usartBuffer, "Master received: 0x", 10);
+			Usart_putInt(usartBuffer,receivedChar,16,10);
 			//Transmit one more byte
 			receivedChar = SpiMaster_shiftByte(master, 0x88);
-			usartBufferPutString(usartBuffer, " , 0x", 10);
-			usartBufferPutInt(usartBuffer,receivedChar,16,10);
-			usartBufferPutString(usartBuffer, "\n", 10);
+			Usart_putString(usartBuffer, " , 0x", 10);
+			Usart_putInt(usartBuffer,receivedChar,16,10);
+			Usart_putString(usartBuffer, "\n", 10);
 			SpiMaster_stopTransmission(master);
 		}
 	}

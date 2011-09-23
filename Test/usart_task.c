@@ -87,7 +87,7 @@ void usartTask( void *pvParameters )
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	UsartTaskParameters * parameters = (UsartTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
-	UsartBuffer * usartBuffer = parameters->usartBuffer;
+	Usart * usartBuffer = parameters->usartBuffer;
 	char commandsBufferSize=parameters->commandsBufferSize;
 	char receivedChar='#';
 	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
@@ -109,7 +109,7 @@ void usartTask( void *pvParameters )
 			//Empty the string first
 			strcpy(str,"");
 			//Read string from queue, while data is available and put it into string
-			while (usartBufferGetByte(usartBuffer, &receivedChar,0))
+			while (Usart_getByte(usartBuffer, &receivedChar,0))
 			{
 				strncat(str,&receivedChar,1);
 				if (strlen(str)>=commandsBufferSize)
@@ -120,7 +120,7 @@ void usartTask( void *pvParameters )
 					Throw e;
 				}
 			}
-			usartBufferPutString(usartBuffer, str,200);
+			Usart_putString(usartBuffer, str,200);
 			//now check the string for content
 			if (strcmp(str,"req_blink")==0)
 			{
@@ -131,7 +131,7 @@ void usartTask( void *pvParameters )
 					ledGroupEventQueuePut(parameters->debugLed,PINK,500);
 					ledGroupEventQueuePut(parameters->debugLed,WHITE,500);
 				}
-				usartBufferPutString(usartBuffer,"resp_blink",200);
+				Usart_putString(usartBuffer,"resp_blink",200);
 			}
 			if (strcmp(str,"throw")==0)
 			{
@@ -143,21 +143,21 @@ void usartTask( void *pvParameters )
 		} Catch (e) {
 			switch (e.type) {
 				case warning:
-					usartBufferPutString(usartBuffer, "caught warning:",0);
-					usartBufferPutString(usartBuffer, e.msg,0);
+					Usart_putString(usartBuffer, "caught warning:",0);
+					Usart_putString(usartBuffer, e.msg,0);
 					break;
 				case error:
-					usartBufferPutString(usartBuffer, "caught error:",0);
-					usartBufferPutString(usartBuffer, e.msg,0);
+					Usart_putString(usartBuffer, "caught error:",0);
+					Usart_putString(usartBuffer, e.msg,0);
 					break;
 				default:
-					usartBufferPutString(usartBuffer, "caught something else\n",0);
+					Usart_putString(usartBuffer, "caught something else\n",0);
 			}//end of switch
 		}//end of catch block
 	}//end of task's infinite loop
 }
 
-void startUsartTask (UsartBuffer * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle){
+void startUsartTask (Usart * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle){
 	UsartTaskParameters * usartTaskParameters = pvPortMalloc(sizeof(UsartTaskParameters));
 	usartTaskParameters->usartBuffer=usartBuffer;
 	usartTaskParameters->debugLed=debugLed;
