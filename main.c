@@ -44,7 +44,7 @@
 #include "ledGroup.h"
 
 #include "spi_task.h"
-#include "usart_task.h"
+#include "CommandInterpreterTask.h"
 /** This is global, because used in hooks */
 LedGroup * ledRGB;
 /** BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */

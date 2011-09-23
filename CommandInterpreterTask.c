@@ -65,81 +65,104 @@
 #include "exceptions.h"
 
 /* Task header file */
-#include "usart_task.h"
+#include "CommandInterpreterTask.h"
 #include <string.h>
 
-/*! \brief Example task
- *
- *  Example task. This task configures USARTD0 for with the parameters:
- *      - 8 bit character size
- *      - No parity
- *      - 1 stop bit
- *      - 9600 Baud
- *
- *  This function then sends three bytes and tests if the received data is
- *  equal to the sent data. The code can be tested by connecting PC3 to PC2. If
- *  the variable 'success' is true at the end of the function, the three bytes
- *  have been successfully sent and received.
-*/
+/* Utils includes. */
+#include "CommandInterpreter.h"
 
-void usartTask( void *pvParameters )
-{
+// "Fields" of this file
+struct exception e;
+struct exception_context *the_exception_context;
+xQueueHandle led;
+/**
+ * Blinks led
+ * @param pcWriteBuffer
+ * @param xWriteBufferLen
+ * @return
+ */
+static portBASE_TYPE blinkLed( signed char *pcWriteBuffer, size_t xWriteBufferLen ) {
+	if(led!=NULL) {
+		ledGroupEventQueuePut(led,RED,500);
+		ledGroupEventQueuePut(led,ORANGE,500);
+		ledGroupEventQueuePut(led,PINK,500);
+		ledGroupEventQueuePut(led,WHITE,500);
+		strncpy( (char*) pcWriteBuffer, "resp_blink ok", xWriteBufferLen );
+	} else {
+		strncpy( (char*) pcWriteBuffer, "resp_blink error: no led assigned", xWriteBufferLen );
+	}
+	return pdFALSE;
+}
+/** The definition of the "blink" command.*/
+static const xCommandLineInput blinkCommand = {
+	( const signed char * const ) "req_blink",
+	( const signed char * const ) "req_blink: Blinks the LED\r\n",
+	blinkLed
+};
+
+/**
+ * Throws an exception
+ * @param pcWriteBuffer
+ * @param xWriteBufferLen
+ * @return
+ */
+static portBASE_TYPE throw( signed char *pcWriteBuffer, size_t xWriteBufferLen ) {
+	e.type = warning;
+	e.msg = "demo warning message";
+	Throw e;
+	return pdFALSE;
+}
+/** The definition of the "blink" command.*/
+static const xCommandLineInput throwCommand = {
+	( const signed char * const ) "throw",
+	( const signed char * const ) "throw: Throws an exception\r\n",
+	throw
+};
+
+void usartTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	UsartTaskParameters * parameters = (UsartTaskParameters *)pvParameters;
-	//store pointer to usart for convenience
+	//store pointer to usart for convenience, it is not accessible from commands themselves
 	Usart * usartBuffer = parameters->usartBuffer;
 	char commandsBufferSize=parameters->commandsBufferSize;
+	led = parameters->debugLed;
+
 	char receivedChar='#';
 	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
-	//Declare and initialize exception context
-	struct exception_context *the_exception_context;
+
+	char * answerBuffer = (char *) pvPortMalloc( sizeof(char)*64);
+	//initialize exception context
 	init_exception_context(the_exception_context);
-	//Declare exception itself
-	struct exception e;
+
+	xCmdIntRegisterCommand(&blinkCommand);
+	xCmdIntRegisterCommand(&throwCommand);
 
 	/* Task loops forever*/
 	for (;;)
 	{
 		 Try {
-			//Continuously send
-			//USART_Buffer_PutString(usart_buffer_t, "g",200);
-			//We could have blocked on the queue instead, but this is better for debug
-			vTaskDelay(500);
 
 			//Empty the string first
 			strcpy(str,"");
 			//Read string from queue, while data is available and put it into string
-			while (Usart_getByte(usartBuffer, &receivedChar,0))
+			while (Usart_getByte(usartBuffer, &receivedChar,portMAX_DELAY))
 			{
+				if (receivedChar == ';') break;
+				if (receivedChar == '\n') break;
 				strncat(str,&receivedChar,1);
 				if (strlen(str)>=commandsBufferSize)
 				{
-					struct exception e;
 					e.type = error;
 					e.msg = "Command exceeded buffer size";
 					Throw e;
 				}
 			}
-			Usart_putString(usartBuffer, str,200);
-			//now check the string for content
-			if (strcmp(str,"req_blink")==0)
-			{
-				if((parameters->debugLed)!=NULL)
-				{
-					ledGroupEventQueuePut(parameters->debugLed,RED,500);
-					ledGroupEventQueuePut(parameters->debugLed,ORANGE,500);
-					ledGroupEventQueuePut(parameters->debugLed,PINK,500);
-					ledGroupEventQueuePut(parameters->debugLed,WHITE,500);
-				}
-				Usart_putString(usartBuffer,"resp_blink",200);
+			for (;;) {
+				char pendingCommand = xCmdIntProcessCommand(str, answerBuffer, 64);
+				Usart_putString(usartBuffer, answerBuffer, 200);
+				if (pendingCommand == pdFALSE) break;
 			}
-			if (strcmp(str,"throw")==0)
-			{
-				struct exception e;
-				e.type = warning;
-				e.msg = "demo warning message";
-				Throw e;
-			}
+
 		} Catch (e) {
 			switch (e.type) {
 				case warning:
