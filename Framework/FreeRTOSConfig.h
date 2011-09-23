@@ -73,6 +73,7 @@
 #define portGET_RUN_TIME_COUNTER_VALUE			0//0
 #define INCLUDE_uxTaskGetStackHighWaterMark		1
 #define INCLUDE_xTaskGetCurrentTaskHandle 		1
+#define configUSE_MALLOC_FAILED_HOOK			1//0
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0 //1

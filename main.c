@@ -116,16 +116,13 @@ int main( void )
 	startSpiMasterTask(spiMasterCdefault, usartFTDI,configLOW_PRIORITY, NULL);
 
 	/* Start scheduler. Creates idle task and returns if failed to create it.
-	 * vTaskStartScheduler never returns during normal operation. If it has returned, probably there is
-	 * not enough space in heap to allocate memory for the idle task, which means that all heap space is
-	 * occupied by previous tasks and queues. Try to increase heap size configTOTAL_HEAP_SIZE in FreeRTOSConfig.h
-	 * XMEGA port uses heap_1.c which doesn't support memory free. It is unlikely that XMEGA port will need to
+	 * vTaskStartScheduler never returns during normal operation. It is unlikely that XMEGA port will need to
 	 * dynamically create tasks or queues. To ensure stable work, create ALL tasks and ALL queues before
-	 * vTaskStartScheduler call. In this case we can be sure that heap size is enough.
+	 * vTaskStartScheduler call.
 	 * Interrupts would be enabled by calling PMIC_EnableLowLevel();*/
 	vTaskStartScheduler();
 
-	/* stop execution and report error */
+	/* Should never get here, stop execution and report error */
 	while(true) ledGroupSet(ledRGB, PINK);
 	return 0;
 }
@@ -152,4 +149,11 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTask
 {
 	/* stop execution and report error */
 	while(true) ledGroupSet(ledRGB, RED);
+}
+/* There is not enough space in heap to allocate memory, which means that all heap space is
+ * occupied by previous tasks and queues.
+ * Try to increase heap size configTOTAL_HEAP_SIZE in FreeRTOSConfig.h
+ * XMEGA port uses heap_1.c which doesn't support memory free. */
+void vApplicationMallocFailedHook() {
+	while(true) ledGroupSet(ledRGB, PINK);
 }
