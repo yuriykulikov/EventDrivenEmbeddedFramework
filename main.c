@@ -122,7 +122,7 @@ int main( void ) {
 	// Initialize SPI master on port C
 	SpiMaster * spiMasterC = SpiMaster_init(&SPIC, false, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV4_gc);
 	SpiDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
-	startSpiMasterTask(spiMasterCdefault, usartFTDI,configLOW_PRIORITY, NULL);
+//	startSpiMasterTask(spiMasterCdefault, usartFTDI,configLOW_PRIORITY, NULL);
 
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. It is unlikely that XMEGA port will need to
