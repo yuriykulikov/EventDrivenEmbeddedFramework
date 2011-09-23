@@ -1,12 +1,6 @@
 /*
-    FreeRTOS V7.0.1 - Copyright (C) 2011 Real Time Engineers Ltd.
-	
+    FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
 
-	FreeRTOS supports many tools and architectures. V7.0.0 is sponsored by:
-	Atollic AB - Atollic provides professional embedded systems development 
-	tools for C/C++ development, code analysis and test automation.  
-	See http://www.atollic.com
-	
 
     ***************************************************************************
      *                                                                       *
@@ -1007,6 +1001,20 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void ) PRIVILEGED_FUNCTION;
 
 /**
  * task. h
+ * <PRE>signed char *pcTaskGetTaskName( xTaskHandle xTaskToQuery );</PRE>
+ *
+ * @return The text (human readable) name of the task referenced by the handle
+ * xTaskToQueury.  A task can query its own name by either passing in its own
+ * handle, or by setting xTaskToQuery to NULL.  INCLUDE_pcTaskGetTaskName must be
+ * set to 1 in FreeRTOSConfig.h for pcTaskGetTaskName() to be available.
+ *
+ * \page pcTaskGetTaskName pcTaskGetTaskName
+ * \ingroup TaskUtils
+ */
+signed char *pcTaskGetTaskName( xTaskHandle xTaskToQuery );
+
+/**
+ * task. h
  * <PRE>void vTaskList( char *pcWriteBuffer );</PRE>
  *
  * configUSE_TRACE_FACILITY must be defined as 1 for this function to be
@@ -1157,6 +1165,14 @@ constant. */
  */
 portBASE_TYPE xTaskCallApplicationTaskHook( xTaskHandle xTask, void *pvParameter ) PRIVILEGED_FUNCTION;
 
+/**
+ * xTaskGetIdleTaskHandle() is only available if 
+ * INCLUDE_xTaskGetIdleTaskHandle is set to 1 in FreeRTOSConfig.h.
+ *
+ * Simply returns the handle of the idle task.  It is not valid to call
+ * xTaskGetIdleTaskHandle() before the scheduler has been started.
+ */
+xTaskHandle xTaskGetIdleTaskHandle( void );
 
 /*-----------------------------------------------------------
  * SCHEDULER INTERNALS AVAILABLE FOR PORTING PURPOSES
@@ -1228,19 +1244,6 @@ void vTaskPlaceOnEventListRestricted( const xList * const pxEventList, portTickT
  * making the call, otherwise pdFALSE.
  */
 signed portBASE_TYPE xTaskRemoveFromEventList( const xList * const pxEventList ) PRIVILEGED_FUNCTION;
-
-/*
- * THIS FUNCTION MUST NOT BE USED FROM APPLICATION CODE.  IT IS AN
- * INTERFACE WHICH IS FOR THE EXCLUSIVE USE OF THE SCHEDULER.
- *
- * INCLUDE_vTaskCleanUpResources and INCLUDE_vTaskSuspend must be defined as 1
- * for this function to be available.
- * See the configuration section for more information.
- *
- * Empties the ready and delayed queues of task control blocks, freeing the
- * memory allocated for the task control block and task stacks as it goes.
- */
-void vTaskCleanUpResources( void ) PRIVILEGED_FUNCTION;
 
 /*
  * THIS FUNCTION MUST NOT BE USED FROM APPLICATION CODE.  IT IS ONLY

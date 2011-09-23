@@ -1,12 +1,6 @@
 /*
-    FreeRTOS V7.0.1 - Copyright (C) 2011 Real Time Engineers Ltd.
-	
+    FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
 
-	FreeRTOS supports many tools and architectures. V7.0.0 is sponsored by:
-	Atollic AB - Atollic provides professional embedded systems development 
-	tools for C/C++ development, code analysis and test automation.  
-	See http://www.atollic.com
-	
 
     ***************************************************************************
      *                                                                       *
@@ -711,6 +705,19 @@ typedef xQueueHandle xSemaphoreHandle;
  */
 #define xSemaphoreCreateCounting( uxMaxCount, uxInitialCount ) xQueueCreateCountingSemaphore( ( uxMaxCount ), ( uxInitialCount ) )
 
+/**
+ * semphr. h
+ * <pre>void vSemaphoreDelete( xSemaphoreHandle xSemaphore );</pre>
+ *
+ * Delete a semaphore.  This function must be used with care.  For example,
+ * do not delete a mutex type semaphore if the mutex is held by a task.
+ *
+ * @param xSemaphore A handle to the semaphore to be deleted.
+ *
+ * \page vSemaphoreDelete vSemaphoreDelete
+ * \ingroup Semaphores
+ */
+#define vSemaphoreDelete( xSemaphore ) vQueueDelete( ( xQueueHandle ) xSemaphore )
 
 #endif /* SEMAPHORE_H */
 
