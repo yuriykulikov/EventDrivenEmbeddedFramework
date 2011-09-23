@@ -45,24 +45,32 @@
 
 #include "spi_task.h"
 #include "usart_task.h"
-// This is global, because used in hooks
+/** This is global, because used in hooks */
 LedGroup * ledRGB;
-/* BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
-ISR (BADISR_vect){
+/** BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
+ISR (BADISR_vect) {
 	//stop execution and report error
 	while(true) ledGroupSet(ledRGB, ORANGE);
 }
 
-// Define a callback function that will be reset the WDT
-void watchdogTimerCallback( xTimerHandle xTimer )
-{
+/**
+ * Callback function that will reset the WDT
+ * @param xTimer
+ */
+void watchdogTimerCallback( xTimerHandle xTimer ) {
 	WDT_Reset();
 }
 
-int main( void )
-{
-	/*  Enable internal 32 MHz ring oscillator and wait until it's
-	 *  stable. Set the 32 MHz ring oscillator as the main clock source.
+/**
+ * Main is used to:
+ * 	Initialize driver structures
+ * 	Create tasks
+ * 	Pass driver structures to tasks
+ */
+int main( void ) {
+	/*
+	 * Enable internal 32 MHz ring oscillator and wait until it's
+	 * stable. Set the 32 MHz ring oscillator as the main clock source.
 	 */
 	CLKSYS_Enable( OSC_RC32MEN_bm );
 	CLKSYS_Prescalers_Config( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
@@ -71,7 +79,8 @@ int main( void )
 
 	//Enable watchdog timer, which will be reset by timer
 	WDT_EnableAndSetTimeout( WDT_PER_1KCLK_gc );
-	/* Do all configuration and create all tasks and queues before scheduler is started.
+	/*
+	 * Do all configuration and create all tasks and queues before scheduler is started.
 	 * It is possible to put initialization of peripherals like displays into task functions
 	 * (which will be executed after scheduler has started) if fast startup is needed.
 	 * Interrupts are not enabled until the call of vTaskStartScheduler();
@@ -126,34 +135,34 @@ int main( void )
 	while(true) ledGroupSet(ledRGB, PINK);
 	return 0;
 }
-/* Prototype */
-void vApplicationIdleHook( void );
-/* This function is only called when there are no tasks to execute, except for the idle task. Most commonly it
+
+/**
+ * This function is only called when there are no tasks to execute, except for the idle task. Most commonly it
  * is used to schedule co-routines or do some unimportant jobs. It is also great to put sleep(); to save
  * power. Microcontroller will stop code execution until the next interrupt from tick timer or peripheral.
  * configUSE_IDLE_HOOK should be defined as 1 to use IdleHook
  */
-void vApplicationIdleHook( void )
-{
-   /* Go to sleep mode if there are no active tasks	*/
+void vApplicationIdleHook( void ) {
+	// Go to sleep mode if there are no active tasks
 	sleep_mode();
 }
-/* Prototype */
-void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName );
-	/* This function is called immediately after task context is saved into stack. This is the case
-	 * when stack contains biggest amount of data. Hook function checks if there is a stack overflow
-	 * for the current (switched) task. Parameters could be used for debug output.
-	 * configCHECK_FOR_STACK_OVERFLOW should be defined as 1 to use StackOverflowHook.
-	 */
-void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName )
-{
-	/* stop execution and report error */
+
+/**
+ * This function is called immediately after task context is saved into stack. This is the case
+ * when stack contains biggest amount of data. Hook function checks if there is a stack overflow
+ * for the current (switched) task. Parameters could be used for debug output.
+ * configCHECK_FOR_STACK_OVERFLOW should be defined as 1 to use StackOverflowHook.
+ */
+void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName ) {
 	while(true) ledGroupSet(ledRGB, RED);
 }
-/* There is not enough space in heap to allocate memory, which means that all heap space is
- * occupied by previous tasks and queues.
- * Try to increase heap size configTOTAL_HEAP_SIZE in FreeRTOSConfig.h
- * XMEGA port uses heap_1.c which doesn't support memory free. */
+
+/**
+ * There is not enough space in heap to allocate memory, which means that all heap space is
+ * occupied by previous tasks and queues. Try to increase heap size configTOTAL_HEAP_SIZE in FreeRTOSConfig.h
+ * XMEGA port uses heap_1.c which doesn't support memory free.
+ * configUSE_MALLOC_FAILED_HOOK should be defined as 1 to use vApplicationMallocFailedHook()
+ */
 void vApplicationMallocFailedHook() {
 	while(true) ledGroupSet(ledRGB, PINK);
 }
