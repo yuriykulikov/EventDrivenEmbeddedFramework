@@ -72,8 +72,8 @@
 #include "CommandInterpreter.h"
 
 // "Fields" of this file
-struct exception e;
-struct exception_context *the_exception_context;
+//struct exception e;
+//struct exception_context *the_exception_context;
 xQueueHandle led;
 /**
  * Blinks led
@@ -107,9 +107,9 @@ static const xCommandLineInput blinkCommand = {
  * @return
  */
 static portBASE_TYPE throw( signed char *pcWriteBuffer, size_t xWriteBufferLen ) {
-	e.type = warning;
-	e.msg = "demo warning message";
-	Throw e;
+//	e.type = warning;
+//	e.msg = "demo warning message";
+//	Throw e;
 	return pdFALSE;
 }
 /** The definition of the "blink" command.*/
@@ -132,7 +132,7 @@ void usartTask( void *pvParameters ) {
 
 	char * answerBuffer = (char *) pvPortMalloc( sizeof(char)*64);
 	//initialize exception context
-	init_exception_context(the_exception_context);
+//	init_exception_context(the_exception_context);
 
 	xCmdIntRegisterCommand(&blinkCommand);
 	xCmdIntRegisterCommand(&throwCommand);
@@ -140,7 +140,7 @@ void usartTask( void *pvParameters ) {
 	/* Task loops forever*/
 	for (;;)
 	{
-		 Try {
+//		 Try {
 
 			//Empty the string first
 			strcpy(str,"");
@@ -152,31 +152,32 @@ void usartTask( void *pvParameters ) {
 				strncat(str,&receivedChar,1);
 				if (strlen(str)>=commandsBufferSize)
 				{
-					e.type = error;
-					e.msg = "Command exceeded buffer size";
-					Throw e;
+//					e.type = error;
+//					e.msg = "Command exceeded buffer size";
+//					Throw e;
 				}
 			}
+
 			for (;;) {
 				char pendingCommand = xCmdIntProcessCommand(str, answerBuffer, 64);
 				Usart_putString(usartBuffer, answerBuffer, 200);
 				if (pendingCommand == pdFALSE) break;
 			}
 
-		} Catch (e) {
-			switch (e.type) {
-				case warning:
-					Usart_putString(usartBuffer, "caught warning:",0);
-					Usart_putString(usartBuffer, e.msg,0);
-					break;
-				case error:
-					Usart_putString(usartBuffer, "caught error:",0);
-					Usart_putString(usartBuffer, e.msg,0);
-					break;
-				default:
-					Usart_putString(usartBuffer, "caught something else\n",0);
-			}//end of switch
-		}//end of catch block
+//		} Catch (e) {
+//			switch (e.type) {
+//				case warning:
+//					Usart_putString(usartBuffer, "caught warning:",0);
+//					Usart_putString(usartBuffer, e.msg,0);
+//					break;
+//				case error:
+//					Usart_putString(usartBuffer, "caught error:",0);
+//					Usart_putString(usartBuffer, e.msg,0);
+//					break;
+//				default:
+//					Usart_putString(usartBuffer, "caught something else\n",0);
+//			}//end of switch
+//		}//end of catch block
 	}//end of task's infinite loop
 }
 
