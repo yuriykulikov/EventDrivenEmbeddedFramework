@@ -113,7 +113,7 @@ int main( void ) {
 	LedGroupEventQueue *ledStringQueue = startLedQueueProcessorTask(ledString, configLOW_PRIORITY, NULL);
 
 	// Start USART task
-	startCommandInterpreterTask(configNORMAL_PRIORITY, NULL, usartFTDI, ledRGBEventQueue, 128, 128);
+	startCommandInterpreterTask(configNORMAL_PRIORITY, NULL, usartFTDI, ledStringQueue, 128, 128);
 
 	// Initialize SPI slave on port D
 	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);

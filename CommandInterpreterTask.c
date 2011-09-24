@@ -80,10 +80,14 @@ xQueueHandle led;
  */
 static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen ) {
 	if(led!=NULL) {
-		ledGroupEventQueuePut(led,RED,500);
-		ledGroupEventQueuePut(led,ORANGE,500);
-		ledGroupEventQueuePut(led,PINK,500);
-		ledGroupEventQueuePut(led,WHITE,500);
+		ledGroupEventQueuePut(led,0x01,100);
+		ledGroupEventQueuePut(led,0x03,100);
+		ledGroupEventQueuePut(led,0x06,100);
+		ledGroupEventQueuePut(led,0x0c,100);
+		ledGroupEventQueuePut(led,0x18,100);
+		ledGroupEventQueuePut(led,0x30,100);
+		ledGroupEventQueuePut(led,0x60,100);
+		ledGroupEventQueuePut(led,0x40,100);
 		strncpy( (char*) writeBuffer, "resp_blink ok\r\n", writeBufferLen );
 	} else {
 		strncpy( (char*) writeBuffer, "resp_blink error: no led assigned\r\n", writeBufferLen );
