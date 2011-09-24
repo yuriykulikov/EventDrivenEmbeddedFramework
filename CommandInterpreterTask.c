@@ -78,18 +78,18 @@ xQueueHandle led;
 /**
  * Blinks led
  * @param pcWriteBuffer
- * @param xWriteBufferLen
+ * @param writeBufferLen
  * @return
  */
-static portBASE_TYPE blinkLed( signed char *pcWriteBuffer, size_t xWriteBufferLen ) {
+static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen ) {
 	if(led!=NULL) {
 		ledGroupEventQueuePut(led,RED,500);
 		ledGroupEventQueuePut(led,ORANGE,500);
 		ledGroupEventQueuePut(led,PINK,500);
 		ledGroupEventQueuePut(led,WHITE,500);
-		strncpy( (char*) pcWriteBuffer, "resp_blink ok", xWriteBufferLen );
+		strncpy( (char*) writeBuffer, "resp_blink ok\r\n", writeBufferLen );
 	} else {
-		strncpy( (char*) pcWriteBuffer, "resp_blink error: no led assigned", xWriteBufferLen );
+		strncpy( (char*) writeBuffer, "resp_blink error: no led assigned\r\n", writeBufferLen );
 	}
 	return pdFALSE;
 }
@@ -103,10 +103,10 @@ static const xCommandLineInput blinkCommand = {
 /**
  * Throws an exception
  * @param pcWriteBuffer
- * @param xWriteBufferLen
+ * @param writeBufferLen
  * @return
  */
-static portBASE_TYPE throw( signed char *pcWriteBuffer, size_t xWriteBufferLen ) {
+static portBASE_TYPE throw( signed char *writeBuffer, size_t writeBufferLen ) {
 //	e.type = warning;
 //	e.msg = "demo warning message";
 //	Throw e;
@@ -119,18 +119,18 @@ static const xCommandLineInput throwCommand = {
 	throw
 };
 
-void usartTask( void *pvParameters ) {
+void CommandInterpreterTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
-	UsartTaskParameters * parameters = (UsartTaskParameters *)pvParameters;
-	//store pointer to usart for convenience, it is not accessible from commands themselves
-	Usart * usartBuffer = parameters->usartBuffer;
-	char commandsBufferSize=parameters->commandsBufferSize;
-	led = parameters->debugLed;
+	CommandInterpreterTaskParameters * parameters = (CommandInterpreterTaskParameters *)pvParameters;
+	// Extract parameters
+	Usart * usart = parameters->usart;
+	led = parameters->led;
+	size_t commandInputLen = parameters->commandInputLen;
+	size_t writeBufferLen = parameters->writeBufferLen;
 
 	char receivedChar='#';
-	char * str = (char *) pvPortMalloc( sizeof(char)*commandsBufferSize);
-
-	char * answerBuffer = (char *) pvPortMalloc( sizeof(char)*64);
+	char * commandInput = (char *) pvPortMalloc( sizeof(char)*commandInputLen);
+	char * writerBuffer = (char *) pvPortMalloc( sizeof(char)*writeBufferLen);
 	//initialize exception context
 //	init_exception_context(the_exception_context);
 
@@ -143,14 +143,14 @@ void usartTask( void *pvParameters ) {
 //		 Try {
 
 			//Empty the string first
-			strcpy(str,"");
+			strcpy(commandInput,"");
 			//Read string from queue, while data is available and put it into string
-			while (Usart_getByte(usartBuffer, &receivedChar,portMAX_DELAY))
+			while (Usart_getByte(usart, &receivedChar,portMAX_DELAY))
 			{
 				if (receivedChar == ';') break;
 				if (receivedChar == '\n') break;
-				strncat(str,&receivedChar,1);
-				if (strlen(str)>=commandsBufferSize)
+				strncat(commandInput,&receivedChar,1);
+				if (strlen(commandInput)>=commandInputLen)
 				{
 //					e.type = error;
 //					e.msg = "Command exceeded buffer size";
@@ -159,8 +159,8 @@ void usartTask( void *pvParameters ) {
 			}
 
 			for (;;) {
-				char pendingCommand = xCmdIntProcessCommand(str, answerBuffer, 64);
-				Usart_putString(usartBuffer, answerBuffer, 200);
+				char pendingCommand = xCmdIntProcessCommand((signed char*)commandInput,(signed char*)writerBuffer, writeBufferLen);
+				Usart_putString(usart, writerBuffer, 200);
 				if (pendingCommand == pdFALSE) break;
 			}
 
@@ -181,11 +181,17 @@ void usartTask( void *pvParameters ) {
 	}//end of task's infinite loop
 }
 
-void startUsartTask (Usart * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle){
-	UsartTaskParameters * usartTaskParameters = pvPortMalloc(sizeof(UsartTaskParameters));
-	usartTaskParameters->usartBuffer=usartBuffer;
-	usartTaskParameters->debugLed=debugLed;
-	usartTaskParameters->commandsBufferSize=commandsBufferSize;
-	xTaskCreate(usartTask, (signed char*)"USARTTSK", 1000,(void*)usartTaskParameters, cPriority, taskHandle);
+void startCommandInterpreterTask (char priority, xTaskHandle taskHandle,
+		Usart * usart,
+		xQueueHandle led,
+		size_t commandInputLen,
+		size_t writeBufferLen)
+{
+	CommandInterpreterTaskParameters * parameters = pvPortMalloc(sizeof(CommandInterpreterTaskParameters));
+	parameters->usart = usart;
+	parameters->led = led;
+	parameters->commandInputLen = commandInputLen;
+	parameters->writeBufferLen = writeBufferLen;
+	xTaskCreate(CommandInterpreterTask, (signed char*)"CMDTSK", 1000,(void*)parameters, priority, taskHandle);
 }
 
