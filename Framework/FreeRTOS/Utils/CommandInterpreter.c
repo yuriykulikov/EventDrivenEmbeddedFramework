@@ -124,7 +124,8 @@ portBASE_TYPE xReturn = pdFAIL;
 			/* Set the end of list marker to the new list item. */
 			pxLastCommandInList = pxNewListItem;
 		}
-		
+		taskEXIT_CRITICAL();
+
 		xReturn = pdPASS;
 	}
 
