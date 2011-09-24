@@ -62,8 +62,6 @@
 #include "led.h"
 #include "usart_driver_RTOS.h"
 
-#include "exceptions.h"
-
 /* Task header file */
 #include "CommandInterpreterTask.h"
 #include <string.h>
@@ -72,9 +70,8 @@
 #include "CommandInterpreter.h"
 
 // "Fields" of this file
-//struct exception e;
-//struct exception_context *the_exception_context;
 xQueueHandle led;
+
 /**
  * Blinks led
  * @param pcWriteBuffer
@@ -100,25 +97,6 @@ static const xCommandLineInput blinkCommand = {
 	blinkLed
 };
 
-/**
- * Throws an exception
- * @param pcWriteBuffer
- * @param writeBufferLen
- * @return
- */
-static portBASE_TYPE throw( signed char *writeBuffer, size_t writeBufferLen ) {
-//	e.type = warning;
-//	e.msg = "demo warning message";
-//	Throw e;
-	return pdFALSE;
-}
-/** The definition of the "blink" command.*/
-static const xCommandLineInput throwCommand = {
-	( const signed char * const ) "throw",
-	( const signed char * const ) "throw: Throws an exception\r\n",
-	throw
-};
-
 void CommandInterpreterTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
 	CommandInterpreterTaskParameters * parameters = (CommandInterpreterTaskParameters *)pvParameters;
@@ -131,17 +109,12 @@ void CommandInterpreterTask( void *pvParameters ) {
 	char receivedChar='#';
 	char * commandInput = (char *) pvPortMalloc( sizeof(char)*commandInputLen);
 	char * writerBuffer = (char *) pvPortMalloc( sizeof(char)*writeBufferLen);
-	//initialize exception context
-//	init_exception_context(the_exception_context);
 
 	xCmdIntRegisterCommand(&blinkCommand);
-	xCmdIntRegisterCommand(&throwCommand);
 
 	/* Task loops forever*/
 	for (;;)
 	{
-//		 Try {
-
 			//Empty the string first
 			strcpy(commandInput,"");
 			//Read string from queue, while data is available and put it into string
@@ -150,12 +123,6 @@ void CommandInterpreterTask( void *pvParameters ) {
 				if (receivedChar == ';') break;
 				if (receivedChar == '\n') break;
 				strncat(commandInput,&receivedChar,1);
-				if (strlen(commandInput)>=commandInputLen)
-				{
-//					e.type = error;
-//					e.msg = "Command exceeded buffer size";
-//					Throw e;
-				}
 			}
 
 			for (;;) {
@@ -163,21 +130,6 @@ void CommandInterpreterTask( void *pvParameters ) {
 				Usart_putString(usart, writerBuffer, 200);
 				if (pendingCommand == pdFALSE) break;
 			}
-
-//		} Catch (e) {
-//			switch (e.type) {
-//				case warning:
-//					Usart_putString(usartBuffer, "caught warning:",0);
-//					Usart_putString(usartBuffer, e.msg,0);
-//					break;
-//				case error:
-//					Usart_putString(usartBuffer, "caught error:",0);
-//					Usart_putString(usartBuffer, e.msg,0);
-//					break;
-//				default:
-//					Usart_putString(usartBuffer, "caught something else\n",0);
-//			}//end of switch
-//		}//end of catch block
 	}//end of task's infinite loop
 }
 
