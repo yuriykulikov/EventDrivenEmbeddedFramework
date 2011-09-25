@@ -117,8 +117,12 @@ void CommandInterpreterTask( void *pvParameters ) {
 	{
 			//Empty the string first
 			strcpy(commandInput,"");
+			// Wait until the first symbol unblocks the task
+			Usart_getByte(usart, &receivedChar,portMAX_DELAY);
+			strncat(commandInput,&receivedChar,1);
 			//Read string from queue, while data is available and put it into string
-			while (Usart_getByte(usart, &receivedChar,portMAX_DELAY))
+			// This loop will be over, when there is either ; or \n is received, or queue is empty for 200 ms
+			while (Usart_getByte(usart, &receivedChar,200))
 			{
 				if (receivedChar == ';') break;
 				if (receivedChar == '\n') break;
