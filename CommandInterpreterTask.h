@@ -19,21 +19,25 @@
  *****************************************************************************/
 
 #include "usart_driver_RTOS.h"
-#include "exceptions.h"
 
-/*
+/**
  * This struct is used to pass arguments to the task
  */
-typedef struct USARTTaskParameters
+typedef struct CommandInterpreterTaskParameters
 {
-	/* \brief Pointer to USART buffer to use. */
-	Usart * usartBuffer;
-	/* \brief Led for debugging. Could be null */
-	xQueueHandle debugLed;
-	/* \brief Command buffer size */
-	short commandsBufferSize;
-} UsartTaskParameters;
+	/** Pointer to Usart software abstraction structure to use. */
+	Usart * usart;
+	/** Led for debugging. Could be null */
+	xQueueHandle led;
 
+	size_t commandInputLen;
+	size_t writeBufferLen;
+} CommandInterpreterTaskParameters;
 
-/* Prototyping of functions. Documentation is found in source file. */
-void startUsartTask (Usart * usartBuffer, xQueueHandle debugLed, short commandsBufferSize, char cPriority, xTaskHandle taskHandle);
+// Prototyping of functions. Documentation is found in source file
+
+void startCommandInterpreterTask (char priority, xTaskHandle taskHandle,
+		Usart * usart,
+		xQueueHandle led,
+		size_t commandInputLen,
+		size_t writeBufferLen);

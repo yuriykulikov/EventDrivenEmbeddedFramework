@@ -44,7 +44,7 @@
 #include "ledGroup.h"
 
 #include "spi_task.h"
-#include "usart_task.h"
+#include "CommandInterpreterTask.h"
 /** This is global, because used in hooks */
 LedGroup * ledRGB;
 /** BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
@@ -113,7 +113,7 @@ int main( void ) {
 	LedGroupEventQueue *ledStringQueue = startLedQueueProcessorTask(ledString, configLOW_PRIORITY, NULL);
 
 	// Start USART task
-	startUsartTask(usartFTDI, ledRGBEventQueue, 128, configNORMAL_PRIORITY, NULL);
+	startCommandInterpreterTask(configNORMAL_PRIORITY, NULL, usartFTDI, ledStringQueue, 128, 128);
 
 	// Initialize SPI slave on port D
 	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
