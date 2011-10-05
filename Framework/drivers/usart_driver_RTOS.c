@@ -60,6 +60,7 @@
 #include "port_driver.h"
 #include "usart.h"
 #include "usart_driver_RTOS.h"
+#include <avr/pgmspace.h>
 //Structures, representing uart and its buffer. for internal use.
 //Memory allocated dynamically
 Usart * usartC;
@@ -208,6 +209,21 @@ inline void Usart_putString(Usart * usart, const char *string, int ticksToWait )
 {
 	//send the whole string. Note that if buffer is full, USART_TXBuffer_PutByte will do nothing
 	while (*string) Usart_putByte(usart,*string++, ticksToWait );
+}
+/** @brief Send program memory string via Usart
+ *
+ *  Stores data string in TX software buffer and enables DRE interrupt if there
+ *  is free space in the TX software buffer.
+ *  String is taken from the program memory.
+ *
+ *  @param usart_struct The USART_struct_t struct instance.
+ *  @param string       The string to send.
+ *  @param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
+ */
+inline void Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksToWait )
+{
+	register char c;
+	while ( (c = pgm_read_byte(progmem_s++)) ) Usart_putByte(usart, c, ticksToWait);
 }
 /** @brief Put data (5-8 bit character).
  *
