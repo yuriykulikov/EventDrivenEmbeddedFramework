@@ -53,6 +53,8 @@
 
 /* Standard includes. */
 #include <string.h>
+#include <avr/pgmspace.h>
+#include "strings.h"
 
 /* FreeRTOS includes. */
 #include "FreeRTOS.h"
@@ -77,8 +79,8 @@ static portBASE_TYPE prvHelpCommand( signed char *pcWriteBuffer, size_t xWriteBu
 of the list of registered commands. */
 static const xCommandLineInput xHelpCommand = 
 {
-	( const signed char * const ) "help",
-	( const signed char * const ) "help: Lists all the registered commands\r\n",
+	Strings_HelpCmd,
+	Strings_HelpCmdDesc,
 	prvHelpCommand
 };
 
@@ -146,7 +148,7 @@ portBASE_TYPE xReturn;
 		/* Search for the command string in the list of registered commands. */
 		for( pxCommand = &xRegisteredCommands; pxCommand != NULL; pxCommand = pxCommand->pxNext )
 		{
-			if( strcmp( ( const char * ) pcCommandInput, ( const char * ) pxCommand->pxCommandLineDefinition->pcCommand ) == 0 )
+			if( strcmp_P( ( const char * ) pcCommandInput, ( const char * ) pxCommand->pxCommandLineDefinition->pcCommand ) == 0 )
 			{
 				/* The command has been found, the loop can exit so the command
 				can be executed. */
@@ -170,7 +172,7 @@ portBASE_TYPE xReturn;
 	}
 	else
 	{
-		strncpy( ( char * ) pcWriteBuffer, ( const char * const ) "Command not recognised.  Enter \"help\" to view a list of available commands.\r\n\r\n", xWriteBufferLen );
+		strncpy_P( ( char * ) pcWriteBuffer, Strings_InterpretorError, xWriteBufferLen );
 		xReturn = pdFALSE;
 	}
 
@@ -191,7 +193,7 @@ signed portBASE_TYPE xReturn;
 
 	/* Return the next command help string, before moving the pointer on to
 	the next command in the list. */
-	strncpy( ( char * ) pcWriteBuffer, ( const char * ) pxCommand->pxCommandLineDefinition->pcHelpString, xWriteBufferLen );
+	strncpy_P( ( char * ) pcWriteBuffer,( const char * )pxCommand->pxCommandLineDefinition->pcHelpString, xWriteBufferLen );
 	pxCommand = pxCommand->pxNext;
 
 	if( pxCommand == NULL )

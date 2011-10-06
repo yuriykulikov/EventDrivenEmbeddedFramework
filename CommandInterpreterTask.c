@@ -65,6 +65,7 @@
 /* Task header file */
 #include "CommandInterpreterTask.h"
 #include <string.h>
+#include "strings.h"
 
 /* Utils includes. */
 #include "CommandInterpreter.h"
@@ -96,8 +97,8 @@ static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen )
 }
 /** The definition of the "blink" command.*/
 static const xCommandLineInput blinkCommand = {
-	( const signed char * const ) "req_blink",
-	( const signed char * const ) "req_blink: Blinks the LED\r\n",
+	Strings_BlinkCmd,
+	Strings_BlinkCmdDesc,
 	blinkLed
 };
 

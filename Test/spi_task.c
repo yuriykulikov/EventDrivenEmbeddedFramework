@@ -22,6 +22,7 @@
 #include "led.h"
 #include "spi_driver.h"
 #include <string.h>
+#include "strings.h"
 // Utils includes
 #include "CommandInterpreter.h"
 // File headers
@@ -141,8 +142,8 @@ static portBASE_TYPE giveSpiMasterTaskSemaphore( signed char *writeBuffer, size_
 }
 /** The definition of the "blink" command.*/
 static const xCommandLineInput giveSpiMasterTaskSemaphoreCommand = {
-	( const signed char * const ) "spi test",
-	( const signed char * const ) "spi test: Start SPI Master Test\r\n",
+	Strings_SpiExampleCmd,
+	Strings_SpiExampleCmdDesc,
 	giveSpiMasterTaskSemaphore
 };
 
