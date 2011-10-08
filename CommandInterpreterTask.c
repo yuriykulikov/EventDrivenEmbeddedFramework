@@ -89,9 +89,9 @@ static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen )
 		ledGroupEventQueuePut(led,0x30,100);
 		ledGroupEventQueuePut(led,0x60,100);
 		ledGroupEventQueuePut(led,0x40,100);
-		strncpy( (char*) writeBuffer, "resp_blink ok\r\n", writeBufferLen );
+		strncpy_P( (char*) writeBuffer, Strings_BlinkResp, writeBufferLen );
 	} else {
-		strncpy( (char*) writeBuffer, "resp_blink error: no led assigned\r\n", writeBufferLen );
+		strncpy_P( (char*) writeBuffer, Strings_BlinkCmdError, writeBufferLen );
 	}
 	return pdFALSE;
 }

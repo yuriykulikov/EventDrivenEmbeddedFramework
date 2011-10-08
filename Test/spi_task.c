@@ -69,9 +69,9 @@ void SpiSlaveTask( void *pvParameters ) {
 		//Function will block the task
 		if (SpiSlave_getByteFromQueue(slave, &receivedChar, portMAX_DELAY) == pdPASS )
 		{
-			Usart_putString(usartBuffer,"Slave received: 0x",10);
+			Usart_putPgmString(usartBuffer,Strings_SpiSlaveExample1,10);
 			Usart_putInt(usartBuffer,receivedChar,16,10);
-			Usart_putString(usartBuffer, "\n", 10);
+			Usart_putPgmString(usartBuffer, Strings_newline, 10);
 			// report some kind of status
 			slave->status = receivedChar + 0x01;
 		}
@@ -98,30 +98,30 @@ void SpiMasterTask( void *pvParameters )
 		char obtainedMutex = SpiMaster_startTransmission(master, 10);
 			if (obtainedMutex) {
 				//Transmit bytes
-				Usart_putString(usartBuffer, "Master send: 0xC001, received: 0x", 10);
+				Usart_putPgmString(usartBuffer, Strings_SpiMasterExample1, 10);
 				receivedChar = SpiMaster_shiftByte(master, 0xC0);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
 				receivedChar = SpiMaster_shiftByte(master, 0x01);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
-				Usart_putString(usartBuffer, "\n", 10);
+				Usart_putPgmString(usartBuffer, Strings_newline, 10);
 				//Transmit more bytes
 				vTaskDelay(1);
-				Usart_putString(usartBuffer, "Master send: 0xC0DE, received: 0x", 10);
+				Usart_putPgmString(usartBuffer, Strings_SpiMasterExample2, 10);
 				receivedChar = SpiMaster_shiftByte(master, 0xC0);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
 				receivedChar = SpiMaster_shiftByte(master, 0xDE);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
-				Usart_putString(usartBuffer, "\n", 10);
+				Usart_putPgmString(usartBuffer, Strings_newline, 10);
 				//Transmit more bytes
 				vTaskDelay(500);
-				Usart_putString(usartBuffer, "Master send: 0xD000DE, received: 0x", 10);
+				Usart_putPgmString(usartBuffer, Strings_SpiMasterExample3, 10);
 				receivedChar = SpiMaster_shiftByte(master, 0xD0);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
 				receivedChar = SpiMaster_shiftByte(master, 0x00);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
 				receivedChar = SpiMaster_shiftByte(master, 0xDE);
 				Usart_putInt(usartBuffer,receivedChar,16,10);
-				Usart_putString(usartBuffer, "\n", 10);
+				Usart_putPgmString(usartBuffer, Strings_newline, 10);
 				SpiMaster_stopTransmission(master);
 			}
 		}
@@ -137,7 +137,7 @@ void SpiMasterTask( void *pvParameters )
 static portBASE_TYPE giveSpiMasterTaskSemaphore( signed char *writeBuffer, size_t writeBufferLen ) {
 	// Give semaphore to the task to be executed once
 	xSemaphoreGive(spiMasterTaskSemaphore);
-	strncpy( (char*) writeBuffer, "spi test: starting SPI Test\r\n", writeBufferLen );
+	strncpy_P( (char*) writeBuffer, Strings_SpiExampleCmdResp, writeBufferLen );
 	return pdFALSE;
 }
 
