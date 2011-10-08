@@ -95,12 +95,6 @@ static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen )
 	}
 	return pdFALSE;
 }
-/** The definition of the "blink" command.*/
-static const xCommandLineInput blinkCommand = {
-	Strings_BlinkCmd,
-	Strings_BlinkCmdDesc,
-	blinkLed
-};
 
 void CommandInterpreterTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
@@ -115,7 +109,7 @@ void CommandInterpreterTask( void *pvParameters ) {
 	char * commandInput = (char *) pvPortMalloc( sizeof(char)*commandInputLen);
 	char * writerBuffer = (char *) pvPortMalloc( sizeof(char)*writeBufferLen);
 
-	xCmdIntRegisterCommand(&blinkCommand);
+	xCmdIntRegisterCommand(Strings_BlinkCmd, Strings_BlinkCmdDesc, blinkLed);
 
 	/* Task loops forever*/
 	for (;;)
@@ -135,7 +129,7 @@ void CommandInterpreterTask( void *pvParameters ) {
 			}
 
 			for (;;) {
-				char pendingCommand = xCmdIntProcessCommand((signed char*)commandInput,(signed char*)writerBuffer, writeBufferLen);
+				char pendingCommand = xCmdIntProcessCommand((char*)commandInput,(char*)writerBuffer, writeBufferLen);
 				Usart_putString(usart, writerBuffer, 200);
 				if (pendingCommand == pdFALSE) break;
 			}

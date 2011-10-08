@@ -140,12 +140,6 @@ static portBASE_TYPE giveSpiMasterTaskSemaphore( signed char *writeBuffer, size_
 	strncpy( (char*) writeBuffer, "spi test: starting SPI Test\r\n", writeBufferLen );
 	return pdFALSE;
 }
-/** The definition of the "blink" command.*/
-static const xCommandLineInput giveSpiMasterTaskSemaphoreCommand = {
-	Strings_SpiExampleCmd,
-	Strings_SpiExampleCmdDesc,
-	giveSpiMasterTaskSemaphore
-};
 
 /**
  * @brief Starts Master test task
@@ -165,7 +159,7 @@ void startSpiMasterTask(SpiDevice * master, Usart * usartBuffer, char cPriority,
 	// Take the semaphore once to clear it
 	xSemaphoreTake(spiMasterTaskSemaphore, 0);
 	// Registed a command for the interpreter
-	xCmdIntRegisterCommand(&giveSpiMasterTaskSemaphoreCommand);
+	xCmdIntRegisterCommand(Strings_SpiExampleCmd, Strings_SpiExampleCmdDesc, giveSpiMasterTaskSemaphore);
 	// Spawn task, stack size is approximate, seems to work well
 	xTaskCreate(SpiMasterTask, ( signed char * ) "SPIMASTER", 250, spiMasterTaskParameters, cPriority, NULL );
 }
