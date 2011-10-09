@@ -52,6 +52,7 @@ Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize);
 
 void Usart_putByte(Usart * usart, uint8_t data, int ticksToWait );
 void Usart_putString(Usart * usart, const char *string, int ticksToWait );
+void Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksToWait );
 void Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait );
 int8_t Usart_getByte(Usart * usart, char * receivedChar, int ticksToWait );
 

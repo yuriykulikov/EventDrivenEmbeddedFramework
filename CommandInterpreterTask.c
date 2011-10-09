@@ -65,6 +65,7 @@
 /* Task header file */
 #include "CommandInterpreterTask.h"
 #include <string.h>
+#include "strings.h"
 
 /* Utils includes. */
 #include "CommandInterpreter.h"
@@ -88,18 +89,12 @@ static portBASE_TYPE blinkLed( signed char *writeBuffer, size_t writeBufferLen )
 		ledGroupEventQueuePut(led,0x30,100);
 		ledGroupEventQueuePut(led,0x60,100);
 		ledGroupEventQueuePut(led,0x40,100);
-		strncpy( (char*) writeBuffer, "resp_blink ok\r\n", writeBufferLen );
+		strncpy_P( (char*) writeBuffer, Strings_BlinkResp, writeBufferLen );
 	} else {
-		strncpy( (char*) writeBuffer, "resp_blink error: no led assigned\r\n", writeBufferLen );
+		strncpy_P( (char*) writeBuffer, Strings_BlinkCmdError, writeBufferLen );
 	}
 	return pdFALSE;
 }
-/** The definition of the "blink" command.*/
-static const xCommandLineInput blinkCommand = {
-	( const signed char * const ) "req_blink",
-	( const signed char * const ) "req_blink: Blinks the LED\r\n",
-	blinkLed
-};
 
 void CommandInterpreterTask( void *pvParameters ) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise
@@ -114,7 +109,7 @@ void CommandInterpreterTask( void *pvParameters ) {
 	char * commandInput = (char *) pvPortMalloc( sizeof(char)*commandInputLen);
 	char * writerBuffer = (char *) pvPortMalloc( sizeof(char)*writeBufferLen);
 
-	xCmdIntRegisterCommand(&blinkCommand);
+	xCmdIntRegisterCommand(Strings_BlinkCmd, Strings_BlinkCmdDesc, blinkLed);
 
 	/* Task loops forever*/
 	for (;;)
@@ -134,7 +129,7 @@ void CommandInterpreterTask( void *pvParameters ) {
 			}
 
 			for (;;) {
-				char pendingCommand = xCmdIntProcessCommand((signed char*)commandInput,(signed char*)writerBuffer, writeBufferLen);
+				char pendingCommand = xCmdIntProcessCommand((char*)commandInput,(char*)writerBuffer, writeBufferLen);
 				Usart_putString(usart, writerBuffer, 200);
 				if (pendingCommand == pdFALSE) break;
 			}
