@@ -39,12 +39,14 @@
 #include "pmic_driver.h"
 #include "wdt_driver.h"
 /* File headers. */
-
 #include "led.h"
 #include "ledGroup.h"
-
-#include "spi_task.h"
+#include "spi_driver.h"
+#include "LooperTask.h"
 #include "CommandInterpreterTask.h"
+#include "SpiSlaveTask.h"
+#include "handler.h"
+#include "strings.h"
 /** This is global, because used in hooks */
 LedGroup * ledRGB;
 /** BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
@@ -93,6 +95,13 @@ int main( void ) {
 	xTimerStart(xTimerCreate((signed char*)"WDT",500, pdTRUE, 0, watchdogTimerCallback), 0);
 	//---------Use USART on PORTC----------------------------
 	Usart * usartFTDI = Usart_initialize(&USARTE0, BAUD9600, 128);
+
+	// Initialize SPI slave on port D
+	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
+	// Initialize SPI master on port C
+	SpiMaster * spiMasterC = SpiMaster_init(&SPIC, false, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV4_gc);
+	SpiDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
+
 	//---------Start LED task for testing purposes-----------
 	ledRGB = ledGroupInitialize(3);
 	ledGroupAdd(ledRGB, &PORTF, 0x04,1 );//R
@@ -100,7 +109,6 @@ int main( void ) {
 	ledGroupAdd(ledRGB, &PORTF, 0x02,1 );//B
 	ledGroupSet(ledRGB, BLUE);
 	LedGroupEventQueue * ledRGBEventQueue = startLedQueueProcessorTask(ledRGB,configLOW_PRIORITY, NULL);
-	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
 
 	LedGroup *ledString = ledGroupInitialize(7);
 	ledGroupAdd(ledString, &PORTA, 0x02, 0);
@@ -112,17 +120,17 @@ int main( void ) {
 	ledGroupAdd(ledString, &PORTA, 0x80, 0);
 	LedGroupEventQueue *ledStringQueue = startLedQueueProcessorTask(ledString, configLOW_PRIORITY, NULL);
 
+	Handler *handler = Handler_create(10);
+	// Register commands for the interpreter
+	CommandLineInterpreter *interpreter = CommandLineInterpreter_create();
+	CommandLineInterpreter_register(interpreter, Strings_SpiExampleCmd, Strings_SpiExampleCmdDesc, handler, EVENT_RUN_SPI_TEST);
+	CommandLineInterpreter_register(interpreter, Strings_BlinkCmd, Strings_BlinkCmdDesc, handler, EVENT_BLINK);
+
+	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
 	// Start USART task
-	startCommandInterpreterTask(configNORMAL_PRIORITY, NULL, usartFTDI, ledStringQueue, 128, 128);
-
-	// Initialize SPI slave on port D
-	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
+	startCommandInterpreterTask(interpreter, usartFTDI, 64, configNORMAL_PRIORITY, NULL);
 	startSpiSlaveTask(spiSlaveD, usartFTDI, configLOW_PRIORITY, NULL);
-
-	// Initialize SPI master on port C
-	SpiMaster * spiMasterC = SpiMaster_init(&SPIC, false, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV4_gc);
-	SpiDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
-	startSpiMasterTask(spiMasterCdefault, usartFTDI,configLOW_PRIORITY, NULL);
+	startLooperTask(handler, interpreter, spiMasterCdefault, usartFTDI, ledStringQueue, configLOW_PRIORITY, NULL);
 
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. It is unlikely that XMEGA port will need to
