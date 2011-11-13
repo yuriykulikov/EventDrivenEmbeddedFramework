@@ -109,6 +109,8 @@ void CommandLineInterpreter_process(CommandLineInterpreter *interpreter, char *p
 		// Search for the command string in the list of registered commands starting with the second entry (first is emtpy)
 		for(xCommandLineInputListItem *entry = interpreter->list->pxNext; entry != NULL; entry = entry->pxNext ) {
 			Usart_putPgmString(usart, entry->pcCommand, 10);
+			Usart_putPgmString(usart, Strings_colon, 10);
+			Usart_putPgmString(usart, Strings_space, 10);
 			Usart_putPgmString(usart, entry->pcHelpString, 10);
 		}
 	} else {
