@@ -19,25 +19,18 @@
  *****************************************************************************/
 
 #include "usart_driver_RTOS.h"
+#include "CommandInterpreter.h"
 
 /**
  * This struct is used to pass arguments to the task
  */
-typedef struct CommandInterpreterTaskParameters
-{
+typedef struct {
+	CommandLineInterpreter *interpreter;
 	/** Pointer to Usart software abstraction structure to use. */
-	Usart * usart;
-	/** Led for debugging. Could be null */
-	xQueueHandle led;
-
+	Usart *usart;
 	size_t commandInputLen;
-	size_t writeBufferLen;
+
 } CommandInterpreterTaskParameters;
 
 // Prototyping of functions. Documentation is found in source file
-
-void startCommandInterpreterTask (char priority, xTaskHandle taskHandle,
-		Usart * usart,
-		xQueueHandle led,
-		size_t commandInputLen,
-		size_t writeBufferLen);
+void startCommandInterpreterTask (CommandLineInterpreter *interpreter, Usart * usart, char commandInputLen, char priority, xTaskHandle taskHandle);

@@ -13,6 +13,8 @@
 
 // Common
 extern char Strings_newline[];
+extern char Strings_colon[];
+extern char Strings_space[];
 // Spi task
 extern char Strings_SpiMasterExample1[];
 extern char Strings_SpiMasterExample2[];
