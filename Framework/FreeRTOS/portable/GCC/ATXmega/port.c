@@ -441,7 +441,7 @@ void vPortYieldFromTick( void )
 	portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedStatReg);
 	portRESTORE_CONTEXT();
 
-	asm volatile ( "reti" );
+	asm volatile ( "ret" );
 }
 /*-----------------------------------------------------------*/
 
