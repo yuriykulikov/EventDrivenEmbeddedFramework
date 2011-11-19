@@ -34,25 +34,28 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
-/* Atmel drivers */
+/* drivers */
 #include "clksys_driver.h"
 #include "pmic_driver.h"
 #include "wdt_driver.h"
-/* File headers. */
-#include "led.h"
-#include "ledGroup.h"
+#include "leds.h"
 #include "spi_driver.h"
+/* File headers. */
+#include "handler.h"
+#include "strings.h"
+/* Tasks */
+#include "BlinkingLedTask.h"
+#include "LedEventProcessorTask.h"
 #include "LooperTask.h"
 #include "CommandInterpreterTask.h"
 #include "SpiSlaveTask.h"
-#include "handler.h"
-#include "strings.h"
+
 /** This is global, because used in hooks */
 LedGroup * ledRGB;
 /** BADISR_vect is called when interrupt has occurred, but there is no ISR handler for it defined */
 ISR (BADISR_vect) {
 	//stop execution and report error
-	while(true) ledGroupSet(ledRGB, ORANGE);
+	while(true) Leds_set(ledRGB, ORANGE);
 }
 
 /**
@@ -103,22 +106,22 @@ int main( void ) {
 	SpiDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
 
 	//---------Start LED task for testing purposes-----------
-	ledRGB = ledGroupInitialize(3);
-	ledGroupAdd(ledRGB, &PORTF, 0x04,1 );//R
-	ledGroupAdd(ledRGB, &PORTF, 0x08,1 );//G
-	ledGroupAdd(ledRGB, &PORTF, 0x02,1 );//B
-	ledGroupSet(ledRGB, BLUE);
-	LedGroupEventQueue * ledRGBEventQueue = startLedQueueProcessorTask(ledRGB,configLOW_PRIORITY, NULL);
+	ledRGB = Leds_init(3);
+	Leds_new(ledRGB, &PORTF, 0x04,1 );//R
+	Leds_new(ledRGB, &PORTF, 0x08,1 );//G
+	Leds_new(ledRGB, &PORTF, 0x02,1 );//B
+	Leds_set(ledRGB, BLUE);
+	LedsEventQueue * ledRGBEventQueue = LedsEvent_startLedsTask(ledRGB,configLOW_PRIORITY, NULL);
 
-	LedGroup *ledString = ledGroupInitialize(7);
-	ledGroupAdd(ledString, &PORTA, 0x02, 0);
-	ledGroupAdd(ledString, &PORTA, 0x04, 0);
-	ledGroupAdd(ledString, &PORTA, 0x08, 0);
-	ledGroupAdd(ledString, &PORTA, 0x10, 0);
-	ledGroupAdd(ledString, &PORTA, 0x20, 0);
-	ledGroupAdd(ledString, &PORTA, 0x40, 0);
-	ledGroupAdd(ledString, &PORTA, 0x80, 0);
-	LedGroupEventQueue *ledStringQueue = startLedQueueProcessorTask(ledString, configLOW_PRIORITY, NULL);
+	LedGroup *ledString = Leds_init(7);
+	Leds_new(ledString, &PORTA, 0x02, 0);
+	Leds_new(ledString, &PORTA, 0x04, 0);
+	Leds_new(ledString, &PORTA, 0x08, 0);
+	Leds_new(ledString, &PORTA, 0x10, 0);
+	Leds_new(ledString, &PORTA, 0x20, 0);
+	Leds_new(ledString, &PORTA, 0x40, 0);
+	Leds_new(ledString, &PORTA, 0x80, 0);
+	LedsEventQueue *ledStringQueue = LedsEvent_startLedsTask(ledString, configLOW_PRIORITY, NULL);
 
 	Handler *handler = Handler_create(10);
 	// Register commands for the interpreter
@@ -140,7 +143,7 @@ int main( void ) {
 	vTaskStartScheduler();
 
 	/* Should never get here, stop execution and report error */
-	while(true) ledGroupSet(ledRGB, PINK);
+	while(true) Leds_set(ledRGB, PINK);
 	return 0;
 }
 
@@ -162,7 +165,7 @@ void vApplicationIdleHook( void ) {
  * configCHECK_FOR_STACK_OVERFLOW should be defined as 1 to use StackOverflowHook.
  */
 void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName ) {
-	while(true) ledGroupSet(ledRGB, RED);
+	while(true) Leds_set(ledRGB, RED);
 }
 
 /**
@@ -172,5 +175,5 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTask
  * configUSE_MALLOC_FAILED_HOOK should be defined as 1 to use vApplicationMallocFailedHook()
  */
 void vApplicationMallocFailedHook() {
-	while(true) ledGroupSet(ledRGB, PINK);
+	while(true) Leds_set(ledRGB, PINK);
 }

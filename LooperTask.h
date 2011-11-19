@@ -16,7 +16,7 @@
 #include "handler.h"
 #include "usart_driver_RTOS.h"
 #include "spi_driver.h"
-#include "led.h"
+#include "LedEventProcessorTask.h"
 
 /** Used to pass arguments to the task */
 typedef struct {
@@ -24,7 +24,7 @@ typedef struct {
 	SpiDevice *spiMaster;
 	/** Pointer to USART buffer to use. */
 	Usart *usart;
-	LedGroupEventQueue *led;
+	LedsEventQueue *led;
 	Handler *handler;
 
 } LooperTaskParameters;
@@ -33,7 +33,7 @@ void startLooperTask(Handler *handler,
 		CommandLineInterpreter *interpreter,
 		SpiDevice *master,
 		Usart *usart,
-		LedGroupEventQueue *led,
+		LedsEventQueue *led,
 		char cPriority, xTaskHandle taskHandle);
 
 #endif /* WORKERTASK_H_ */

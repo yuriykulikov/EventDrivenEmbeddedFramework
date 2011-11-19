@@ -18,13 +18,11 @@
 
 // Framework
 #include "usart_driver_RTOS.h"
-#include "led.h"
 #include "spi_driver.h"
-#include <string.h>
-#include "strings.h"
 
 // File headers
 #include "SpiSlaveTask.h"
+#include "strings.h"
 
 //Prototype
 void SpiSlaveTask( void *pvParameters );

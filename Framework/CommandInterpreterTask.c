@@ -58,17 +58,17 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-/* File headers. */
-#include "led.h"
+/* Driver headers. */
 #include "usart_driver_RTOS.h"
 
-/* Task header file */
-#include "CommandInterpreterTask.h"
 #include <string.h>
 #include "strings.h"
+#include "CommandInterpreter.h"
+#include "CommandInterpreterTask.h"
+
 
 /* Utils includes. */
-#include "CommandInterpreter.h"
+
 
 void CommandInterpreterTask(void *pvParameters) {
 	//do a cast t local variable, because eclipse does not provide suggestions otherwise

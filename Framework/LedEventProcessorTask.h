@@ -22,32 +22,31 @@
  *****************************************************************************/
 #ifndef LED_H
 #define LED_H
+
+#include "avr_compiler.h"
+
 /* Scheduler include files. */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 
-#include "avr_compiler.h"
-
-#include "ledGroup.h"
-
+#include "leds.h"
 
 /* Led event, described by bitmask and duration */
 typedef struct LEDEventDefenition
 {
 	uint16_t duration;
 	uint8_t bitmask;
-} LedGroupEvent;
+} LedsEvent;
 /* A queue to put and then process Led events */
 typedef struct LedGroupEventQueueDefenition
 {
 	LedGroup * ledGroup;
 	xQueueHandle queueHandle;
-} LedGroupEventQueue;
+} LedsEventQueue;
 
 //---------------------------------------
 
-void ledGroupEventQueuePut (LedGroupEventQueue * ledGroupEventQueue,uint8_t bitmask, uint16_t duration);
-LedGroupEventQueue * startLedQueueProcessorTask (LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle);
-void startBlinkingLedTask (LedGroupEventQueue * ledGroupEventQueue, char cPriority, xTaskHandle taskHandle);
+void LedsEvent_put (LedsEventQueue * ledGroupEventQueue,uint8_t bitmask, uint16_t duration);
+LedsEventQueue * LedsEvent_startLedsTask (LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle);
 #endif

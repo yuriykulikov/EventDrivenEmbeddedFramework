@@ -40,8 +40,8 @@ typedef enum {
 } Color_enum;
 
 
-LedGroup * ledGroupInitialize (short amountOfLedsInGroup);
-short ledGroupAdd(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isActiveLow);
-void ledGroupSet(LedGroup * ledGroup , uint8_t bitmask);
+LedGroup * Leds_init (short amountOfLedsInGroup);
+short Leds_new(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isActiveLow);
+void Leds_set(LedGroup * ledGroup , uint8_t bitmask);
 
 #endif /* LEDGROUP_H_ */

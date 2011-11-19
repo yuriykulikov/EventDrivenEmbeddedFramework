@@ -1,5 +1,5 @@
 /*
- * WorkerTask.c
+ * LooperTask.c
  *
  *  Created on: Oct 26, 2011
  *      Author: Yuriy
@@ -10,7 +10,8 @@
 #include "handler.h"
 #include "usart_driver_RTOS.h"
 #include "spi_driver.h"
-#include "ledGroup.h"
+#include "leds.h"
+#include "LedEventProcessorTask.h"
 #include "strings.h"
 
 void LooperTask( void *pvParameters )
@@ -19,7 +20,7 @@ void LooperTask( void *pvParameters )
 	LooperTaskParameters * parameters = (LooperTaskParameters *)pvParameters;
 	//store pointer to usart for convenience
 	SpiDevice * master = parameters->spiMaster;
-	LedGroupEventQueue *led = parameters->led;
+	LedsEventQueue *led = parameters->led;
 
 	//Infinite loop
 	for (;;) {
@@ -64,14 +65,14 @@ void LooperTask( void *pvParameters )
 
 			case EVENT_BLINK:
 				usart = msg.ptr;
-				ledGroupEventQueuePut(led,0x01,100);
-				ledGroupEventQueuePut(led,0x03,100);
-				ledGroupEventQueuePut(led,0x06,100);
-				ledGroupEventQueuePut(led,0x0c,100);
-				ledGroupEventQueuePut(led,0x18,100);
-				ledGroupEventQueuePut(led,0x30,100);
-				ledGroupEventQueuePut(led,0x60,100);
-				ledGroupEventQueuePut(led,0x40,100);
+				LedsEvent_put(led,0x01,100);
+				LedsEvent_put(led,0x03,100);
+				LedsEvent_put(led,0x06,100);
+				LedsEvent_put(led,0x0c,100);
+				LedsEvent_put(led,0x18,100);
+				LedsEvent_put(led,0x30,100);
+				LedsEvent_put(led,0x60,100);
+				LedsEvent_put(led,0x40,100);
 				Usart_putPgmString(usart, Strings_BlinkResp, 10);
 				break;
 			}
@@ -83,7 +84,7 @@ void startLooperTask(Handler *handler,
 		CommandLineInterpreter *interpreter,
 		SpiDevice *master,
 		Usart *usart,
-		LedGroupEventQueue *led,
+		LedsEventQueue *led,
 		char cPriority, xTaskHandle taskHandle)
 {
 

@@ -15,10 +15,10 @@
 #include "queue.h"
 
 #include "port_driver.h"
-#include "ledGroup.h"
+#include "leds.h"
 
 /* Allocates memory for the led group with specified amount of leds */
-LedGroup * ledGroupInitialize (short amountOfLedsInGroup){
+LedGroup * Leds_init (short amountOfLedsInGroup){
 	LedGroup * ledGroup = pvPortMalloc(sizeof(LedGroup));
 	ledGroup->amountOfLedsInGroup = 0;
 	ledGroup->pins=pvPortMalloc(sizeof(Pin)*amountOfLedsInGroup);
@@ -32,7 +32,7 @@ LedGroup * ledGroupInitialize (short amountOfLedsInGroup){
  * Special case for RG - add Red, then Green
  * Returns 1 if success.
  */
-short ledGroupAdd(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isActiveLow){
+short Leds_new(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isActiveLow){
 	if ((ledGroup->amountOfLedsInGroup)<8)
 	{
 		short index = ledGroup->amountOfLedsInGroup;
@@ -58,7 +58,7 @@ short ledGroupAdd(LedGroup * ledGroup, PORT_t * port, uint8_t bitmask, short isA
  * It is possible to use Color_enum instead of the bitmask for RGB leds -
  * in this case R G and B lesa should added in this order - R G B
  */
-void ledGroupSet(LedGroup * ledGroup , uint8_t bitmask)
+void Leds_set(LedGroup * ledGroup , uint8_t bitmask)
 {
 	for (int i=0; i<(ledGroup->amountOfLedsInGroup);i++){
 		/* bitmask>>i shifts bitmask to the left, effectively placing bit
