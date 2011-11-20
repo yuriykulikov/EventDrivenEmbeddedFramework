@@ -23,11 +23,34 @@
 #include "task.h"
 #include "queue.h"
 
+#include "Looper.h"
+
+typedef struct MESSAGE Message;
+typedef struct HANDLER Handler;
+/**
+ * The prototype to which handleMessage functions used to process messages must comply.
+ * @param msg - message to handle
+ * @param *context - context of current Handler. Store variables there
+ * @param *handler - pointer to the handler, to modify or look into the queue
+ */
+typedef void (*HANDLE_MESSAGE_CALLBACK)(Message msg, void *context, Handler *handler);
+
+/** Struct represents handler */
+struct HANDLER{
+	/** Queue on which handler posts messages */
+	xQueueHandle messageQueue;
+	/** Function which handles messages*/
+	HANDLE_MESSAGE_CALLBACK handleMessage;
+	/** Execution context of current handler, handleMessage should cast it to something */
+	void *context;
+};
+
 /**
  * This structure represents a message
  */
-typedef struct
-{
+struct MESSAGE{
+	/** Handler responsible for handling this message */
+	Handler *handler;
 	/** What message is about */
 	char what;
 	/** First argument */
@@ -37,18 +60,11 @@ typedef struct
 	/** Pointer to the allocated memory. Handler should cast to the proper type,
 	 * according to the message.what */
 	void *ptr;
-} Message;
-
-/** Struct represents handler */
-typedef struct
-{
-	/** Queue on which looper task should block */
-	xQueueHandle taskQueue;
-} Handler;
+};
 
 /* Prototyping of functions. Documentation is found in source file. */
-Handler * Handler_create (short taskQueueSize);
 
+Handler * Handler_create (Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
 void Handler_sendEmptyMessage(Handler *handler, char what);
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
 void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr);
