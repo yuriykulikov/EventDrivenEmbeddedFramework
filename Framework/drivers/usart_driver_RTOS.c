@@ -87,10 +87,10 @@ ISR(USARTE0_DRE_vect){USART_DataRegEmpty(usartE);}
  * @param module hardware module to use
  * @param baudrate
  * @param bufferSize
+ * @param ticksToWait - Default wait time
  * @return pointer to the Usart software module
  */
-Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize)
-{
+Usart * Usart_initialize(USART_t *module, Baudrate baudrate, char bufferSize, int ticksToWait) {
 	//We use only low level interrupts, but leave local variable in case we change the mind
 	USART_DREINTLVL_t dreIntLevel = USART_DREINTLVL_LO_gc;
 	PORT_t * port;
@@ -135,6 +135,8 @@ Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize)
 	usart->module = module;
 	/*Store DRE level so we will know which level to enable when we put data and want it to be sent. */
 	usart->dreIntLevel = dreIntLevel;
+	// store default ticksToWait value - used in Dflt functions
+	usart->ticksToWait = ticksToWait;
 	/* @brief  Receive buffer size: 2,4,8,16,32,64,128 bytes. */
 	usart->RXqueue = xQueueCreate(bufferSize,sizeof(char));
 	usart->TXqueue = xQueueCreate(bufferSize,sizeof(char));
@@ -251,6 +253,57 @@ int8_t Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait )
 {
 	char * str="big string for some itoa uses";
 	return Usart_putString(usart, itoa(Int,str,radix), ticksToWait );
+}
+
+/** @brief Put data
+ *  Stores data byte in TX software buffer and enables DRE interrupt if there
+ *  is free space in the TX software buffer.
+ * @param usart
+ * @param data The data to send
+ * @return pdTRUE is success, pdFALSE if queue was full and ticksToWait elapsed
+ */
+inline int8_t Usart_putByteDflt(Usart * usart, uint8_t data) {
+	return Usart_putByte(usart, data, usart->ticksToWait);
+}
+/** @brief Send string via Usart
+ *  Stores data string in TX software buffer and enables DRE interrupt if there
+ *  is free space in the TX software buffer.
+ *  @param usart_struct The USART_struct_t struct instance.
+ *  @param string       The string to send.
+ */
+inline int8_t Usart_putStringDflt(Usart * usart, const char *string) {
+	return Usart_putString(usart, string, usart->ticksToWait);
+}
+/** @brief Send program memory string via Usart
+ *  Stores data string in TX software buffer and enables DRE interrupt if there
+ *  is free space in the TX software buffer.
+ *  String is taken from the program memory.
+ *  @param usart_struct The USART_struct_t struct instance.
+ *  @param string       The string to send.
+ */
+inline int8_t Usart_putPgmStringDflt(Usart * usart, const char *progmem_s) {
+	return Usart_putPgmString(usart, progmem_s, usart->ticksToWait);
+}
+/** @brief Put data (5-8 bit character).
+ *  Stores data integer represented as string in TX software buffer and enables DRE interrupt if there
+ *  is free space in the TX software buffer.
+ *  @param usart Usart software abstraction structure
+ *  @param Int       The integer to send.
+ *  @param radix	Integer basis - 10 for decimal, 16 for hex
+ */
+inline int8_t Usart_putIntDflt(Usart * usart, int16_t Int,int16_t radix) {
+	return Usart_putInt(usart, Int, radix, usart->ticksToWait);
+}
+/** @brief Get received data
+ *
+ *  Returns pdTRUE is data is available and puts byte into &receivedChar variable
+ *
+ *  @param usart_struct       The USART_struct_t struct instance.
+ *	@param receivedChar       Pointer to char variable for to save result.
+ *  @return					  Success.
+ */
+inline int8_t Usart_getByteDflt(Usart * usart, char * receivedChar) {
+	return Usart_getByte(usart, receivedChar, usart->ticksToWait);
 }
 
 /**

@@ -41,6 +41,8 @@ typedef struct UsartStructDefenition
 	USART_t * module;
 	/* \brief Data register empty interrupt level. */
 	USART_DREINTLVL_t dreIntLevel;
+	/** Default ticksToWait value */
+	int ticksToWait;
 	/* \brief Data buffer. */
 	xQueueHandle RXqueue;
 	xQueueHandle TXqueue;
@@ -48,13 +50,19 @@ typedef struct UsartStructDefenition
 
 /* Functions for interrupt driven driver. */
 
-Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize);
+Usart * Usart_initialize(USART_t *module, Baudrate baudrate, char bufferSize, int ticksToWait);
 
 int8_t Usart_putByte(Usart * usart, uint8_t data, int ticksToWait );
 int8_t Usart_putString(Usart * usart, const char *string, int ticksToWait );
 int8_t Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksToWait );
 int8_t Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait );
 int8_t Usart_getByte(Usart * usart, char * receivedChar, int ticksToWait );
+
+int8_t Usart_putByteDflt(Usart * usart, uint8_t data);
+int8_t Usart_putStringDflt(Usart * usart, const char *string);
+int8_t Usart_putPgmStringDflt(Usart * usart, const char *progmem_s);
+int8_t Usart_putIntDflt(Usart * usart, int16_t Int,int16_t radix);
+int8_t Usart_getByteDflt(Usart * usart, char * receivedChar);
 
 #endif
 
