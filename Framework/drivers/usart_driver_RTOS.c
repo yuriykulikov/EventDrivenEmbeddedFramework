@@ -169,17 +169,21 @@ Usart * Usart_initialize(USART_t *module, Baudrate baudrate ,char bufferSize)
  * @param usart
  * @param data The data to send
  * @param ticksToWait Amount of RTOS ticks (1 ms default) to wait if there is space in queue
+ * @return pdTRUE is success, pdFALSE if queue was full and ticksToWait elapsed
  */
-void Usart_putByte(Usart * usart, uint8_t data, int ticksToWait )
+int8_t Usart_putByte(Usart * usart, uint8_t data, int ticksToWait )
 {
 	uint8_t tempCTRLA;
+	signed char queueSendResult = xQueueSendToBack(usart->TXqueue, &data, ticksToWait);
 	/* If we successfully loaded byte to queue */
-	if (xQueueSendToBack(usart->TXqueue, &data, ticksToWait))
-	{
+	if (queueSendResult == pdPASS) {
 		/* Enable DRE interrupt. */
 		tempCTRLA = usart->module->CTRLA;
 		tempCTRLA = (tempCTRLA & ~USART_DREINTLVL_gm) | usart->dreIntLevel;
 		usart->module->CTRLA = tempCTRLA;
+		return pdPASS;
+	} else {
+		return pdFAIL;
 	}
 }
 
@@ -205,10 +209,14 @@ inline int8_t Usart_getByte(Usart * usart, char * receivedChar, int ticksToWait 
  *  @param string       The string to send.
  *  @param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
  */
-inline void Usart_putString(Usart * usart, const char *string, int ticksToWait )
+inline int8_t Usart_putString(Usart * usart, const char *string, int ticksToWait )
 {
 	//send the whole string. Note that if buffer is full, USART_TXBuffer_PutByte will do nothing
-	while (*string) Usart_putByte(usart,*string++, ticksToWait );
+	while (*string) {
+		int8_t putByteResult = Usart_putByte(usart, *string++, ticksToWait);
+		if (putByteResult == pdFAIL) return pdFAIL;
+	}
+	return pdPASS;
 }
 /** @brief Send program memory string via Usart
  *
@@ -220,10 +228,14 @@ inline void Usart_putString(Usart * usart, const char *string, int ticksToWait )
  *  @param string       The string to send.
  *  @param xTicksToWait       Amount of RTOS ticks (1 ms default) to wait if there is space in queue.
  */
-inline void Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksToWait )
+inline int8_t Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksToWait )
 {
 	register char c;
-	while ( (c = pgm_read_byte(progmem_s++)) ) Usart_putByte(usart, c, ticksToWait);
+	while ( (c = pgm_read_byte(progmem_s++)) ) {
+		int8_t putByteResult =  Usart_putByte(usart, c, ticksToWait);
+		if (putByteResult == pdFAIL) return pdFAIL;
+	}
+	return pdPASS;
 }
 /** @brief Put data (5-8 bit character).
  *
@@ -235,10 +247,10 @@ inline void Usart_putPgmString(Usart * usart, const char *progmem_s, int ticksTo
  *  @param radix	Integer basis - 10 for decimal, 16 for hex
  *  @param xTicksToWait
  */
-void Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait )
+int8_t Usart_putInt(Usart * usart, int16_t Int,int16_t radix, int ticksToWait )
 {
 	char * str="big string for some itoa uses";
-	Usart_putString(usart, itoa(Int,str,radix), ticksToWait );
+	return Usart_putString(usart, itoa(Int,str,radix), ticksToWait );
 }
 
 /**
