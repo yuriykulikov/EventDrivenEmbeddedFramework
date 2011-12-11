@@ -105,15 +105,15 @@ void CommandLineInterpreter_process(CommandLineInterpreter *interpreter, char *p
 	}
 	// No matches were found, maybe it was a help command?
 	if (strcmp_P( ( const char * ) pcCommandInput, ( const char * ) Strings_HelpCmd ) == 0) {
-		Usart_putPgmString(usart, Strings_HelpCmdDesc, 10);
+		Usart_putPgmStringDflt(usart, Strings_HelpCmdDesc);
 		// Search for the command string in the list of registered commands starting with the second entry (first is emtpy)
 		for(xCommandLineInputListItem *entry = interpreter->list->pxNext; entry != NULL; entry = entry->pxNext ) {
-			Usart_putPgmString(usart, entry->pcCommand, 10);
-			Usart_putPgmString(usart, Strings_colon, 10);
-			Usart_putPgmString(usart, Strings_space, 10);
-			Usart_putPgmString(usart, entry->pcHelpString, 10);
+			Usart_putPgmStringDflt(usart, entry->pcCommand);
+			Usart_putPgmStringDflt(usart, Strings_colon);
+			Usart_putPgmStringDflt(usart, Strings_space);
+			Usart_putPgmStringDflt(usart, entry->pcHelpString);
 		}
 	} else {
-		Usart_putPgmString(usart, Strings_InterpretorError, 10);
+		Usart_putPgmStringDflt(usart, Strings_InterpretorError);
 	}
 }
