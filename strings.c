@@ -13,6 +13,9 @@
 char Strings_newline[] PROGMEM = "\n";
 char Strings_colon[] PROGMEM = ":";
 char Strings_space[] PROGMEM = " ";
+char Strings_comma[] PROGMEM = ",";
+char Strings_hex[] PROGMEM = "0x";
+
 // Spi task
 char Strings_SpiMasterExample1[] PROGMEM = "Master send: 0xC001, received: 0x";
 char Strings_SpiMasterExample2[] PROGMEM = "Master send: 0xC0DE, received: 0x";
