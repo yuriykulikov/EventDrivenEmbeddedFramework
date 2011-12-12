@@ -63,9 +63,9 @@ void SpiSlaveTask( void *pvParameters ) {
 		//Function will block the task
 		if (SpiSlave_getByteFromQueue(slave, &receivedChar, portMAX_DELAY) == pdPASS )
 		{
-			Usart_putPgmString(usartBuffer,Strings_SpiSlaveExample1,10);
-			Usart_putInt(usartBuffer,receivedChar,16,10);
-			Usart_putPgmString(usartBuffer, Strings_newline, 10);
+			Usart_putPgmStringDflt(usartBuffer,Strings_SpiSlaveExample1);
+			Usart_putIntDflt(usartBuffer,receivedChar,16);
+			Usart_putPgmStringDflt(usartBuffer, Strings_newline);
 			// report some kind of status
 			slave->status = receivedChar + 0x01;
 		}

@@ -98,7 +98,7 @@ int main( void ) {
 	//Create and start the timer, which will reset Watch Dog Timer
 	xTimerStart(xTimerCreate((signed char*)"WDT",500, pdTRUE, 0, watchdogTimerCallback), 0);
 	//---------Use USART on PORTC----------------------------
-	Usart * usartFTDI = Usart_initialize(&USARTE0, BAUD9600, 128);
+	Usart * usartFTDI = Usart_initialize(&USARTE0, BAUD9600, 128, 10);
 
 	// Initialize SPI slave on port D
 	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
