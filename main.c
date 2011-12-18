@@ -101,10 +101,10 @@ int main( void ) {
 	Usart * usartFTDI = Usart_initialize(&USARTE0, BAUD9600, 128, 10);
 
 	// Initialize SPI slave on port D
-	SpiSlave * spiSlaveD = SpiSlave_init(&SPID,false,SPI_MODE_0_gc,64);
+	SpiSlave * spiSlave = SpiSlave_init(&SPIC,false,SPI_MODE_1_gc,64);
 	// Initialize SPI master on port C
-	SpiMaster * spiMasterC = SpiMaster_init(&SPIC, false, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV4_gc);
-	SpiDevice * spiMasterCdefault = SpiMaster_initDevice(spiMasterC, &PORTC, SPI_SS_bm);
+	SpiMaster * spiMaster = SpiMaster_init(&SPID, false, SPI_MODE_1_gc, false, SPI_PRESCALER_DIV4_gc);
+	SpiDevice * spiDevice = SpiMaster_initDevice(spiMaster, &PORTD, SPI_SS_bm);
 
 	//---------Start LED task for testing purposes-----------
 	ledRGB = Leds_init(3);
@@ -127,7 +127,7 @@ int main( void ) {
 	// ***** Start main Looper
 	Looper *looper = Looper_start(10, "LPR", 350, configNORMAL_PRIORITY, NULL);
 	ExampleHandlerContext *exampleContext = pvPortMalloc(sizeof(ExampleHandlerContext));
-	exampleContext->spiMaster = spiMasterCdefault;
+	exampleContext->spiMaster = spiDevice;
 	exampleContext->usart = usartFTDI;
 	exampleContext->led = ledStringQueue;
 	Handler *exampleHandler = Handler_create(looper, ExampleHandler_handleMessage, exampleContext);
@@ -140,7 +140,7 @@ int main( void ) {
 
 	// ****** Start stand-alone tasks
 	startBlinkingLedTask(ledRGBEventQueue,configLOW_PRIORITY, NULL);
-	startSpiSlaveTask(spiSlaveD, usartFTDI, configLOW_PRIORITY, NULL);
+	startSpiSlaveTask(spiSlave, usartFTDI, configLOW_PRIORITY, NULL);
 
 	/* Start scheduler. Creates idle task and returns if failed to create it.
 	 * vTaskStartScheduler never returns during normal operation. It is unlikely that XMEGA port will need to
