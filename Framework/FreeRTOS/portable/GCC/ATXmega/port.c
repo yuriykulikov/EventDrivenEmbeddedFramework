@@ -430,8 +430,8 @@ void vPortYield( void )
  * difference from vPortYield() is the tick count is incremented as the
  * call comes from the tick ISR.
  */
-void vPortYieldFromTick( void ) __attribute__ ( ( naked ) );
-void vPortYieldFromTick( void )
+//void vPortYieldFromTick( void ) __attribute__ ( ( naked ) );
+inline void vPortYieldFromTick( void )
 {
 	unsigned portBASE_TYPE uxSavedStatReg;
 	portSAVE_CONTEXT();
@@ -441,7 +441,7 @@ void vPortYieldFromTick( void )
 	portCLEAR_INTERRUPT_MASK_FROM_ISR(uxSavedStatReg);
 	portRESTORE_CONTEXT();
 
-	asm volatile ( "ret" );
+//	asm volatile ( "ret" );
 }
 /*-----------------------------------------------------------*/
 
