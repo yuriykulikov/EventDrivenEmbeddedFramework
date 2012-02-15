@@ -42,30 +42,6 @@
 #define configTIMER_TASK_PRIORITY		configLOW_PRIORITY
 #define configTIMER_QUEUE_LENGTH		16
 #define configTIMER_TASK_STACK_DEPTH	configMINIMAL_STACK_SIZE
-/** Multi-level interrupts support. XMEGA has three interrupt levels.
- * 1	PMIC_LOWLVLEN_bm
- * 2	PMIC_MEDLVLEN_bm
- * 3	PMIC_HILVLEN_bm
- * Kernel interrupt is a tick interrupt from the timer, it should have  the lowest
- * priority, because there is no need to switch tasks exactly when the timer overflows.
- * A task switch will be triggered if task was blocking on the queue, mutex or semaphore.
- * @attention FreeRTOS API functions (like xQueueReceiveFromISR) could not be called from the
- * interrupts with level higher than configMAX_SYSCALL_INTERRUPT_PRIORITY. These interrupts will not
- * be affected by critical sections or context switches. Intention to use them is to service stuff
- * with a very strict reaction deadline.
- * @attention Preferred interrupt level is PMIC_LOWLVLEN_bm
- * because of the Round-Robin Scheduling and programmable interrupt priority.
- * Interrupts with the level higher then configMAX_SYSCALL_INTERRUPT_PRIORITY
- * should be only used for very strict events, since they are not prevented from execution by
- * critical sections. One should make sure to increase stack sizes if interrupt nesting is used.
- * Interrupts with level higher than configKERNEL_INTERRUPT_PRIORITY but not higher than
- * configMAX_SYSCALL_INTERRUPT_PRIORITY could preempt lower level interrupts, unless the critical
- * section was entered within an interrupt (e.g. context switch).
- */
-// tick interrupt is lowest level, should be always defined as 1
-#define configKERNEL_INTERRUPT_PRIORITY 1
-// interrupts with PMIC_MEDLVLEN_bm could preemt PMIC_LOWLVLEN_bm UNLESS a critical section was entered
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY 2
 
 /* Debug */
 #define configCHECK_FOR_STACK_OVERFLOW			1//0
@@ -86,7 +62,7 @@ to exclude the API function. */
 #define INCLUDE_uxTaskPriorityGet		0
 #define INCLUDE_vTaskDelete				0//1
 #define INCLUDE_vTaskCleanUpResources	0
-#define INCLUDE_vTaskSuspend			1
+#define INCLUDE_vTaskSuspend			0
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
 

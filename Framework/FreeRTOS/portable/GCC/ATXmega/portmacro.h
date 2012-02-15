@@ -44,12 +44,6 @@ extern "C" {
 
 #define portDISABLE_INTERRUPTS()	asm volatile ( "cli" :: );
 #define portENABLE_INTERRUPTS()		asm volatile ( "sei" :: );
-
-extern unsigned portBASE_TYPE uxPortSetInterruptMaskFromISR();
-extern void vPortClearInterruptMaskFromISR( unsigned portBASE_TYPE );
-#define portSET_INTERRUPT_MASK_FROM_ISR() uxPortSetInterruptMaskFromISR()
-#define portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedStatusRegister ) vPortClearInterruptMaskFromISR( uxSavedStatusRegister )
-
 /*-----------------------------------------------------------*/
 
 /* Architecture specifics. */
