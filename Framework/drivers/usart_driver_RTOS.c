@@ -70,9 +70,18 @@ Usart * usartE;
 signed char USART_RXComplete(Usart *);
 signed char USART_DataRegEmpty(Usart *);
 
-ISR(USARTC0_RXC_vect){ if( USART_RXComplete(usartC) ) taskYIELD(); }
-ISR(USARTD0_RXC_vect){ if( USART_RXComplete(usartD) ) taskYIELD(); }
-ISR(USARTE0_RXC_vect){ if( USART_RXComplete(usartE) ) taskYIELD(); }
+ISR(USARTC0_RXC_vect){
+    //TODO declare ISR as naked, add context switch
+    uint8_t isHigherPriorityTaskWoken = USART_RXComplete(usartC);
+}
+ISR(USARTD0_RXC_vect){
+    //TODO declare ISR as naked, add context switch
+    uint8_t isHigherPriorityTaskWoken =  USART_RXComplete(usartD);
+}
+ISR(USARTE0_RXC_vect){
+    //TODO declare ISR as naked, add context switch
+    uint8_t isHigherPriorityTaskWoken =  USART_RXComplete(usartE);
+}
 
 ISR(USARTC0_DRE_vect){USART_DataRegEmpty(usartC);}
 ISR(USARTD0_DRE_vect){USART_DataRegEmpty(usartD);}

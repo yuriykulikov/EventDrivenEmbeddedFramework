@@ -42,9 +42,15 @@ SpiSlave *slaveD;
 //Prototype
 signed char Spi_handleInterrupt (SPI_t *module, SpiMaster *master, SpiSlave *slave);
 //Interrupt handling for the module on the port C
-ISR(SPIC_INT_vect){ if( Spi_handleInterrupt(&SPIC, masterC, slaveC) ) taskYIELD(); }
+ISR(SPIC_INT_vect){
+    //TODO declare ISR as naked, add context switch
+    uint8_t isHigherPriorityTaskWoken = Spi_handleInterrupt(&SPIC, masterC, slaveC);
+}
 //Interrupt handling for the module on the port D
-ISR(SPID_INT_vect){ if( Spi_handleInterrupt(&SPID, masterD, slaveD) ) taskYIELD(); }
+ISR(SPID_INT_vect){
+    //TODO declare ISR as naked, add context switch
+    uint8_t isHigherPriorityTaskWoken = Spi_handleInterrupt(&SPID, masterD, slaveD);
+}
 
 /**
  * @brief Common for all modules interrupt handler
