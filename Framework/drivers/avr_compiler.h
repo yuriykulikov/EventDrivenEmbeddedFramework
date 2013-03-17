@@ -112,7 +112,6 @@
 /*! \brief Define the watchdog reset macro. */
 #define watchdog_reset( ) (__watchdog_reset( ))
 
-
 #define INLINE PRAGMA( inline=forced ) static
 
 #define FLASH_DECLARE(x) _MEMATTR x

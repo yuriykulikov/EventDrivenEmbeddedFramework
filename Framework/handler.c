@@ -17,7 +17,6 @@
  *
  *****************************************************************************/
 
-
 /* Compiler definitions include file. */
 #include "avr_compiler.h"
 
@@ -79,11 +78,11 @@ void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg
  * @param handleMessage
  * @param context
  */
-Handler * Handler_create (Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
-	// Pack input parameters into the structure and pass them to the task
-	Handler *handler = pvPortMalloc(sizeof(Handler));
-	handler->messageQueue =  looper->messageQueue;
-	handler->handleMessage = handleMessage;
-	handler->context = context;
-	return handler;
+Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
+    // Pack input parameters into the structure and pass them to the task
+    Handler *handler = pvPortMalloc(sizeof(Handler));
+    handler->messageQueue = looper->messageQueue;
+    handler->handleMessage = handleMessage;
+    handler->context = context;
+    return handler;
 }

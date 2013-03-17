@@ -101,7 +101,6 @@
  */
 #define TC_UnlockCompareUpdate( _tc ) ( (_tc)->CTRLFCLR = TC0_LUPD_bm )
 
-
 /*! \brief Force an update of the output compare and period registers.
  *
  *  This macro will trigger a transfer from the output compare and period
@@ -341,7 +340,6 @@
  */
 #define TC_ClearCCDFlag( _tc ) ( (_tc)->INTFLAGS = TC0_CCDIF_bm )
 
-
 /*! \brief Reads the first available input capture value for channel A.
  *
  *  This macro returns the first available input capture value for
@@ -390,34 +388,32 @@
  */
 #define TC_GetCaptureD( _tc ) ( (_tc)->CCD )
 
-
 /* Prototyping of functions. Documentation can be found in source file. */
 
-void TC0_ConfigClockSource( volatile TC0_t * tc, TC_CLKSEL_t clockSelection );
-void TC0_ConfigWGM( volatile TC0_t * tc, TC_WGMODE_t wgm );
-void TC0_ConfigInputCapture( volatile TC0_t * tc, TC_EVSEL_t eventSource );
-void TC0_EnableCCChannels( volatile TC0_t * tc, uint8_t enableMask );
-void TC0_DisableCCChannels( volatile TC0_t * tc, uint8_t disableMask );
-void TC0_SetOverflowIntLevel( volatile TC0_t * tc, TC_OVFINTLVL_t intLevel );
-void TC0_SetErrorIntLevel( volatile TC0_t * tc, TC_ERRINTLVL_t intLevel );
-void TC0_SetCCAIntLevel( volatile TC0_t * tc, TC_CCAINTLVL_t intLevel );
-void TC0_SetCCBIntLevel( volatile TC0_t * tc, TC_CCBINTLVL_t intLevel );
-void TC0_SetCCCIntLevel( volatile TC0_t * tc, TC_CCCINTLVL_t intLevel );
-void TC0_SetCCDIntLevel( volatile TC0_t * tc, TC_CCDINTLVL_t intLevel );
-void TC0_Reset( volatile TC0_t * tc );
+void TC0_ConfigClockSource(volatile TC0_t * tc, TC_CLKSEL_t clockSelection);
+void TC0_ConfigWGM(volatile TC0_t * tc, TC_WGMODE_t wgm);
+void TC0_ConfigInputCapture(volatile TC0_t * tc, TC_EVSEL_t eventSource);
+void TC0_EnableCCChannels(volatile TC0_t * tc, uint8_t enableMask);
+void TC0_DisableCCChannels(volatile TC0_t * tc, uint8_t disableMask);
+void TC0_SetOverflowIntLevel(volatile TC0_t * tc, TC_OVFINTLVL_t intLevel);
+void TC0_SetErrorIntLevel(volatile TC0_t * tc, TC_ERRINTLVL_t intLevel);
+void TC0_SetCCAIntLevel(volatile TC0_t * tc, TC_CCAINTLVL_t intLevel);
+void TC0_SetCCBIntLevel(volatile TC0_t * tc, TC_CCBINTLVL_t intLevel);
+void TC0_SetCCCIntLevel(volatile TC0_t * tc, TC_CCCINTLVL_t intLevel);
+void TC0_SetCCDIntLevel(volatile TC0_t * tc, TC_CCDINTLVL_t intLevel);
+void TC0_Reset(volatile TC0_t * tc);
 
-void TC1_ConfigClockSource( volatile TC1_t * tc, TC_CLKSEL_t clockSelection );
-void TC1_ConfigWGM( volatile TC1_t * tc, TC_WGMODE_t wgm );
-void TC1_ConfigInputCapture( volatile TC1_t * tc, TC_EVSEL_t eventSource );
-void TC1_EnableCCChannels( volatile TC1_t * tc, uint8_t enableMask );
-void TC1_DisableCCChannels( volatile TC1_t * tc, uint8_t disableMask );
-void TC1_SetOverflowIntLevel( volatile TC1_t * tc, TC_OVFINTLVL_t intLevel );
-void TC1_SetErrorIntLevel( volatile TC1_t * tc, TC_ERRINTLVL_t intLevel );
-void TC1_SetCCAIntLevel( volatile TC1_t * tc, TC_CCAINTLVL_t intLevel );
-void TC1_SetCCBIntLevel( volatile TC1_t * tc, TC_CCBINTLVL_t intLevel );
-void TC1_SetCCCIntLevel( volatile TC1_t * tc, TC_CCCINTLVL_t intLevel );
-void TC1_SetCCDIntLevel( volatile TC1_t * tc, TC_CCDINTLVL_t intLevel );
-void TC1_Reset( volatile TC1_t * tc );
-
+void TC1_ConfigClockSource(volatile TC1_t * tc, TC_CLKSEL_t clockSelection);
+void TC1_ConfigWGM(volatile TC1_t * tc, TC_WGMODE_t wgm);
+void TC1_ConfigInputCapture(volatile TC1_t * tc, TC_EVSEL_t eventSource);
+void TC1_EnableCCChannels(volatile TC1_t * tc, uint8_t enableMask);
+void TC1_DisableCCChannels(volatile TC1_t * tc, uint8_t disableMask);
+void TC1_SetOverflowIntLevel(volatile TC1_t * tc, TC_OVFINTLVL_t intLevel);
+void TC1_SetErrorIntLevel(volatile TC1_t * tc, TC_ERRINTLVL_t intLevel);
+void TC1_SetCCAIntLevel(volatile TC1_t * tc, TC_CCAINTLVL_t intLevel);
+void TC1_SetCCBIntLevel(volatile TC1_t * tc, TC_CCBINTLVL_t intLevel);
+void TC1_SetCCCIntLevel(volatile TC1_t * tc, TC_CCCINTLVL_t intLevel);
+void TC1_SetCCDIntLevel(volatile TC1_t * tc, TC_CCDINTLVL_t intLevel);
+void TC1_Reset(volatile TC1_t * tc);
 
 #endif

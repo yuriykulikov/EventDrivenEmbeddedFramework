@@ -36,35 +36,35 @@ typedef struct HANDLER Handler;
 typedef void (*HANDLE_MESSAGE_CALLBACK)(Message msg, void *context, Handler *handler);
 
 /** Struct represents handler */
-struct HANDLER{
-	/** Queue on which handler posts messages */
-	xQueueHandle messageQueue;
-	/** Function which handles messages*/
-	HANDLE_MESSAGE_CALLBACK handleMessage;
-	/** Execution context of current handler, handleMessage should cast it to something */
-	void *context;
+struct HANDLER {
+    /** Queue on which handler posts messages */
+    xQueueHandle messageQueue;
+    /** Function which handles messages*/
+    HANDLE_MESSAGE_CALLBACK handleMessage;
+    /** Execution context of current handler, handleMessage should cast it to something */
+    void *context;
 };
 
 /**
  * This structure represents a message
  */
-struct MESSAGE{
-	/** Handler responsible for handling this message */
-	Handler *handler;
-	/** What message is about */
-	char what;
-	/** First argument */
-	char arg1;
-	/** First argument */
-	char arg2;
-	/** Pointer to the allocated memory. Handler should cast to the proper type,
-	 * according to the message.what */
-	void *ptr;
+struct MESSAGE {
+    /** Handler responsible for handling this message */
+    Handler *handler;
+    /** What message is about */
+    char what;
+    /** First argument */
+    char arg1;
+    /** First argument */
+    char arg2;
+    /** Pointer to the allocated memory. Handler should cast to the proper type,
+     * according to the message.what */
+    void *ptr;
 };
 
 /* Prototyping of functions. Documentation is found in source file. */
 
-Handler * Handler_create (Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
+Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
 void Handler_sendEmptyMessage(Handler *handler, char what);
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
 void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr);

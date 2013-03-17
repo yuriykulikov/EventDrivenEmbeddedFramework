@@ -57,8 +57,6 @@
  *****************************************************************************/
 #include "wdt_driver.h"
 
-
-
 /*! \brief Enable Watchdog without changing prescaler settings.
  *
  *  This function enables the Watchdog without changing prescaler settings.
@@ -70,19 +68,16 @@
  *  wait for the watchdog to be synchronized to the other clock domains. before
  *  proceeding
  */
-void WDT_Enable( void )
-{
-	uint8_t temp = WDT.CTRL | WDT_ENABLE_bm | WDT_CEN_bm;
-	CCP = CCP_IOREG_gc;
-	WDT.CTRL = temp;
+void WDT_Enable(void) {
+    uint8_t temp = WDT.CTRL | WDT_ENABLE_bm | WDT_CEN_bm;
+    CCP = CCP_IOREG_gc;
+    WDT.CTRL = temp;
 
-	/* Wait for WD to synchronize with new settings. */
-	while(WDT_IsSyncBusy()){
+    /* Wait for WD to synchronize with new settings. */
+    while (WDT_IsSyncBusy()) {
 
-	}
+    }
 }
-
-
 
 /*! \brief Enable Watchdog and set prescaler.
  *
@@ -97,19 +92,16 @@ void WDT_Enable( void )
  *
  *  \param  period  Watchdog Timer timeout period
  */
-void WDT_EnableAndSetTimeout( WDT_PER_t period )
-{
-	uint8_t temp = WDT_ENABLE_bm | WDT_CEN_bm | period;
-	CCP = CCP_IOREG_gc;
-	WDT.CTRL = temp;
+void WDT_EnableAndSetTimeout(WDT_PER_t period) {
+    uint8_t temp = WDT_ENABLE_bm | WDT_CEN_bm | period;
+    CCP = CCP_IOREG_gc;
+    WDT.CTRL = temp;
 
-	/* Wait for WD to synchronize with new settings. */
-	while(WDT_IsSyncBusy()){
+    /* Wait for WD to synchronize with new settings. */
+    while (WDT_IsSyncBusy()) {
 
-	}
+    }
 }
-
-
 
 /*! \brief Disable Watchdog without changing prescaler settings.
  *
@@ -122,23 +114,19 @@ void WDT_EnableAndSetTimeout( WDT_PER_t period )
  *  automatically ignored during the change enable period. Disable functions
  *  operate asynchronously with immidiate effect.
  */
-void WDT_Disable( void )
-{
-	uint8_t temp = (WDT.CTRL & ~WDT_ENABLE_bm) | WDT_CEN_bm;
-	CCP = CCP_IOREG_gc;
-	WDT.CTRL = temp;
+void WDT_Disable(void) {
+    uint8_t temp = (WDT.CTRL & ~WDT_ENABLE_bm) | WDT_CEN_bm;
+    CCP = CCP_IOREG_gc;
+    WDT.CTRL = temp;
 }
-
 
 /*! \brief Return status of window mode enable bit.
  *
  *  \retval  true   The WD Window Mode is enabled.
  *  \retval  false  The WD Eindow Mode is not enabled.
- */
-bool WDT_IsWindowModeEnabled( void )
-{
-	uint8_t wdwm_enabled = (WDT.WINCTRL & WDT_WEN_bm);
-	return wdwm_enabled;
+ */bool WDT_IsWindowModeEnabled(void) {
+    uint8_t wdwm_enabled = (WDT.WINCTRL & WDT_WEN_bm);
+    return wdwm_enabled;
 }
 
 /*! \brief Enable window mode without changing prescaler settings.
@@ -155,23 +143,19 @@ bool WDT_IsWindowModeEnabled( void )
  *
  *  \retval  true   The WD is enabled before enabling window mode
  *  \retval  false  The WD is not enabled before enabling window mode.
- */
-bool WDT_EnableWindowMode( void )
-{
-	uint8_t wd_enable = WDT.CTRL & WDT_ENABLE_bm;
-	uint8_t temp = WDT.WINCTRL | WDT_WEN_bm | WDT_WCEN_bm;
-	CCP = CCP_IOREG_gc;
-	WDT.WINCTRL = temp;
-        
-	/* Wait for WD to synchronize with new settings. */
-	while(WDT_IsSyncBusy()){
+ */bool WDT_EnableWindowMode(void) {
+    uint8_t wd_enable = WDT.CTRL & WDT_ENABLE_bm;
+    uint8_t temp = WDT.WINCTRL | WDT_WEN_bm | WDT_WCEN_bm;
+    CCP = CCP_IOREG_gc;
+    WDT.WINCTRL = temp;
 
-	}
-        
-	return wd_enable;
+    /* Wait for WD to synchronize with new settings. */
+    while (WDT_IsSyncBusy()) {
+
+    }
+
+    return wd_enable;
 }
-
-
 
 /*! \brief Enable window mode and set prescaler.
  *
@@ -189,22 +173,19 @@ bool WDT_EnableWindowMode( void )
  *
  *  \retval  true   The WD is enabled before enabling window mode
  *  \retval  false  The WD is not enabled before enabling window mode.
- */
-bool WDT_EnableWindowModeAndSetTimeout( WDT_WPER_t period )
-{
-	uint8_t wd_enable = WDT.CTRL & WDT_ENABLE_bm;
-	uint8_t temp = WDT_WEN_bm | WDT_WCEN_bm | period;
-	CCP = CCP_IOREG_gc;
-	WDT.WINCTRL = temp;
-        
-	/* Wait for WD to synchronize with new settings. */
-	while(WDT_IsSyncBusy()){
+ */bool WDT_EnableWindowModeAndSetTimeout(WDT_WPER_t period) {
+    uint8_t wd_enable = WDT.CTRL & WDT_ENABLE_bm;
+    uint8_t temp = WDT_WEN_bm | WDT_WCEN_bm | period;
+    CCP = CCP_IOREG_gc;
+    WDT.WINCTRL = temp;
 
-	}
-        
-	return wd_enable;
+    /* Wait for WD to synchronize with new settings. */
+    while (WDT_IsSyncBusy()) {
+
+    }
+
+    return wd_enable;
 }
-
 
 /*! \brief Disable window mode without changing prescaler settings.
  *
@@ -217,9 +198,8 @@ bool WDT_EnableWindowModeAndSetTimeout( WDT_WPER_t period )
  *  automatically ignored during the change enable period. Disable functions
  *  operate asynchronously with immidiate effect.
  */
-void WDT_DisableWindowMode( void )
-{
-	uint8_t temp = (WDT.WINCTRL & ~WDT_WEN_bm) | WDT_WCEN_bm;
-	CCP = CCP_IOREG_gc;
-	WDT.WINCTRL = temp;
+void WDT_DisableWindowMode(void) {
+    uint8_t temp = (WDT.WINCTRL & ~WDT_WEN_bm) | WDT_WCEN_bm;
+    CCP = CCP_IOREG_gc;
+    WDT.WINCTRL = temp;
 }

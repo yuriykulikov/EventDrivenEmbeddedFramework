@@ -1,4 +1,3 @@
-
 /* This file has been prepared for Doxygen automatic documentation generation.*/
 /*! \file *********************************************************************
  *
@@ -33,20 +32,18 @@
 #include "leds.h"
 
 /* Led event, described by bitmask and duration */
-typedef struct LEDEventDefenition
-{
-	uint16_t duration;
-	uint8_t bitmask;
+typedef struct LEDEventDefenition {
+    uint16_t duration;
+    uint8_t bitmask;
 } LedsEvent;
 /* A queue to put and then process Led events */
-typedef struct LedGroupEventQueueDefenition
-{
-	LedGroup * ledGroup;
-	xQueueHandle queueHandle;
+typedef struct LedGroupEventQueueDefenition {
+    LedGroup * ledGroup;
+    xQueueHandle queueHandle;
 } LedsEventQueue;
 
 //---------------------------------------
 
-void LedsEvent_put (LedsEventQueue * ledGroupEventQueue,uint8_t bitmask, uint16_t duration);
-LedsEventQueue * LedsEvent_startLedsTask (LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle);
+void LedsEvent_put(LedsEventQueue * ledGroupEventQueue, uint8_t bitmask, uint16_t duration);
+LedsEventQueue * LedsEvent_startLedsTask(LedGroup * ledGroup, char cPriority, xTaskHandle taskHandle);
 #endif

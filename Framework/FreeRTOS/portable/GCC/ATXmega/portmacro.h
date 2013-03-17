@@ -26,13 +26,13 @@ extern "C" {
 #define portBASE_TYPE	char
 
 #if( configUSE_16_BIT_TICKS == 1 )
-	typedef unsigned portSHORT portTickType;
-	#define portMAX_DELAY ( portTickType ) 0xffff
+typedef unsigned portSHORT portTickType;
+#define portMAX_DELAY ( portTickType ) 0xffff
 #else
-	typedef unsigned portLONG portTickType;
-	#define portMAX_DELAY ( portTickType ) 0xffffffff
+typedef unsigned portLONG portTickType;
+#define portMAX_DELAY ( portTickType ) 0xffffffff
 #endif
-/*-----------------------------------------------------------*/	
+/*-----------------------------------------------------------*/
 
 /* Critical section management. */
 #define portENTER_CRITICAL()		asm volatile ( "in		__tmp_reg__, __SREG__" :: );	\
@@ -54,7 +54,7 @@ extern "C" {
 /*-----------------------------------------------------------*/
 
 /* Kernel utilities. */
-extern void vPortYield( void ) __attribute__ ( ( naked ) );
+extern void vPortYield(void) __attribute__ ( ( naked ) );
 #define portYIELD()					vPortYield()
 /*-----------------------------------------------------------*/
 

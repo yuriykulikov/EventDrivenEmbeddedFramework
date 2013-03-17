@@ -19,11 +19,11 @@
 
 /** Used to store context of the handler */
 typedef struct {
-	/** Pointer to SpiSlave to use */
-	SpiDevice *spiMaster;
-	/** Pointer to USART buffer to use. */
-	Usart *usart;
-	LedsEventQueue *led;
+    /** Pointer to SpiSlave to use */
+    SpiDevice *spiMaster;
+    /** Pointer to USART buffer to use. */
+    Usart *usart;
+    LedsEventQueue *led;
 } ExampleHandlerContext;
 
 void ExampleHandler_handleMessage(Message msg, void *handlerContext, Handler *handler);

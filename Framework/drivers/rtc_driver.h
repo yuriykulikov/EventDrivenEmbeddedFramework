@@ -140,32 +140,26 @@
  */
 #define RTC_GetCompareValue()    ( RTC.COMP )
 
-
 /* Prototyping of functions. Documentation is found in source file. */
 
-void RTC_Initialize( uint16_t period,
-                     uint16_t count,
-                     uint16_t compareValue,
-                     RTC_PRESCALER_t prescaler);
-void RTC_SetOverflowIntLevel( RTC_OVFINTLVL_t intLevel );
-void RTC_SetCompareIntLevel( RTC_COMPINTLVL_t intLevel );
-void RTC_SetIntLevels( RTC_OVFINTLVL_t ovfIntLevel,
-                       RTC_COMPINTLVL_t compIntLevel );
-void RTC_SetAlarm( uint16_t alarmTimeout );
-void RTC_SetPrescaler( RTC_PRESCALER_t prescaler );
-
+void RTC_Initialize(uint16_t period, uint16_t count, uint16_t compareValue, RTC_PRESCALER_t prescaler);
+void RTC_SetOverflowIntLevel(RTC_OVFINTLVL_t intLevel);
+void RTC_SetCompareIntLevel(RTC_COMPINTLVL_t intLevel);
+void RTC_SetIntLevels(RTC_OVFINTLVL_t ovfIntLevel, RTC_COMPINTLVL_t compIntLevel);
+void RTC_SetAlarm(uint16_t alarmTimeout);
+void RTC_SetPrescaler(RTC_PRESCALER_t prescaler);
 
 /*! This is the interrupt vector declaration. Copy it to your
  *  program code if you want to use it. Leave commented if it's not
  *  used to avoid overhead when compiling.
  *
-   ISR(RTC_COMP_vect)
-   {
-   }
+ ISR(RTC_COMP_vect)
+ {
+ }
 
-   ISR(RTC_OVF_vect)
-   {
-   }
+ ISR(RTC_OVF_vect)
+ {
+ }
  *
  */
 

@@ -74,8 +74,6 @@
  */
 #define PORT_SetDirection( _port, _directionMask) ( (_port)->DIR = _directionMask )
 
-
-
 /*! \brief Sets the data direction of a set of pins to output
  *
  *  This macro sets the data direction of the selected port pins to output
@@ -86,8 +84,6 @@
  *                       location n will configure pin n as output.
  */
 #define PORT_SetPinsAsOutput( _port, _outputMask ) ( (_port)->DIRSET = _outputMask )
-
-
 
 /*! \brief Sets the data direction of a set of pins to input
  *
@@ -100,8 +96,6 @@
  */
 #define PORT_SetPinsAsInput( _port, _inputMask) ( (_port)->DIRCLR = _inputMask )
 
-
-
 /*! \brief Toggle the data direction of a set of pins
  *
  *  This macro toggles the data direction of the selected port pins
@@ -111,8 +105,6 @@
  *  \param _toggleMask   A bit mask of the pins on which to toggle input direction.
  */
 #define PORT_ToggleDirection( _port, _toggleMask) ( (_port)->DIRTGL = _toggleMask )
-
-
 
 /*! \brief This macro sets the output value/logic level of all pins in the
  *         I/O port or virtual port.
@@ -125,8 +117,6 @@
  */
 #define PORT_SetOutputValue( _port, _outValue) ( (_port)->OUT = _outValue )
 
-
-
 /*! \brief Set the output value of a set of I/O pins to logic high.
  *
  *  This macro sets the output value of a set of I/O pins to logic high.
@@ -137,8 +127,6 @@
  *  \param _setMask      The bit mask of pins to set to logic high level.
  */
 #define PORT_SetPins( _port, _setMask) ( (_port)->OUTSET = _setMask )
-
-
 
 /*! \brief Set the output value of a set of I/O pins to logic low.
  *
@@ -151,8 +139,6 @@
  */
 #define PORT_ClearPins( _port, _clearMask) ( (_port)->OUTCLR = _clearMask )
 
-
-
 /*! \brief Toggle the output value of a set of I/O pins.
  *
  *  This macro toggles the output value of a set of I/O pins. It does not
@@ -163,8 +149,6 @@
  */
 #define PORT_TogglePins( _port, _toggleMask ) ( (_port)->OUTTGL = _toggleMask )
 
-
-
 /*! \brief This macro returns the current logic value of the port or virtual
  *         port.
  *
@@ -174,8 +158,6 @@
  *  \return          The current logic state of the port.
  */
 #define PORT_GetPortValue( _port ) ( (_port)->IN )
-
-
 
 /*! \brief This macro returns the current state of the interrupt flags, given by
  *         a bit mask, for an I/O port or a virtual port.
@@ -188,8 +170,6 @@
  */
 #define PORT_GetInterruptFlags( _port, _bitMask ) ( (_port)->INTFLAGS & _bitMask )
 
-
-
 /*! \brief This macro clears interrupt flags, given by a bit mask, for an I/O
  *         port or a virtual port.
  *
@@ -199,8 +179,6 @@
  *  \param _bitMask  Bit mask for interrupt flags to clear.
  */
 #define PORT_ClearInterruptFlags( _port, _bitMask ) ( (_port)->INTFLAGS = _bitMask )
-
-
 
 /*! \brief This macro sets a bit in the OUT register of an I/O port or virtual
  *         port.
@@ -213,8 +191,6 @@
  */
 #define PORT_SetOutputBit( _port, _bitPosition ) ( (_port)->OUT = (_port)->OUT | (1 << _bitPosition) )
 
-
-
 /*! \brief This macro clears a bit in the OUT register of an I/O port or virtual
  *         port.
  *
@@ -225,8 +201,6 @@
  *  \param _bitPosition  Position of bit to cleared.
  */
 #define PORT_ClearOutputBit( _port, _bitPosition ) ( (_port)->OUT = (_port)->OUT & ~(1 << _bitPosition) )
-
-
 
 /*! \brief This macro configures a pin in an I/O port or virtual port as an
  *         output.
@@ -239,8 +213,6 @@
  */
 #define PORT_SetPinAsOutput( _port, _bitPosition ) ( (_port)->DIR = (_port)->DIR | (1 << _bitPosition) )
 
-
-
 /*! \brief This macro configures a pin in an I/O port or virtual port as an
  *         input.
  *
@@ -252,29 +224,18 @@
  */
 #define PORT_SetPinAsInput( _port, _bitPosition ) ( (_port)->DIR = (_port)->DIR & ~(1 << _bitPosition) )
 
-
-
 /* Prototyping of functions. Documentation is found in source file. */
 
-void PORT_ConfigureInterrupt0( PORT_t * port,
-                               PORT_INT0LVL_t intLevel,
-                               uint8_t pinMask);
+void PORT_ConfigureInterrupt0(PORT_t * port, PORT_INT0LVL_t intLevel, uint8_t pinMask);
 
-void PORT_ConfigureInterrupt1( PORT_t * port,
-                               PORT_INT1LVL_t intLevel,
-                               uint8_t pinMask);
+void PORT_ConfigureInterrupt1(PORT_t * port, PORT_INT1LVL_t intLevel, uint8_t pinMask);
 
-void PORT_ConfigurePins( PORT_t * port,
-                         uint8_t pinMask,
-                         uint8_t slewRateEnable,
-                         uint8_t invertEnable,
-                         PORT_OPC_t opc,
-                         PORT_ISC_t isc);
+void PORT_ConfigurePins(PORT_t * port, uint8_t pinMask, uint8_t slewRateEnable, uint8_t invertEnable, PORT_OPC_t opc,
+        PORT_ISC_t isc);
 
 void PORT_MapVirtualPort0(PORTCFG_VP0MAP_t realPort);
 void PORT_MapVirtualPort1(PORTCFG_VP1MAP_t realPort);
 void PORT_MapVirtualPort2(PORTCFG_VP2MAP_t realPort);
 void PORT_MapVirtualPort3(PORTCFG_VP3MAP_t realPort);
-
 
 #endif

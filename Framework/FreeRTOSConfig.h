@@ -50,13 +50,11 @@
 #define INCLUDE_uxTaskGetStackHighWaterMark		1
 #define INCLUDE_xTaskGetCurrentTaskHandle 		1
 #define configUSE_MALLOC_FAILED_HOOK			1//0
-
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES 		0 //1
 #define configMAX_CO_ROUTINE_PRIORITIES ( 0 )//2
-
 /* Set the following definitions to 1 to include the API function, or zero
-to exclude the API function. */
+ to exclude the API function. */
 
 #define INCLUDE_vTaskPrioritySet		0
 #define INCLUDE_uxTaskPriorityGet		0
@@ -65,6 +63,5 @@ to exclude the API function. */
 #define INCLUDE_vTaskSuspend			0
 #define INCLUDE_vTaskDelayUntil			1
 #define INCLUDE_vTaskDelay				1
-
 
 #endif /* FREERTOS_CONFIG_H */

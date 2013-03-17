@@ -59,9 +59,7 @@
 #ifndef WDT_DRIVER_H
 #define WDT_DRIVER_H
 
-
 #include "avr_compiler.h"
-
 
 /* Definition of macros */
 
@@ -71,15 +69,14 @@
 /*! \brief This macro resets the Watchdog Timer. */
 #define WDT_Reset()	asm("wdr") //( watchdog_reset( ) )
 
-
 /* Prototypes of funtions. */
 
-void WDT_Enable( void );
-void WDT_EnableAndSetTimeout( WDT_PER_t period );
-void WDT_Disable( void );
-bool WDT_IsWindowModeEnabled( void );
-bool WDT_EnableWindowMode( void );
-bool WDT_EnableWindowModeAndSetTimeout( WDT_WPER_t period );
-void WDT_DisableWindowMode( void );
+void WDT_Enable(void);
+void WDT_EnableAndSetTimeout(WDT_PER_t period);
+void WDT_Disable(void);
+bool WDT_IsWindowModeEnabled(void);
+bool WDT_EnableWindowMode(void);
+bool WDT_EnableWindowModeAndSetTimeout(WDT_WPER_t period);
+void WDT_DisableWindowMode(void);
 
 #endif

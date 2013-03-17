@@ -50,7 +50,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
-
 /* Compiler definitions include file. */
 #include "avr_compiler.h"
 
@@ -66,41 +65,41 @@
 #include "CommandInterpreter.h"
 #include "CommandInterpreterTask.h"
 
-
 /* Utils includes. */
 
-
 void CommandInterpreterTask(void *pvParameters) {
-	//do a cast t local variable, because eclipse does not provide suggestions otherwise
-	CommandInterpreterTaskParameters * parameters = (CommandInterpreterTaskParameters *)pvParameters;
-	char receivedChar='#';
-	char * commandInput = (char *) pvPortMalloc( sizeof(char)*parameters->commandInputLen);
+    //do a cast t local variable, because eclipse does not provide suggestions otherwise
+    CommandInterpreterTaskParameters * parameters = (CommandInterpreterTaskParameters *) pvParameters;
+    char receivedChar = '#';
+    char * commandInput = (char *) pvPortMalloc(sizeof(char) * parameters->commandInputLen);
 
-	/* Task loops forever*/
-	for (;;) {
-		//Empty the string first
-		strcpy(commandInput,"");
-		// Wait until the first symbol unblocks the task
-		Usart_getByte(parameters->usart, &receivedChar,portMAX_DELAY);
-		strncat(commandInput,&receivedChar,1);
-		//Read string from queue, while data is available and put it into string
-		// This loop will be over, when there is either ; or \n is received, or queue is empty for 200 ms
-		while (Usart_getByte(parameters->usart, &receivedChar,200)) {
-			if (receivedChar == ';') break;
-			if (receivedChar == '\n') break;
-			strncat(commandInput,&receivedChar,1);
-		}
+    /* Task loops forever*/
+    for (;;) {
+        //Empty the string first
+        strcpy(commandInput, "");
+        // Wait until the first symbol unblocks the task
+        Usart_getByte(parameters->usart, &receivedChar, portMAX_DELAY);
+        strncat(commandInput, &receivedChar, 1);
+        //Read string from queue, while data is available and put it into string
+        // This loop will be over, when there is either ; or \n is received, or queue is empty for 200 ms
+        while (Usart_getByte(parameters->usart, &receivedChar, 200)) {
+            if (receivedChar == ';')
+                break;
+            if (receivedChar == '\n')
+                break;
+            strncat(commandInput, &receivedChar, 1);
+        }
 
-		CommandLineInterpreter_process(parameters->interpreter, (char*)commandInput,parameters->usart);
-	}
+        CommandLineInterpreter_process(parameters->interpreter, (char*) commandInput, parameters->usart);
+    }
 }
 
-void startCommandInterpreterTask (CommandLineInterpreter *interpreter, Usart *usart, char commandInputLen, char priority, xTaskHandle taskHandle)
-{
-	CommandInterpreterTaskParameters * parameters = pvPortMalloc(sizeof(CommandInterpreterTaskParameters));
-	parameters->interpreter = interpreter;
-	parameters->usart = usart;
-	parameters->commandInputLen = commandInputLen;
-	xTaskCreate(CommandInterpreterTask, (signed char*)"CMDTSK", 300,(void*)parameters, priority, taskHandle);
+void startCommandInterpreterTask(CommandLineInterpreter *interpreter, Usart *usart, char commandInputLen, char priority,
+        xTaskHandle taskHandle) {
+    CommandInterpreterTaskParameters * parameters = pvPortMalloc(sizeof(CommandInterpreterTaskParameters));
+    parameters->interpreter = interpreter;
+    parameters->usart = usart;
+    parameters->commandInputLen = commandInputLen;
+    xTaskCreate(CommandInterpreterTask, (signed char*)"CMDTSK", 300, (void*)parameters, priority, taskHandle);
 }
 

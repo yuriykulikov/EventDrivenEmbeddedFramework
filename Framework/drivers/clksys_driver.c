@@ -74,53 +74,54 @@
  *  \param address A pointer to the address to write to.
  *  \param value   The value to put in to the register.
  */
-void CCPWrite( volatile uint8_t * address, uint8_t value )
-{
+void CCPWrite(volatile uint8_t * address, uint8_t value) {
 #ifdef __ICCAVR__
 
-	// Store global interrupt setting in scratch register and disable interrupts.
-        asm("in  R1, 0x3F \n"
-	    "cli"
-	    );
+    // Store global interrupt setting in scratch register and disable interrupts.
+    asm("in  R1, 0x3F \n"
+            "cli"
+    );
 
-	// Move destination address pointer to Z pointer registers.
-	asm("movw r30, r16");
+    // Move destination address pointer to Z pointer registers.
+    asm("movw r30, r16");
 #ifdef RAMPZ
-	asm("ldi  R16, 0 \n"
+    asm("ldi  R16, 0 \n"
             "out  0x3B, R16"
-	    );
+    );
 
 #endif
-	asm("ldi  r16,  0xD8 \n"
-	    "out  0x34, r16  \n"
+    asm("ldi  r16,  0xD8 \n"
+            "out  0x34, r16  \n"
 #if (__MEMORY_MODEL__ == 1)
-	    "st     Z,  r17  \n");
+            "st     Z,  r17  \n");
 #elif (__MEMORY_MODEL__ == 2)
-	    "st     Z,  r18  \n");
+    "st     Z,  r18  \n");
 #else /* (__MEMORY_MODEL__ == 3) || (__MEMORY_MODEL__ == 5) */
-	    "st     Z,  r19  \n");
+    "st     Z,  r19  \n");
 #endif /* __MEMORY_MODEL__ */
 
-	// Restore global interrupt setting from scratch register.
-        asm("out  0x3F, R1");
+    // Restore global interrupt setting from scratch register.
+    asm("out  0x3F, R1");
 
 #elif defined __GNUC__
-	AVR_ENTER_CRITICAL_REGION( );
-	volatile uint8_t * tmpAddr = address;
+    AVR_ENTER_CRITICAL_REGION( )
+    ;
+    volatile uint8_t * tmpAddr = address;
 #ifdef RAMPZ
-	RAMPZ = 0;
+    RAMPZ = 0;
 #endif
-	asm volatile(
-		"movw r30,  %0"	      "\n\t"
-		"ldi  r16,  %2"	      "\n\t"
-		"out   %3, r16"	      "\n\t"
-		"st     Z,  %1"       "\n\t"
-		:
-		: "r" (tmpAddr), "r" (value), "M" (CCP_IOREG_gc), "i" (&CCP)
-		: "r16", "r30", "r31"
-		);
+    asm volatile(
+            "movw r30,  %0" "\n\t"
+            "ldi  r16,  %2" "\n\t"
+            "out   %3, r16" "\n\t"
+            "st     Z,  %1" "\n\t"
+            :
+            : "r" (tmpAddr), "r" (value), "M" (CCP_IOREG_gc), "i" (&CCP)
+            : "r16", "r30", "r31"
+    );
 
-	AVR_LEAVE_CRITICAL_REGION( );
+    AVR_LEAVE_CRITICAL_REGION( )
+    ;
 #endif
 }
 
@@ -138,15 +139,9 @@ void CCPWrite( volatile uint8_t * address, uint8_t value )
  *  \param  xoscModeSelection  Combined selection of oscillator type (or
  *                             external clock) and startup times.
  */
-void CLKSYS_XOSC_Config( OSC_FRQRANGE_t freqRange,
-                         bool lowPower32kHz,
-                         OSC_XOSCSEL_t xoscModeSelection )
-{
-	OSC.XOSCCTRL = (uint8_t) freqRange |
-	               ( lowPower32kHz ? OSC_X32KLPM_bm : 0 ) |
-	               xoscModeSelection;
+void CLKSYS_XOSC_Config(OSC_FRQRANGE_t freqRange, bool lowPower32kHz, OSC_XOSCSEL_t xoscModeSelection) {
+    OSC.XOSCCTRL = (uint8_t) freqRange | (lowPower32kHz ? OSC_X32KLPM_bm : 0) | xoscModeSelection;
 }
-
 
 /*! \brief This function configures the internal high-frequency PLL.
  *
@@ -164,12 +159,10 @@ void CLKSYS_XOSC_Config( OSC_FRQRANGE_t freqRange,
  *  \param  factor      PLL multiplication factor, must be
  *                      from 1 to 31, inclusive.
  */
-void CLKSYS_PLL_Config( OSC_PLLSRC_t clockSource, uint8_t factor )
-{
-	factor &= OSC_PLLFAC_gm;
-	OSC.PLLCTRL = (uint8_t) clockSource | ( factor << OSC_PLLFAC_gp );
+void CLKSYS_PLL_Config(OSC_PLLSRC_t clockSource, uint8_t factor) {
+    factor &= OSC_PLLFAC_gm;
+    OSC.PLLCTRL = (uint8_t) clockSource | (factor << OSC_PLLFAC_gp);
 }
-
 
 /*! \brief This function disables the selected oscillator.
  *
@@ -184,13 +177,11 @@ void CLKSYS_PLL_Config( OSC_PLLSRC_t clockSource, uint8_t factor )
  *
  *  \return  Non-zero if oscillator was disabled successfully.
  */
-uint8_t CLKSYS_Disable( uint8_t oscSel )
-{
-	OSC.CTRL &= ~oscSel;
-	uint8_t clkEnabled = OSC.CTRL & oscSel;
-	return clkEnabled;
+uint8_t CLKSYS_Disable(uint8_t oscSel) {
+    OSC.CTRL &= ~oscSel;
+    uint8_t clkEnabled = OSC.CTRL & oscSel;
+    return clkEnabled;
 }
-
 
 /*! \brief This function changes the prescaler configuration.
  *
@@ -203,13 +194,10 @@ uint8_t CLKSYS_Disable( uint8_t oscSel )
  *  \param  PSBCfactor  Prescaler B and C division factor, in the combination
  *                      of (1,1), (1,2), (4,1) or (2,2).
  */
-void CLKSYS_Prescalers_Config( CLK_PSADIV_t PSAfactor,
-                               CLK_PSBCDIV_t PSBCfactor )
-{
-	uint8_t PSconfig = (uint8_t) PSAfactor | PSBCfactor;
-	CCPWrite( &CLK.PSCTRL, PSconfig );
+void CLKSYS_Prescalers_Config(CLK_PSADIV_t PSAfactor, CLK_PSBCDIV_t PSBCfactor) {
+    uint8_t PSconfig = (uint8_t) PSAfactor | PSBCfactor;
+    CCPWrite(&CLK.PSCTRL, PSconfig);
 }
-
 
 /*! \brief This function selects the main system clock source.
  *
@@ -222,14 +210,12 @@ void CLKSYS_Prescalers_Config( CLK_PSADIV_t PSAfactor,
  *
  *  \return  Non-zero if change was successful.
  */
-uint8_t CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_t clockSource )
-{
-	uint8_t clkCtrl = ( CLK.CTRL & ~CLK_SCLKSEL_gm ) | clockSource;
-	CCPWrite( &CLK.CTRL, clkCtrl );
-	clkCtrl = ( CLK.CTRL & clockSource );
-	return clkCtrl;
+uint8_t CLKSYS_Main_ClockSource_Select(CLK_SCLKSEL_t clockSource) {
+    uint8_t clkCtrl = (CLK.CTRL & ~CLK_SCLKSEL_gm) | clockSource;
+    CCPWrite(&CLK.CTRL, clkCtrl);
+    clkCtrl = (CLK.CTRL & clockSource);
+    return clkCtrl;
 }
-
 
 /*! \brief This function selects a Real-Time Counter clock source.
  *
@@ -238,13 +224,9 @@ uint8_t CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_t clockSource )
  *
  *  \param  clockSource  Clock source to use for the RTC.
  */
-void CLKSYS_RTC_ClockSource_Enable( CLK_RTCSRC_t clockSource )
-{
-	CLK.RTCCTRL = ( CLK.RTCCTRL & ~CLK_RTCSRC_gm ) |
-	              clockSource |
-	              CLK_RTCEN_bm;
+void CLKSYS_RTC_ClockSource_Enable(CLK_RTCSRC_t clockSource) {
+    CLK.RTCCTRL = (CLK.RTCCTRL & ~CLK_RTCSRC_gm) | clockSource | CLK_RTCEN_bm;
 }
-
 
 /*! \brief This function enables automatic calibration of the selected internal
  *         oscillator.
@@ -257,17 +239,14 @@ void CLKSYS_RTC_ClockSource_Enable( CLK_RTCSRC_t clockSource )
  *                       OSC_RC32MCREF_bm.
  *  \param  extReference True if external crystal should be used as reference.
  */
-void CLKSYS_AutoCalibration_Enable( uint8_t clkSource, bool extReference )
-{
-	OSC.DFLLCTRL = ( OSC.DFLLCTRL & ~clkSource ) |
-	               ( extReference ? clkSource : 0 );
-	if (clkSource == OSC_RC2MCREF_bm) {
-		DFLLRC2M.CTRL |= DFLL_ENABLE_bm;
-	} else if (clkSource == OSC_RC32MCREF_bm) {
-		DFLLRC32M.CTRL |= DFLL_ENABLE_bm;
-	}
+void CLKSYS_AutoCalibration_Enable(uint8_t clkSource, bool extReference) {
+    OSC.DFLLCTRL = (OSC.DFLLCTRL & ~clkSource) | (extReference ? clkSource : 0);
+    if (clkSource == OSC_RC2MCREF_bm) {
+        DFLLRC2M.CTRL |= DFLL_ENABLE_bm;
+    } else if (clkSource == OSC_RC32MCREF_bm) {
+        DFLLRC32M.CTRL |= DFLL_ENABLE_bm;
+    }
 }
-
 
 /*! \brief This function enables the External Oscillator Failure Detection
  *         (XOSCFD) feature.
@@ -277,11 +256,9 @@ void CLKSYS_AutoCalibration_Enable( uint8_t clkSource, bool extReference )
  *  any interrupt priorities and settings. Therefore, make sure that a handler
  *  is implemented for the XOSCF NMI when you enable it.
  */
-void CLKSYS_XOSC_FailureDetection_Enable( void )
-{
-	CCPWrite( &OSC.XOSCFAIL, ( OSC_XOSCFDIF_bm | OSC_XOSCFDEN_bm ) );
+void CLKSYS_XOSC_FailureDetection_Enable(void) {
+    CCPWrite(&OSC.XOSCFAIL, (OSC_XOSCFDIF_bm | OSC_XOSCFDEN_bm));
 }
-
 
 /*! \brief This function lock the entire clock system configuration.
  *
@@ -289,8 +266,7 @@ void CLKSYS_XOSC_FailureDetection_Enable( void )
  *  External Oscillator Failure Detections (XOSCFD) feature detects a failure
  *  and switches to internal 2MHz RC oscillator.
  */
-void CLKSYS_Configuration_Lock( void )
-{
-	CCPWrite( &CLK.LOCK, CLK_LOCK_bm );
+void CLKSYS_Configuration_Lock(void) {
+    CCPWrite(&CLK.LOCK, CLK_LOCK_bm);
 }
 

@@ -1,55 +1,55 @@
 /*
-    FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
+ FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
 
 
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS tutorial books are available in pdf and paperback.        *
-     *    Complete, revised, and edited pdf reference manuals are also       *
-     *    available.                                                         *
-     *                                                                       *
-     *    Purchasing FreeRTOS documentation will not only help you, by       *
-     *    ensuring you get running as quickly as possible and with an        *
-     *    in-depth knowledge of how to use FreeRTOS, it will also help       *
-     *    the FreeRTOS project to continue with its mission of providing     *
-     *    professional grade, cross platform, de facto standard solutions    *
-     *    for microcontrollers - completely free of charge!                  *
-     *                                                                       *
-     *    >>> See http://www.FreeRTOS.org/Documentation for details. <<<     *
-     *                                                                       *
-     *    Thank you for using FreeRTOS, and thank you for your support!      *
-     *                                                                       *
-    ***************************************************************************
+ ***************************************************************************
+ *                                                                       *
+ *    FreeRTOS tutorial books are available in pdf and paperback.        *
+ *    Complete, revised, and edited pdf reference manuals are also       *
+ *    available.                                                         *
+ *                                                                       *
+ *    Purchasing FreeRTOS documentation will not only help you, by       *
+ *    ensuring you get running as quickly as possible and with an        *
+ *    in-depth knowledge of how to use FreeRTOS, it will also help       *
+ *    the FreeRTOS project to continue with its mission of providing     *
+ *    professional grade, cross platform, de facto standard solutions    *
+ *    for microcontrollers - completely free of charge!                  *
+ *                                                                       *
+ *    >>> See http://www.FreeRTOS.org/Documentation for details. <<<     *
+ *                                                                       *
+ *    Thank you for using FreeRTOS, and thank you for your support!      *
+ *                                                                       *
+ ***************************************************************************
 
 
-    This file is part of the FreeRTOS distribution.
+ This file is part of the FreeRTOS distribution.
 
-    FreeRTOS is free software; you can redistribute it and/or modify it under
-    the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
-    >>>NOTE<<< The modification to the GPL is included to allow you to
-    distribute a combined work that includes FreeRTOS without being obliged to
-    provide the source code for proprietary components outside of the FreeRTOS
-    kernel.  FreeRTOS is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-    more details. You should have received a copy of the GNU General Public
-    License and the FreeRTOS license exception along with FreeRTOS; if not it
-    can be viewed here: http://www.freertos.org/a00114.html and also obtained
-    by writing to Richard Barry, contact details for whom are available on the
-    FreeRTOS WEB site.
+ FreeRTOS is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License (version 2) as published by the
+ Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
+ >>>NOTE<<< The modification to the GPL is included to allow you to
+ distribute a combined work that includes FreeRTOS without being obliged to
+ provide the source code for proprietary components outside of the FreeRTOS
+ kernel.  FreeRTOS is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ more details. You should have received a copy of the GNU General Public
+ License and the FreeRTOS license exception along with FreeRTOS; if not it
+ can be viewed here: http://www.freertos.org/a00114.html and also obtained
+ by writing to Richard Barry, contact details for whom are available on the
+ FreeRTOS WEB site.
 
-    1 tab == 4 spaces!
+ 1 tab == 4 spaces!
 
-    http://www.FreeRTOS.org - Documentation, latest information, license and
-    contact details.
+ http://www.FreeRTOS.org - Documentation, latest information, license and
+ contact details.
 
-    http://www.SafeRTOS.com - A version that is certified for use in safety
-    critical systems.
+ http://www.SafeRTOS.com - A version that is certified for use in safety
+ critical systems.
 
-    http://www.OpenRTOS.com - Commercial support, development, porting,
-    licensing and training services.
-*/
+ http://www.OpenRTOS.com - Commercial support, development, porting,
+ licensing and training services.
+ */
 
 /*
  * This is the list implementation used by the scheduler.  While it is tailored
@@ -79,7 +79,6 @@
  * \ingroup FreeRTOSIntro
  */
 
-
 #ifndef LIST_H
 #define LIST_H
 
@@ -89,32 +88,29 @@ extern "C" {
 /*
  * Definition of the only type of object that a list can contain.
  */
-struct xLIST_ITEM
-{
-	portTickType xItemValue;				/*< The value being listed.  In most cases this is used to sort the list in descending order. */
-	volatile struct xLIST_ITEM * pxNext;	/*< Pointer to the next xListItem in the list. */
-	volatile struct xLIST_ITEM * pxPrevious;/*< Pointer to the previous xListItem in the list. */
-	void * pvOwner;							/*< Pointer to the object (normally a TCB) that contains the list item.  There is therefore a two way link between the object containing the list item and the list item itself. */
-	void * pvContainer;						/*< Pointer to the list in which this list item is placed (if any). */
+struct xLIST_ITEM {
+    portTickType xItemValue; /*< The value being listed.  In most cases this is used to sort the list in descending order. */
+    volatile struct xLIST_ITEM * pxNext; /*< Pointer to the next xListItem in the list. */
+    volatile struct xLIST_ITEM * pxPrevious;/*< Pointer to the previous xListItem in the list. */
+    void * pvOwner; /*< Pointer to the object (normally a TCB) that contains the list item.  There is therefore a two way link between the object containing the list item and the list item itself. */
+    void * pvContainer; /*< Pointer to the list in which this list item is placed (if any). */
 };
-typedef struct xLIST_ITEM xListItem;		/* For some reason lint wants this as two separate definitions. */
+typedef struct xLIST_ITEM xListItem; /* For some reason lint wants this as two separate definitions. */
 
-struct xMINI_LIST_ITEM
-{
-	portTickType xItemValue;
-	volatile struct xLIST_ITEM *pxNext;
-	volatile struct xLIST_ITEM *pxPrevious;
+struct xMINI_LIST_ITEM {
+    portTickType xItemValue;
+    volatile struct xLIST_ITEM *pxNext;
+    volatile struct xLIST_ITEM *pxPrevious;
 };
 typedef struct xMINI_LIST_ITEM xMiniListItem;
 
 /*
  * Definition of the type of queue used by the scheduler.
  */
-typedef struct xLIST
-{
-	volatile unsigned portBASE_TYPE uxNumberOfItems;
-	volatile xListItem * pxIndex;			/*< Used to walk through the list.  Points to the last item returned by a call to pvListGetOwnerOfNextEntry (). */
-	volatile xMiniListItem xListEnd;		/*< List item that contains the maximum possible item value meaning it is always at the end of the list and is therefore used as a marker. */
+typedef struct xLIST {
+    volatile unsigned portBASE_TYPE uxNumberOfItems;
+    volatile xListItem * pxIndex; /*< Used to walk through the list.  Points to the last item returned by a call to pvListGetOwnerOfNextEntry (). */
+    volatile xMiniListItem xListEnd; /*< List item that contains the maximum possible item value meaning it is always at the end of the list and is therefore used as a marker. */
 } xList;
 
 /*
@@ -200,7 +196,6 @@ xList * const pxConstList = ( pxList );													\
 	( pxTCB ) = ( pxConstList )->pxIndex->pvOwner;										\
 }
 
-
 /*
  * Access function to obtain the owner of the first entry in a list.  Lists
  * are normally sorted in ascending item value order.
@@ -241,7 +236,7 @@ xList * const pxConstList = ( pxList );													\
  * \page vListInitialise vListInitialise
  * \ingroup LinkedList
  */
-void vListInitialise( xList *pxList );
+void vListInitialise(xList *pxList);
 
 /*
  * Must be called before a list item is used.  This sets the list container to
@@ -252,7 +247,7 @@ void vListInitialise( xList *pxList );
  * \page vListInitialiseItem vListInitialiseItem
  * \ingroup LinkedList
  */
-void vListInitialiseItem( xListItem *pxItem );
+void vListInitialiseItem(xListItem *pxItem);
 
 /*
  * Insert a list item into a list.  The item will be inserted into the list in
@@ -265,7 +260,7 @@ void vListInitialiseItem( xListItem *pxItem );
  * \page vListInsert vListInsert
  * \ingroup LinkedList
  */
-void vListInsert( xList *pxList, xListItem *pxNewListItem );
+void vListInsert(xList *pxList, xListItem *pxNewListItem);
 
 /*
  * Insert a list item into a list.  The item will be inserted in a position
@@ -286,7 +281,7 @@ void vListInsert( xList *pxList, xListItem *pxNewListItem );
  * \page vListInsertEnd vListInsertEnd
  * \ingroup LinkedList
  */
-void vListInsertEnd( xList *pxList, xListItem *pxNewListItem );
+void vListInsertEnd(xList *pxList, xListItem *pxNewListItem);
 
 /*
  * Remove an item from a list.  The list item has a pointer to the list that
@@ -298,7 +293,7 @@ void vListInsertEnd( xList *pxList, xListItem *pxNewListItem );
  * \page vListRemove vListRemove
  * \ingroup LinkedList
  */
-void vListRemove( xListItem *pxItemToRemove );
+void vListRemove(xListItem *pxItemToRemove);
 
 #ifdef __cplusplus
 }

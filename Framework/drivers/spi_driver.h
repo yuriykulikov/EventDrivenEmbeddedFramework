@@ -43,16 +43,16 @@
  * @attention  Interact with this struct only using functions.
  */
 typedef struct MasterDefinition {
-	/** Pointer to what module to use. */
-	SPI_t *module;
-	//Master specific fields
-	/** Used to prevent several tasks from using SPI module simultaneously */
-	xSemaphoreHandle mutex;
-	/** Used to synchronize task with interrupts*/
+    /** Pointer to what module to use. */
+    SPI_t *module;
+    //Master specific fields
+    /** Used to prevent several tasks from using SPI module simultaneously */
+    xSemaphoreHandle mutex;
+    /** Used to synchronize task with interrupts*/
 //	xSemaphoreHandle semaphore;
-	/** Pointer to data to transmit */
+    /** Pointer to data to transmit */
 //	const uint8_t *transmitData;
-	/** Pointer to receiving buffer */
+    /** Pointer to receiving buffer */
 //	volatile uint8_t *receiveData;
 //	volatile uint8_t bytesToTransceive;
 //	volatile uint8_t bytesTransceived;
@@ -66,11 +66,11 @@ typedef struct MasterDefinition {
  * @attention  Interact with this struct only using functions.
  */
 typedef struct MasterDeviceDefinition {
-	/** Spi structure to use */
-	SpiMaster *master;
-	//SS pin description
-	PORT_t *ssPort;
-	uint8_t ssPinMask;
+    /** Spi structure to use */
+    SpiMaster *master;
+    //SS pin description
+    PORT_t *ssPort;
+    uint8_t ssPinMask;
 } SpiDevice;
 
 /**
@@ -78,18 +78,18 @@ typedef struct MasterDeviceDefinition {
  * @attention  Interact with this struct only using functions.
  */
 typedef struct SpiSlaveDefinition {
-	/** Contents of this register are sent to the master when not transmitting data*/
-	uint8_t status;
-	/** Master out slave in commands queue */
-	xQueueHandle commandsQueue;
+    /** Contents of this register are sent to the master when not transmitting data*/
+    uint8_t status;
+    /** Master out slave in commands queue */
+    xQueueHandle commandsQueue;
 } SpiSlave;
 
 SpiMaster * SpiMaster_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, bool clk2x, SPI_PRESCALER_t clockDivision);
 SpiDevice * SpiMaster_initDevice(SpiMaster *master, PORT_t *ssPort, uint8_t ssPinMask);
 
-char SpiMaster_startTransmission (SpiDevice *device, int ticksToWait);
+char SpiMaster_startTransmission(SpiDevice *device, int ticksToWait);
 uint8_t SpiMaster_shiftByte(SpiDevice *master, uint8_t data);
-void SpiMaster_stopTransmission (SpiDevice *device);
+void SpiMaster_stopTransmission(SpiDevice *device);
 
 SpiSlave * SpiSlave_init(SPI_t *module, bool lsbFirst, SPI_MODE_t mode, uint8_t queueSize);
 

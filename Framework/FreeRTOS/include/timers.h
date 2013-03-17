@@ -1,62 +1,61 @@
 /*
-    FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
+ FreeRTOS V7.0.2 - Copyright (C) 2011 Real Time Engineers Ltd.
 
 
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS tutorial books are available in pdf and paperback.        *
-     *    Complete, revised, and edited pdf reference manuals are also       *
-     *    available.                                                         *
-     *                                                                       *
-     *    Purchasing FreeRTOS documentation will not only help you, by       *
-     *    ensuring you get running as quickly as possible and with an        *
-     *    in-depth knowledge of how to use FreeRTOS, it will also help       *
-     *    the FreeRTOS project to continue with its mission of providing     *
-     *    professional grade, cross platform, de facto standard solutions    *
-     *    for microcontrollers - completely free of charge!                  *
-     *                                                                       *
-     *    >>> See http://www.FreeRTOS.org/Documentation for details. <<<     *
-     *                                                                       *
-     *    Thank you for using FreeRTOS, and thank you for your support!      *
-     *                                                                       *
-    ***************************************************************************
+ ***************************************************************************
+ *                                                                       *
+ *    FreeRTOS tutorial books are available in pdf and paperback.        *
+ *    Complete, revised, and edited pdf reference manuals are also       *
+ *    available.                                                         *
+ *                                                                       *
+ *    Purchasing FreeRTOS documentation will not only help you, by       *
+ *    ensuring you get running as quickly as possible and with an        *
+ *    in-depth knowledge of how to use FreeRTOS, it will also help       *
+ *    the FreeRTOS project to continue with its mission of providing     *
+ *    professional grade, cross platform, de facto standard solutions    *
+ *    for microcontrollers - completely free of charge!                  *
+ *                                                                       *
+ *    >>> See http://www.FreeRTOS.org/Documentation for details. <<<     *
+ *                                                                       *
+ *    Thank you for using FreeRTOS, and thank you for your support!      *
+ *                                                                       *
+ ***************************************************************************
 
 
-    This file is part of the FreeRTOS distribution.
+ This file is part of the FreeRTOS distribution.
 
-    FreeRTOS is free software; you can redistribute it and/or modify it under
-    the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
-    >>>NOTE<<< The modification to the GPL is included to allow you to
-    distribute a combined work that includes FreeRTOS without being obliged to
-    provide the source code for proprietary components outside of the FreeRTOS
-    kernel.  FreeRTOS is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-    more details. You should have received a copy of the GNU General Public
-    License and the FreeRTOS license exception along with FreeRTOS; if not it
-    can be viewed here: http://www.freertos.org/a00114.html and also obtained
-    by writing to Richard Barry, contact details for whom are available on the
-    FreeRTOS WEB site.
+ FreeRTOS is free software; you can redistribute it and/or modify it under
+ the terms of the GNU General Public License (version 2) as published by the
+ Free Software Foundation AND MODIFIED BY the FreeRTOS exception.
+ >>>NOTE<<< The modification to the GPL is included to allow you to
+ distribute a combined work that includes FreeRTOS without being obliged to
+ provide the source code for proprietary components outside of the FreeRTOS
+ kernel.  FreeRTOS is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ more details. You should have received a copy of the GNU General Public
+ License and the FreeRTOS license exception along with FreeRTOS; if not it
+ can be viewed here: http://www.freertos.org/a00114.html and also obtained
+ by writing to Richard Barry, contact details for whom are available on the
+ FreeRTOS WEB site.
 
-    1 tab == 4 spaces!
+ 1 tab == 4 spaces!
 
-    http://www.FreeRTOS.org - Documentation, latest information, license and
-    contact details.
+ http://www.FreeRTOS.org - Documentation, latest information, license and
+ contact details.
 
-    http://www.SafeRTOS.com - A version that is certified for use in safety
-    critical systems.
+ http://www.SafeRTOS.com - A version that is certified for use in safety
+ critical systems.
 
-    http://www.OpenRTOS.com - Commercial support, development, porting,
-    licensing and training services.
-*/
-
+ http://www.OpenRTOS.com - Commercial support, development, porting,
+ licensing and training services.
+ */
 
 #ifndef TIMERS_H
 #define TIMERS_H
 
 #ifndef INC_FREERTOS_H
-	#error "include FreeRTOS.h must appear in source files before include timers.h"
+#error "include FreeRTOS.h must appear in source files before include timers.h"
 #endif
 
 #include "portable.h"
@@ -68,8 +67,8 @@ extern "C" {
 #endif
 
 /* IDs for commands that can be sent/received on the timer queue.  These are to
-be used solely through the macros that make up the public software timer API,
-as defined below. */
+ be used solely through the macros that make up the public software timer API,
+ as defined below. */
 #define tmrCOMMAND_START					0
 #define tmrCOMMAND_STOP						1
 #define tmrCOMMAND_CHANGE_PERIOD			2
@@ -79,7 +78,7 @@ as defined below. */
  * MACROS AND DEFINITIONS
  *----------------------------------------------------------*/
 
- /**
+/**
  * Type by which software timers are referenced.  For example, a call to
  * xTimerCreate() returns an xTimerHandle variable that can then be used to
  * reference the subject timer in calls to other software timer API functions
@@ -88,7 +87,7 @@ as defined below. */
 typedef void * xTimerHandle;
 
 /* Define the prototype to which timer callback functions must conform. */
-typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
+typedef void (*tmrTIMER_CALLBACK)(xTimerHandle xTimer);
 
 /**
  * xTimerHandle xTimerCreate( 	const signed char *pcTimerName,
@@ -218,7 +217,9 @@ typedef void (*tmrTIMER_CALLBACK)( xTimerHandle xTimer );
  *     for( ;; );
  * }
  */
-xTimerHandle xTimerCreate( const signed char *pcTimerName, portTickType xTimerPeriodInTicks, unsigned portBASE_TYPE uxAutoReload, void * pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction ) PRIVILEGED_FUNCTION;
+xTimerHandle xTimerCreate(const signed char *pcTimerName, portTickType xTimerPeriodInTicks,
+        unsigned portBASE_TYPE uxAutoReload, void * pvTimerID, tmrTIMER_CALLBACK pxCallbackFunction)
+                PRIVILEGED_FUNCTION;
 
 /**
  * void *pvTimerGetTimerID( xTimerHandle xTimer );
@@ -240,7 +241,7 @@ xTimerHandle xTimerCreate( const signed char *pcTimerName, portTickType xTimerPe
  *
  * See the xTimerCreate() API function example usage scenario.
  */
-void *pvTimerGetTimerID( xTimerHandle xTimer ) PRIVILEGED_FUNCTION;
+void *pvTimerGetTimerID(xTimerHandle xTimer) PRIVILEGED_FUNCTION;
 
 /**
  * portBASE_TYPE xTimerIsTimerActive( xTimerHandle xTimer );
@@ -275,8 +276,7 @@ void *pvTimerGetTimerID( xTimerHandle xTimer ) PRIVILEGED_FUNCTION;
  *         // xTimer is not active, do something else.
  *     }
  * }
- */
-portBASE_TYPE xTimerIsTimerActive( xTimerHandle xTimer ) PRIVILEGED_FUNCTION;
+ */portBASE_TYPE xTimerIsTimerActive(xTimerHandle xTimer) PRIVILEGED_FUNCTION;
 
 /**
  * xTimerGetTimerDaemonTaskHandle() is only available if 
@@ -285,7 +285,7 @@ portBASE_TYPE xTimerIsTimerActive( xTimerHandle xTimer ) PRIVILEGED_FUNCTION;
  * Simply returns the handle of the timer service/daemon task.  It it not valid
  * to call xTimerGetTimerDaemonTaskHandle() before the scheduler has been started.
  */
-xTaskHandle xTimerGetTimerDaemonTaskHandle( void );
+xTaskHandle xTimerGetTimerDaemonTaskHandle(void);
 
 /**
  * portBASE_TYPE xTimerStart( xTimerHandle xTimer, portTickType xBlockTime );
@@ -458,7 +458,7 @@ xTaskHandle xTimerGetTimerDaemonTaskHandle( void );
  *     }
  * }
  */
- #define xTimerChangePeriod( xTimer, xNewPeriod, xBlockTime ) xTimerGenericCommand( ( xTimer ), tmrCOMMAND_CHANGE_PERIOD, ( xNewPeriod ), NULL, ( xBlockTime ) )
+#define xTimerChangePeriod( xTimer, xNewPeriod, xBlockTime ) xTimerGenericCommand( ( xTimer ), tmrCOMMAND_CHANGE_PERIOD, ( xNewPeriod ), NULL, ( xBlockTime ) )
 
 /**
  * portBASE_TYPE xTimerDelete( xTimerHandle xTimer, portTickType xBlockTime );
@@ -927,14 +927,12 @@ xTaskHandle xTimerGetTimerDaemonTaskHandle( void );
 /*
  * Functions beyond this part are not part of the public API and are intended
  * for use by the kernel only.
- */
-portBASE_TYPE xTimerCreateTimerTask( void ) PRIVILEGED_FUNCTION;
-portBASE_TYPE xTimerGenericCommand( xTimerHandle xTimer, portBASE_TYPE xCommandID, portTickType xOptionalValue, portBASE_TYPE *pxHigherPriorityTaskWoken, portTickType xBlockTime ) PRIVILEGED_FUNCTION;
+ */portBASE_TYPE xTimerCreateTimerTask(void) PRIVILEGED_FUNCTION;
+portBASE_TYPE xTimerGenericCommand(xTimerHandle xTimer, portBASE_TYPE xCommandID, portTickType xOptionalValue,
+        portBASE_TYPE *pxHigherPriorityTaskWoken, portTickType xBlockTime) PRIVILEGED_FUNCTION;
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* TIMERS_H */
-
-
 

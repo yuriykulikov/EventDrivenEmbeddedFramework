@@ -58,7 +58,6 @@
 
 #include "rtc_driver.h"
 
-
 /*! \brief This function initializes the RTC with period, initial count,
  *         compare value and clock prescaler.
  *
@@ -71,37 +70,28 @@
  *  \param compareValue   Compare value.
  *  \param prescaler      Clock prescaler setting.
  */
-void RTC_Initialize( uint16_t period,
-                     uint16_t count,
-                     uint16_t compareValue,
-                     RTC_PRESCALER_t prescaler )
-{
-	RTC.PER = period - 1;
-	RTC.CNT = count;
-	RTC.COMP = compareValue;
-	RTC.CTRL = ( RTC.CTRL & ~RTC_PRESCALER_gm ) | prescaler;
+void RTC_Initialize(uint16_t period, uint16_t count, uint16_t compareValue, RTC_PRESCALER_t prescaler) {
+    RTC.PER = period - 1;
+    RTC.CNT = count;
+    RTC.COMP = compareValue;
+    RTC.CTRL = (RTC.CTRL & ~RTC_PRESCALER_gm) | prescaler;
 }
-
 
 /*! \brief This function sets the RTC overflow interrupt level.
  *
  *  \param intLevel The overflow interrupt level.
  */
-void RTC_SetOverflowIntLevel( RTC_OVFINTLVL_t intLevel )
-{
-	RTC.INTCTRL = ( RTC.INTCTRL & ~RTC_OVFINTLVL_gm ) | intLevel;
+void RTC_SetOverflowIntLevel(RTC_OVFINTLVL_t intLevel) {
+    RTC.INTCTRL = (RTC.INTCTRL & ~RTC_OVFINTLVL_gm) | intLevel;
 }
-
 
 /*! \brief This function sets the RTC compare interrupt level.
  *
  *  \param intLevel The compare interrupt level.
  */
-void RTC_SetCompareIntLevel( RTC_COMPINTLVL_t intLevel )
-{
-	RTC.INTCTRL = ( RTC.INTCTRL & ~RTC_COMPINTLVL_gm ) | intLevel;
+void RTC_SetCompareIntLevel(RTC_COMPINTLVL_t intLevel) {
+    RTC.INTCTRL = (RTC.INTCTRL & ~RTC_COMPINTLVL_gm) | intLevel;
 }
-
 
 /*! \brief This function sets both compare and overflow interrupt levels in
  *         one go.
@@ -109,15 +99,9 @@ void RTC_SetCompareIntLevel( RTC_COMPINTLVL_t intLevel )
  *  \param ovfIntLevel  The overflow interrupt level.
  *  \param compIntLevel The compare interrupt level.
  */
-void RTC_SetIntLevels( RTC_OVFINTLVL_t ovfIntLevel,
-                       RTC_COMPINTLVL_t compIntLevel )
-{
-	RTC.INTCTRL = ( RTC.INTCTRL &
-	              ~( RTC_COMPINTLVL_gm | RTC_OVFINTLVL_gm ) ) |
-	              ovfIntLevel |
-	              compIntLevel;
+void RTC_SetIntLevels(RTC_OVFINTLVL_t ovfIntLevel, RTC_COMPINTLVL_t compIntLevel) {
+    RTC.INTCTRL = (RTC.INTCTRL & ~(RTC_COMPINTLVL_gm | RTC_OVFINTLVL_gm)) | ovfIntLevel | compIntLevel;
 }
-
 
 /*! \brief This function sets a timeout alarm.
  *
@@ -134,20 +118,18 @@ void RTC_SetIntLevels( RTC_OVFINTLVL_t ovfIntLevel,
  *
  *  \param alarmTimeout Timeout time in RTC clock cycles (scaled).
  */
-void RTC_SetAlarm( uint16_t alarmTimeout )
-{
-	/* Calculate compare time. */
-	uint16_t compareValue = RTC.CNT + alarmTimeout;
+void RTC_SetAlarm(uint16_t alarmTimeout) {
+    /* Calculate compare time. */
+    uint16_t compareValue = RTC.CNT + alarmTimeout;
 
-	/* Wrap on period. */
-	if (compareValue > RTC.PER){
-		compareValue -= RTC.PER;
-	}
+    /* Wrap on period. */
+    if (compareValue > RTC.PER) {
+        compareValue -= RTC.PER;
+    }
 
-	/* Add the timeout value to get the absolute time of the alarm. */
-	RTC.COMP = compareValue;
+    /* Add the timeout value to get the absolute time of the alarm. */
+    RTC.COMP = compareValue;
 }
-
 
 /*! \brief This function sets a new RTC clock prescaler value.
  *
@@ -156,7 +138,6 @@ void RTC_SetAlarm( uint16_t alarmTimeout )
  *
  *  \param prescaler Clock prescaler setting.
  */
-void RTC_SetPrescaler( RTC_PRESCALER_t prescaler )
-{
-	RTC.CTRL = ( RTC.CTRL & ~RTC_PRESCALER_gm ) | prescaler;
+void RTC_SetPrescaler(RTC_PRESCALER_t prescaler) {
+    RTC.CTRL = (RTC.CTRL & ~RTC_PRESCALER_gm) | prescaler;
 }

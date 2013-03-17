@@ -61,7 +61,6 @@
 
 #include "avr_compiler.h"
 
-
 /* Definitions of macros. */
 
 /*! \brief This macro enables the selected oscillator.
@@ -104,21 +103,16 @@
  */
 #define CLKSYS_AutoCalibration_Disable( _clk ) ( (_clk).CTRL &= ~DFLL_ENABLE_bm )
 
-
 /* Prototyping of function. Detailed information is found in source file. */
-void CCPWrite( volatile uint8_t * address, uint8_t value );
-void CLKSYS_XOSC_Config( OSC_FRQRANGE_t freqRange,
-                         bool lowPower32kHz,
-                         OSC_XOSCSEL_t xoscModeSelection );
-void CLKSYS_PLL_Config( OSC_PLLSRC_t clockSource, uint8_t factor );
-uint8_t CLKSYS_Disable( uint8_t oscSel );
-void CLKSYS_Prescalers_Config( CLK_PSADIV_t PSAfactor,
-                               CLK_PSBCDIV_t PSBCfactor );
-uint8_t CLKSYS_Main_ClockSource_Select( CLK_SCLKSEL_t clockSource );
-void CLKSYS_RTC_ClockSource_Enable( CLK_RTCSRC_t clockSource );
-void CLKSYS_AutoCalibration_Enable( uint8_t clkSource, bool extReference );
-void CLKSYS_XOSC_FailureDetection_Enable( void );
-void CLKSYS_Configuration_Lock( void );
-
+void CCPWrite(volatile uint8_t * address, uint8_t value);
+void CLKSYS_XOSC_Config(OSC_FRQRANGE_t freqRange, bool lowPower32kHz, OSC_XOSCSEL_t xoscModeSelection);
+void CLKSYS_PLL_Config(OSC_PLLSRC_t clockSource, uint8_t factor);
+uint8_t CLKSYS_Disable(uint8_t oscSel);
+void CLKSYS_Prescalers_Config(CLK_PSADIV_t PSAfactor, CLK_PSBCDIV_t PSBCfactor);
+uint8_t CLKSYS_Main_ClockSource_Select(CLK_SCLKSEL_t clockSource);
+void CLKSYS_RTC_ClockSource_Enable(CLK_RTCSRC_t clockSource);
+void CLKSYS_AutoCalibration_Enable(uint8_t clkSource, bool extReference);
+void CLKSYS_XOSC_FailureDetection_Enable(void);
+void CLKSYS_Configuration_Lock(void);
 
 #endif

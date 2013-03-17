@@ -68,35 +68,26 @@
 /*! \brief Enable low-level interrupts. */
 #define PMIC_EnableLowLevel() (PMIC.CTRL |= PMIC_LOLVLEN_bm)
 
-
 /*! \brief Disable low-level interrupts. */
 #define PMIC_DisableLowLevel() (PMIC.CTRL &= ~PMIC_LOLVLEN_bm)
-
 
 /*! \brief Enable medium-level interrupts. */
 #define PMIC_EnableMediumLevel() (PMIC.CTRL |= PMIC_MEDLVLEN_bm)
 
-
 /*! \brief Disable medium-level interrupts. */
 #define PMIC_DisableMediumLevel() (PMIC.CTRL &= ~PMIC_MEDLVLEN_bm)
-
 
 /*! \brief Enable high-level interrupts. */
 #define PMIC_EnableHighLevel() (PMIC.CTRL |= PMIC_HILVLEN_bm)
 
-
 /*! \brief Disable high-level interrupts. */
 #define PMIC_DisableHighLevel() (PMIC.CTRL &= ~PMIC_HILVLEN_bm)
-
 
 /*! \brief Enable round-robin scheduling for low-level interrupts. */
 #define	PMIC_EnableRoundRobin() (PMIC.CTRL |= PMIC_RREN_bm)
 
-
 /*! \brief Disable round-robin scheduling for low-level interrupts. */
 #define PMIC_DisableRoundRobin() (PMIC.CTRL &= ~PMIC_RREN_bm)
-
-
 
 /*! \brief Set interrupt priority for round-robin scheduling.
  *
@@ -111,15 +102,11 @@
  */
 #define PMIC_SetNextRoundRobinInterrupt(_vectorAddress) (PMIC.INTPRI = (_vectorAddress >> 2) - 1)
 
-
-
 /*! \brief Check if a high-level interrupt handler is currently executing.
  *
  *  \return  Non-zero if interrupt handler is executing. Zero otherwise.
  */
 #define PMIC_IsHighLevelExecuting() (PMIC.STATUS & PMIC_HILVLEX_bm)
-
-
 
 /*! \brief Check if a medium-level interrupt handler is currently executing.
  *
@@ -127,15 +114,11 @@
  */
 #define PMIC_IsMediumLevelExecuting() (PMIC.STATUS & PMIC_MEDLVLEX_bm)
 
-
-
 /*! \brief Check if a low-level interrupt handler is currently executing.
  *
  *  \return  Non-zero if interrupt handler is executing. Zero otherwise.
  */
 #define PMIC_IsLowLevelExecuting() (PMIC.STATUS & PMIC_LOLVLEX_bm)
-
-
 
 /*! \brief Check if an NMI handler is currently executing.
  *
@@ -143,11 +126,9 @@
  */
 #define PMIC_IsNMIExecuting() (PMIC.STATUS & PMIC_NMIEX_bm)
 
-
-
 /* Prototype of functions. */
 
-void PMIC_SetVectorLocationToBoot( void );
-void PMIC_SetVectorLocationToApplication( void );
+void PMIC_SetVectorLocationToBoot(void);
+void PMIC_SetVectorLocationToApplication(void);
 
 #endif

@@ -17,6 +17,6 @@
 /* File headers. */
 #include "LedEventProcessorTask.h"
 
-void startBlinkingLedTask (LedsEventQueue * ledGroupEventQueue, char cPriority, xTaskHandle taskHandle);
+void startBlinkingLedTask(LedsEventQueue * ledGroupEventQueue, char cPriority, xTaskHandle taskHandle);
 
 #endif /* BLINKINGLEDTASK_H_ */

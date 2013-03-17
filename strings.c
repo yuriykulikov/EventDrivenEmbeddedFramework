@@ -31,6 +31,7 @@ char Strings_BlinkCmdDesc[] PROGMEM = "Blinks the LED\n";
 char Strings_BlinkResp[] PROGMEM = "Blinking...\n";
 char Strings_BlinkCmdError[] PROGMEM = "blink error: no led assigned\n";
 // CommandInterpreter
-char Strings_InterpretorError[] PROGMEM = "Command not recognized.  Enter \"help\" to view a list of available commands.\n";
+char Strings_InterpretorError[] PROGMEM
+        = "Command not recognized.  Enter \"help\" to view a list of available commands.\n";
 char Strings_HelpCmd[] PROGMEM = "help";
 char Strings_HelpCmdDesc[] PROGMEM = "help: Lists all the registered commands\n";

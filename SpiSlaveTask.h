@@ -17,17 +17,15 @@
  *
  *****************************************************************************/
 
-
 #include "usart_driver_RTOS.h"
 #include "spi_driver.h"
 
 /** Used to pass arguments to the task */
-typedef struct SpiSlaveTaskParametersDefinition
-{
-	/** Pointer to SpiSlave to use */
-	SpiSlave * spiSlave;
-	/** Pointer to USART buffer to use */
-	Usart * usartBuffer;
+typedef struct SpiSlaveTaskParametersDefinition {
+    /** Pointer to SpiSlave to use */
+    SpiSlave * spiSlave;
+    /** Pointer to USART buffer to use */
+    Usart * usartBuffer;
 } SpiSlaveTaskParameters;
 void startSpiSlaveTask(SpiSlave * slave, Usart * usartBuffer, char cPriority, xTaskHandle taskHandle);
 

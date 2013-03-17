@@ -25,12 +25,13 @@
  * This struct is used to pass arguments to the task
  */
 typedef struct {
-	CommandLineInterpreter *interpreter;
-	/** Pointer to Usart software abstraction structure to use. */
-	Usart *usart;
-	size_t commandInputLen;
+    CommandLineInterpreter *interpreter;
+    /** Pointer to Usart software abstraction structure to use. */
+    Usart *usart;
+    size_t commandInputLen;
 
 } CommandInterpreterTaskParameters;
 
 // Prototyping of functions. Documentation is found in source file
-void startCommandInterpreterTask (CommandLineInterpreter *interpreter, Usart * usart, char commandInputLen, char priority, xTaskHandle taskHandle);
+void startCommandInterpreterTask(CommandLineInterpreter *interpreter, Usart * usart, char commandInputLen,
+        char priority, xTaskHandle taskHandle);
