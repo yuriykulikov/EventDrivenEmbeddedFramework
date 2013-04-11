@@ -80,7 +80,7 @@ typedef struct tmrTimerControl {
     unsigned portBASE_TYPE uxAutoReload; /*<< Set to pdTRUE if the timer should be automatically restarted once expired.  Set to pdFALSE if the timer is, in effect, a one shot timer. */
     void *pvTimerID; /*<< An ID to identify the timer.  This allows the timer to be identified when the same callback is used for multiple timers. */
     tmrTIMER_CALLBACK pxCallbackFunction; /*<< The function that will be called when the timer expires. */
-} xTIMER;
+}xTIMER;
 
 /* The definition of messages that can be sent and received on the timer
  queue. */
@@ -88,7 +88,7 @@ typedef struct tmrTimerQueueMessage {
     portBASE_TYPE xMessageID; /*<< The command being sent to the timer service task. */
     portTickType xMessageValue; /*<< An optional value used by a subset of commands, for example, when changing the period of a timer. */
     xTIMER * pxTimer; /*<< The timer to which the command will be applied. */
-} xTIMER_MESSAGE;
+}xTIMER_MESSAGE;
 
 /* The list in which active timers are stored.  Timers are referenced in expire
  time order, with the nearest expiry time at the front of the list.  Only the
@@ -189,7 +189,7 @@ portBASE_TYPE xTimerCreateTimerTask(void) {
         {
             /* Create the timer task without storing its handle. */
             xReturn =
-                    xTaskCreate( prvTimerTask, ( const signed char * ) "Tmr Svc", ( unsigned short ) configTIMER_TASK_STACK_DEPTH, NULL, ( unsigned portBASE_TYPE ) configTIMER_TASK_PRIORITY, NULL);
+            xTaskCreate( prvTimerTask, ( const signed char * ) "Tmr Svc", ( unsigned short ) configTIMER_TASK_STACK_DEPTH, NULL, ( unsigned portBASE_TYPE ) configTIMER_TASK_PRIORITY, NULL);
         }
 #endif
     }
@@ -295,7 +295,7 @@ static void prvProcessExpiredTimer(portTickType xNextExpireTime, portTickType xT
          switch lists due to a tick count overflow is already waiting in
          the timer queue. */
         if (prvInsertTimerInActiveList(pxTimer, (xNextExpireTime + pxTimer->xTimerPeriodInTicks), xTimeNow,
-                xNextExpireTime) == pdTRUE) {
+                        xNextExpireTime) == pdTRUE) {
             /* The timer expired before it was added to the active timer
              list.  Reload it now.  */
             xResult = xTimerGenericCommand(pxTimer, tmrCOMMAND_START, xNextExpireTime, NULL, tmrNO_DELAY);
@@ -345,37 +345,37 @@ static void prvProcessTimerOrBlockTask(portTickType xNextExpireTime, portBASE_TY
         xTimeNow = prvSampleTimeNow(&xTimerListsWereSwitched);
         if (xTimerListsWereSwitched == pdFALSE) {
             /* The tick count has not overflowed, has the timer expired? */
-            if ((xListWasEmpty == pdFALSE)&& ( xNextExpireTime <= xTimeNow ) ){
-            xTaskResumeAll();
-            prvProcessExpiredTimer( xNextExpireTime, xTimeNow );
+            if ((xListWasEmpty == pdFALSE)&& ( xNextExpireTime <= xTimeNow ) ) {
+                xTaskResumeAll();
+                prvProcessExpiredTimer( xNextExpireTime, xTimeNow );
+            }
+            else
+            {
+                /* The tick count has not overflowed, and the next expire
+                 time has not been reached yet.  This task should therefore
+                 block to wait for the next expire time or a command to be
+                 received - whichever comes first.  The following line cannot
+                 be reached unless xNextExpireTime > xTimeNow, except in the
+                 case when the current timer list is empty. */
+                vQueueWaitForMessageRestricted( xTimerQueue, ( xNextExpireTime - xTimeNow ) );
+
+                if( xTaskResumeAll() == pdFALSE )
+                {
+                    /* Yield to wait for either a command to arrive, or the block time
+                     to expire.  If a command arrived between the critical section being
+                     exited and this yield then the yield will not cause the task
+                     to block. */
+                    portYIELD_WITHIN_API();
+                }
+            }
         }
         else
         {
-            /* The tick count has not overflowed, and the next expire
-             time has not been reached yet.  This task should therefore
-             block to wait for the next expire time or a command to be
-             received - whichever comes first.  The following line cannot
-             be reached unless xNextExpireTime > xTimeNow, except in the
-             case when the current timer list is empty. */
-            vQueueWaitForMessageRestricted( xTimerQueue, ( xNextExpireTime - xTimeNow ) );
-
-            if( xTaskResumeAll() == pdFALSE )
-            {
-                /* Yield to wait for either a command to arrive, or the block time
-                 to expire.  If a command arrived between the critical section being
-                 exited and this yield then the yield will not cause the task
-                 to block. */
-                portYIELD_WITHIN_API();
-            }
+            xTaskResumeAll();
         }
     }
-    else
-    {
-        xTaskResumeAll();
-    }
 }
-}
-            /*-----------------------------------------------------------*/
+/*-----------------------------------------------------------*/
 
 static portTickType prvGetNextExpireTime(portBASE_TYPE *pxListWasEmpty) {
     portTickType xNextExpireTime;
@@ -476,10 +476,10 @@ static void prvProcessReceivedCommands(void) {
         traceTIMER_COMMAND_RECEIVED( pxTimer, xMessage.xMessageID, xMessage.xMessageValue );
 
         switch (xMessage.xMessageID) {
-        case tmrCOMMAND_START:
+            case tmrCOMMAND_START:
             /* Start or restart a timer. */
             if (prvInsertTimerInActiveList(pxTimer, xMessage.xMessageValue + pxTimer->xTimerPeriodInTicks, xTimeNow,
-                    xMessage.xMessageValue) == pdTRUE) {
+                            xMessage.xMessageValue) == pdTRUE) {
                 /* The timer expired before it was added to the active timer
                  list.  Process it now. */
                 pxTimer->pxCallbackFunction((xTimerHandle) pxTimer);
@@ -493,24 +493,24 @@ static void prvProcessReceivedCommands(void) {
             }
             break;
 
-        case tmrCOMMAND_STOP:
+            case tmrCOMMAND_STOP:
             /* The timer has already been removed from the active list.
              There is nothing to do here. */
             break;
 
-        case tmrCOMMAND_CHANGE_PERIOD:
+            case tmrCOMMAND_CHANGE_PERIOD:
             pxTimer->xTimerPeriodInTicks = xMessage.xMessageValue;
             configASSERT( ( pxTimer->xTimerPeriodInTicks > 0 ) );
             prvInsertTimerInActiveList(pxTimer, (xTimeNow + pxTimer->xTimerPeriodInTicks), xTimeNow, xTimeNow);
             break;
 
-        case tmrCOMMAND_DELETE:
+            case tmrCOMMAND_DELETE:
             /* The timer has already been removed from the active list,
              just free up the memory. */
             vPortFree(pxTimer);
             break;
 
-        default:
+            default:
             /* Don't expect to get here. */
             break;
         }

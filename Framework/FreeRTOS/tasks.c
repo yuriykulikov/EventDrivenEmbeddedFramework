@@ -90,19 +90,19 @@ typedef struct tskTaskControlBlock {
     signed char pcTaskName[configMAX_TASK_NAME_LEN];/*< Descriptive name given to the task when created.  Facilitates debugging only. */
 
 #if ( portSTACK_GROWTH > 0 )
-    portSTACK_TYPE *pxEndOfStack; /*< Used for stack overflow checking on architectures where the stack grows up from low memory. */
+portSTACK_TYPE *pxEndOfStack; /*< Used for stack overflow checking on architectures where the stack grows up from low memory. */
 #endif
 
 #if ( portCRITICAL_NESTING_IN_TCB == 1 )
-    unsigned portBASE_TYPE uxCriticalNesting;
+unsigned portBASE_TYPE uxCriticalNesting;
 #endif
 
 #if ( configUSE_TRACE_FACILITY == 1 )
-    unsigned portBASE_TYPE uxTCBNumber; /*< This is used for tracing the scheduler and making debugging easier only. */
+unsigned portBASE_TYPE uxTCBNumber; /*< This is used for tracing the scheduler and making debugging easier only. */
 #endif
 
 #if ( configUSE_MUTEXES == 1 )
-    unsigned portBASE_TYPE uxBasePriority; /*< The priority last assigned to the task - used by the priority inheritance mechanism. */
+unsigned portBASE_TYPE uxBasePriority; /*< The priority last assigned to the task - used by the priority inheritance mechanism. */
 #endif
 
 #if ( configUSE_APPLICATION_TASK_TAG == 1 )
@@ -128,7 +128,7 @@ PRIVILEGED_DATA tskTCB * volatile pxCurrentTCB = NULL;
 
 /* Lists for ready and blocked tasks. --------------------*/
 
-PRIVILEGED_DATA static xList pxReadyTasksLists[configMAX_PRIORITIES ]; /*< Prioritised ready tasks. */
+PRIVILEGED_DATA static xList pxReadyTasksLists[configMAX_PRIORITIES]; /*< Prioritised ready tasks. */
 PRIVILEGED_DATA static xList xDelayedTaskList1; /*< Delayed tasks. */
 PRIVILEGED_DATA static xList xDelayedTaskList2; /*< Delayed tasks (two lists are used - one for delays that have overflowed the current tick count. */
 PRIVILEGED_DATA static xList * volatile pxDelayedTaskList; /*< Points to the delayed task list currently being used. */
@@ -431,7 +431,7 @@ signed portBASE_TYPE xTaskGenericCreate(pdTASK_CODE pxTaskCode, const signed cha
 signed portBASE_TYPE xReturn;
 tskTCB * pxNewTCB;
 
-configASSERT( pxTaskCode ); configASSERT( ( uxPriority < configMAX_PRIORITIES ) );
+configASSERT( pxTaskCode );configASSERT( ( uxPriority < configMAX_PRIORITIES ) );
 
 /* Allocate the memory required by the TCB and stack for the new task,
  checking that the allocation was successful. */
@@ -1621,7 +1621,7 @@ if (uxSchedulerSuspended != (unsigned portBASE_TYPE ) pdFALSE) {
     }
 #endif
 
-    taskFIRST_CHECK_FOR_STACK_OVERFLOW(); taskSECOND_CHECK_FOR_STACK_OVERFLOW();
+    taskFIRST_CHECK_FOR_STACK_OVERFLOW();taskSECOND_CHECK_FOR_STACK_OVERFLOW();
 
     /* Find the highest priority queue that contains ready tasks. */
     while (listLIST_IS_EMPTY( &( pxReadyTasksLists[ uxTopReadyPriority ] ) )) {
@@ -1633,7 +1633,7 @@ if (uxSchedulerSuspended != (unsigned portBASE_TYPE ) pdFALSE) {
      same priority get an equal share of the processor time. */
     listGET_OWNER_OF_NEXT_ENTRY( pxCurrentTCB, &( pxReadyTasksLists[ uxTopReadyPriority ] ));
 
-    traceTASK_SWITCHED_IN(); vWriteTraceToBuffer();
+    traceTASK_SWITCHED_IN();vWriteTraceToBuffer();
 }
 }
 /*-----------------------------------------------------------*/
@@ -1770,7 +1770,7 @@ pxTimeOut->xTimeOnEntering = xTickCount;
 portBASE_TYPE xTaskCheckForTimeOut(xTimeOutType * const pxTimeOut, portTickType * const pxTicksToWait) {
 portBASE_TYPE xReturn;
 
-configASSERT( pxTimeOut ); configASSERT( pxTicksToWait );
+configASSERT( pxTimeOut );configASSERT( pxTicksToWait );
 
 taskENTER_CRITICAL()
 ;
@@ -1893,7 +1893,7 @@ pxTCB->pcTaskName[(unsigned short) configMAX_TASK_NAME_LEN - (unsigned short) 1]
 
 /* This is used as an array index so must ensure it's not too large.  First
  remove the privilege bit if one is present. */
-if (uxPriority >= configMAX_PRIORITIES ) {
+if (uxPriority >= configMAX_PRIORITIES) {
     uxPriority = configMAX_PRIORITIES - (unsigned portBASE_TYPE ) 1U;
 }
 
@@ -1968,7 +1968,7 @@ vPortStoreTaskMPUSettings( &( pxTCB->xMPUSettings ), xRegions, NULL, 0 );
 static void prvInitialiseTaskLists(void) {
 unsigned portBASE_TYPE uxPriority;
 
-for (uxPriority = (unsigned portBASE_TYPE ) 0U; uxPriority < configMAX_PRIORITIES ; uxPriority++) {
+for (uxPriority = (unsigned portBASE_TYPE ) 0U; uxPriority < configMAX_PRIORITIES; uxPriority++) {
     vListInitialise((xList *) &(pxReadyTasksLists[uxPriority]));
 }
 

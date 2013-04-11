@@ -1,11 +1,18 @@
-/**
- * strings.h
+/*
+ * Copyright (C) 2013 Yuriy Kulikov yuriy.kulikov.87@gmail.com
+ * Copyright (C) 2013 Alexey Serdyuk
  *
- * Contains strings, which have to be stored in the program space
- * (flash memory), in order to save precious RAM. Strings have to be
- * read using special functions found in <avr/pgmspace.h>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * See http://www.nongnu.org/avr-libc/user-manual/pgmspace.html
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 #include <avr/pgmspace.h>
 
@@ -32,6 +39,6 @@ char Strings_BlinkResp[] PROGMEM = "Blinking...\n";
 char Strings_BlinkCmdError[] PROGMEM = "blink error: no led assigned\n";
 // CommandInterpreter
 char Strings_InterpretorError[] PROGMEM
-        = "Command not recognized.  Enter \"help\" to view a list of available commands.\n";
+= "Command not recognized.  Enter \"help\" to view a list of available commands.\n";
 char Strings_HelpCmd[] PROGMEM = "help";
 char Strings_HelpCmdDesc[] PROGMEM = "help: Lists all the registered commands\n";

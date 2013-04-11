@@ -461,7 +461,7 @@ signed portBASE_TYPE xQueueGenericSend(xQueueHandle pxQueue, const void * const 
     signed portBASE_TYPE xEntryTimeSet = pdFALSE;
     xTimeOutType xTimeOut;
 
-    configASSERT( pxQueue ); configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
+    configASSERT( pxQueue );configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
 
     /* This function relaxes the coding standard somewhat to allow return
      statements within the function itself.  This is done in the interest
@@ -772,7 +772,7 @@ signed portBASE_TYPE xQueueGenericSendFromISR(xQueueHandle pxQueue, const void *
     signed portBASE_TYPE xReturn;
     unsigned portBASE_TYPE uxSavedInterruptStatus;
 
-    configASSERT( pxQueue ); configASSERT( pxHigherPriorityTaskWoken ); configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
+    configASSERT( pxQueue );configASSERT( pxHigherPriorityTaskWoken );configASSERT( !( ( pvItemToQueue == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
 
     /* Similar to xQueueGenericSend, except we don't block if there is no room
      in the queue.  Also we don't directly wake a task that was blocked on a
@@ -820,7 +820,7 @@ signed portBASE_TYPE xQueueGenericReceive(xQueueHandle pxQueue, void * const pvB
     xTimeOutType xTimeOut;
     signed char *pcOriginalReadPosition;
 
-    configASSERT( pxQueue ); configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
+    configASSERT( pxQueue );configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
 
     /* This function relaxes the coding standard somewhat to allow return
      statements within the function itself.  This is done in the interest
@@ -951,7 +951,7 @@ signed portBASE_TYPE xQueueReceiveFromISR(xQueueHandle pxQueue, void * const pvB
     signed portBASE_TYPE xReturn;
     unsigned portBASE_TYPE uxSavedInterruptStatus;
 
-    configASSERT( pxQueue ); configASSERT( pxTaskWoken ); configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
+    configASSERT( pxQueue );configASSERT( pxTaskWoken );configASSERT( !( ( pvBuffer == NULL ) && ( pxQueue->uxItemSize != ( unsigned portBASE_TYPE ) 0U ) ) );
 
     uxSavedInterruptStatus = portSET_INTERRUPT_MASK_FROM_ISR();
     {
@@ -1020,7 +1020,7 @@ unsigned portBASE_TYPE uxQueueMessagesWaitingFromISR(const xQueueHandle pxQueue)
 void vQueueDelete(xQueueHandle pxQueue) {
     configASSERT( pxQueue );
 
-    traceQUEUE_DELETE( pxQueue ); vQueueUnregisterQueue( pxQueue );
+    traceQUEUE_DELETE( pxQueue );vQueueUnregisterQueue( pxQueue );
     vPortFree(pxQueue->pcHead);
     vPortFree(pxQueue);
 }

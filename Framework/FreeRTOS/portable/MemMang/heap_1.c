@@ -78,7 +78,7 @@ static union xRTOS_HEAP {
 #else
     volatile unsigned long ulDummy;
 #endif	
-    unsigned char ucHeap[configTOTAL_HEAP_SIZE ];
+    unsigned char ucHeap[configTOTAL_HEAP_SIZE];
 } xHeap;
 
 static size_t xNextFreeByte = (size_t) 0;
@@ -99,14 +99,13 @@ void *pvPortMalloc(size_t xWantedSize) {
     vTaskSuspendAll();
     {
         /* Check there is enough room left for the allocation. */
-        if (((xNextFreeByte + xWantedSize) < configTOTAL_HEAP_SIZE )&&
-        ( ( xNextFreeByte + xWantedSize ) > xNextFreeByte ) )/* Check for overflow. */
-{        /* Return the next free byte then increment the index past this
+        if (((xNextFreeByte + xWantedSize) < configTOTAL_HEAP_SIZE) && ((xNextFreeByte + xWantedSize) > xNextFreeByte))/* Check for overflow. */
+        { /* Return the next free byte then increment the index past this
          block. */
-        pvReturn = &( xHeap.ucHeap[ xNextFreeByte ] );
-        xNextFreeByte += xWantedSize;
+            pvReturn = &(xHeap.ucHeap[xNextFreeByte]);
+            xNextFreeByte += xWantedSize;
+        }
     }
-}
     xTaskResumeAll();
 
 #if( configUSE_MALLOC_FAILED_HOOK == 1 )

@@ -68,7 +68,6 @@
 
 /*! \brief This macro resets the Watchdog Timer. */
 #define WDT_Reset()	asm("wdr") //( watchdog_reset( ) )
-
 /* Prototypes of funtions. */
 
 void WDT_Enable(void);

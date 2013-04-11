@@ -369,7 +369,6 @@ static void prvSetupTimerInterrupt(void);
     //pxTopOfStack--;
     //*pxTopOfStack = ( portSTACK_TYPE ) 0x3c;	/* 3c EIND */
     //pxTopOfStack--;
-
     /*lint +e950 +e611 +e923 */
 
     return pxTopOfStack;
@@ -467,9 +466,7 @@ ISR (TCC0_OVF_vect, ISR_NAKED) {
  * Tick ISR for the cooperative scheduler.  All this does is increment the
  * tick count.  We don't need to switch context, this can only be done by
  * manual calls to taskYIELD();
- */
-ISR (TCC0_OVF_vect, ISR_NAKED)
-{
+ */ISR (TCC0_OVF_vect, ISR_NAKED) {
     vTaskIncrementTick();
 }
 #endif
