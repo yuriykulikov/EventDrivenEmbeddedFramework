@@ -13,6 +13,7 @@
 #include "LedEventProcessorTask.h"
 #include "strings.h"
 
+//i think we need more comments
 void ExampleHandler_handleMessage(Message msg, void *handlerContext, Handler *handler) {
     //do a cast t local variable, because eclipse does not provide suggestions otherwise
     ExampleHandlerContext *context = (ExampleHandlerContext *) handlerContext;

@@ -17,12 +17,8 @@
  *
  *****************************************************************************/
 
-/* Compiler definitions include file. */
-#include "avr_compiler.h"
 
 /* Scheduler include files. */
-#include "FreeRTOS.h"
-#include "task.h"
 #include "queue.h"
 
 /* Task header file */
@@ -34,10 +30,10 @@
  * @param what
  */
 void Handler_sendEmptyMessage(Handler *handler, char what) {
-    Message msg;
+	static Message msg;
     msg.handler = handler;
     msg.what = what;
-    xQueueSend(handler->messageQueue, &msg, 2);
+    QueueMsgSend(handler->messageQueue, &msg);
 }
 /**
  * Post message with arguments
@@ -47,12 +43,12 @@ void Handler_sendEmptyMessage(Handler *handler, char what) {
  * @param arg2
  */
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2) {
-    Message msg;
+    static Message msg;
     msg.handler = handler;
     msg.what = what;
     msg.arg1 = arg1;
     msg.arg2 = arg2;
-    xQueueSend(handler->messageQueue, &msg, 2);
+    QueueMsgSend(handler->messageQueue, &msg);
 }
 /**
  * Post message with arguments and a pointer to allocated data
@@ -63,26 +59,27 @@ void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2) {
  * @param ptr
  */
 void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr) {
-    Message msg;
+	static Message msg;
     msg.handler = handler;
     msg.what = what;
     msg.arg1 = arg1;
     msg.arg2 = arg2;
     msg.ptr = ptr;
-    xQueueSend(handler->messageQueue, &msg, 2);
+    QueueMsgSend(handler->messageQueue, &msg);
 }
 
 /**
+ * FOR NOW HANDLERS WILL BE INITIALIZED IN COMPILATION STAGE
  * Creates a handler, which has to be bind to the looper task
  * @param looper
  * @param handleMessage
  * @param context
  */
-Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
-    // Pack input parameters into the structure and pass them to the task
-    Handler *handler = pvPortMalloc(sizeof(Handler));
-    handler->messageQueue = looper->messageQueue;
-    handler->handleMessage = handleMessage;
-    handler->context = context;
-    return handler;
-}
+//Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
+//    // Pack input parameters into the structure and pass them to the task
+//    Handler *handler = pvPortMalloc(sizeof(Handler));
+//    handler->messageQueue = looper->messageQueue;
+//    handler->handleMessage = handleMessage;
+//    handler->context = context;
+//    return handler;
+//}

@@ -19,14 +19,14 @@
 #ifndef HANDLER_H_
 #define HANDLER_H_
 /* Scheduler include files. */
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
-#include "Looper.h"
 
 typedef struct MESSAGE Message;
 typedef struct HANDLER Handler;
+typedef struct QUEUE Queue;
+
+#include "queue.h"
+#include "looper.h"
+
 /**
  * The prototype to which handleMessage functions used to process messages must comply.
  * @param msg - message to handle
@@ -37,8 +37,9 @@ typedef void (*HANDLE_MESSAGE_CALLBACK)(Message msg, void *context, Handler *han
 
 /** Struct represents handler */
 struct HANDLER {
-    /** Queue on which handler posts messages */
-    xQueueHandle messageQueue;
+    /** Pointer to queue on which handler posts messages */
+    Queue* messageQueue;
+    //Queue messageQueue;
     /** Function which handles messages*/
     HANDLE_MESSAGE_CALLBACK handleMessage;
     /** Execution context of current handler, handleMessage should cast it to something */
@@ -62,9 +63,24 @@ struct MESSAGE {
     void *ptr;
 };
 
+///**
+
+/**
+ * This structure represents a queue
+ */
+#define QUEUE_MAX_LEN 20
+struct QUEUE {
+    /** Array of messages */
+    Message MsgArray[QUEUE_MAX_LEN];
+    /** Queue top */
+    char qTop;
+    /** Queue tail */
+    char qTail;
+};
+
 /* Prototyping of functions. Documentation is found in source file. */
 
-Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
+//Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
 void Handler_sendEmptyMessage(Handler *handler, char what);
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
 void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr);
