@@ -30,6 +30,8 @@ typedef struct MSG_QUEUE MsgQueue;
 /** Pool of messages */
 static Message MsgArray[QUEUE_MAX_LEN];
 
+static uint16_t tick;
+
 struct MSG_QUEUE {
     Message *poolHead;
     Message *queueHead;
