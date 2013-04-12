@@ -14,9 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "queue.h"
+#include "MsgQueue.h"
 
-void QueueMsgSend(Queue* msgQueue, Message* msg) {
+void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize){
+    msgQueue->poolHead = poolHead;
+    msgQueue->queueHead = 0;
+}
+
+void MsgQueue_send(MsgQueue* msgQueue, Message* msg){
+    //TODO
     DISABLE_INTERRUPTS;
     if (msgQueue->qTop < QUEUE_MAX_LEN - 1)
         msgQueue->qTop++;
@@ -30,7 +36,9 @@ void QueueMsgSend(Queue* msgQueue, Message* msg) {
     ENABLE_INTERRUPTS;
 }
 
-Message* QueueMsgGet(Queue* msgQueue) {
+
+Message* MsgQueue_obtain(MsgQueue* msgQueue){
+    //TODO
     Message* this;
     this = &msgQueue->MsgArray[msgQueue->qTop];
     if (msgQueue->qTop != msgQueue->qTail) {
@@ -45,3 +53,12 @@ Message* QueueMsgGet(Queue* msgQueue) {
     return this;
 }
 
+
+void MsgQueue_recycle(MsgQueue* msgQueue, Message* msg){
+
+}
+
+
+void MsgQueue_processNextMessage(MsgQueue* msgQueue){
+
+}

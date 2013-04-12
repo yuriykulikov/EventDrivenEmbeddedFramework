@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-/* Scheduler include files. */
-#include "queue.h"
+#include "MsgQueue.h"
+#include "Handler.h"
 
-/* Task header file */
-#include "handler.h"
-#include <string.h>
 /**
  * Post empty message
  * @param handler
  * @param what
  */
 void Handler_sendEmptyMessage(Handler *handler, char what) {
-    static Message msg;
+    Message msg = MsgQueue_obtain(handler->messageQueue);
     msg.handler = handler;
     msg.what = what;
-    QueueMsgSend(handler->messageQueue, &msg);
+    MsgQueue_send(handler->messageQueue, &msg);
 }
 /**
  * Post message with arguments
@@ -40,12 +37,12 @@ void Handler_sendEmptyMessage(Handler *handler, char what) {
  * @param arg2
  */
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2) {
-    static Message msg;
+    Message msg = MsgQueue_obtain(handler->messageQueue);
     msg.handler = handler;
     msg.what = what;
     msg.arg1 = arg1;
     msg.arg2 = arg2;
-    QueueMsgSend(handler->messageQueue, &msg);
+    MsgQueue_send(handler->messageQueue, &msg);
 }
 /**
  * Post message with arguments and a pointer to allocated data
@@ -56,27 +53,23 @@ void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2) {
  * @param ptr
  */
 void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr) {
-    static Message msg;
+    Message msg = MsgQueue_obtain(handler->messageQueue);
     msg.handler = handler;
     msg.what = what;
     msg.arg1 = arg1;
     msg.arg2 = arg2;
     msg.ptr = ptr;
-    QueueMsgSend(handler->messageQueue, &msg);
+    MsgQueue_send(handler->messageQueue, &msg);
 }
 
 /**
- * FOR NOW HANDLERS WILL BE INITIALIZED IN COMPILATION STAGE
  * Creates a handler, which has to be bind to the looper task
  * @param looper
  * @param handleMessage
  * @param context
  */
-//Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
-//    // Pack input parameters into the structure and pass them to the task
-//    Handler *handler = pvPortMalloc(sizeof(Handler));
-//    handler->messageQueue = looper->messageQueue;
-//    handler->handleMessage = handleMessage;
-//    handler->context = context;
-//    return handler;
-//}
+void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
+    handler->messageQueue = msgQueue;
+    handler->handleMessage = handleMessage;
+    handler->context = context;
+}
