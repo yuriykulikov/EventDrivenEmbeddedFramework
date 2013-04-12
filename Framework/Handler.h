@@ -43,8 +43,10 @@ struct HANDLER {
 };
 
 void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
-void Handler_sendEmptyMessage(Handler *handler, char what);
+Message * Handler_obtain(Handler *handler, char what);
+void Handler_sendMessage(Handler *handler, Message * message);
+void Handler_sendMessageDelayed(Handler *handler, Message * message, uint16_t delay);
 void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
-void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr);
+void Handler_sendEmptyMessage(Handler *handler, char what);
 
 #endif /* HANDLER_H_ */
