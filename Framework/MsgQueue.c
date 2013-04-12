@@ -48,58 +48,64 @@
  * @enduml
  */
 
-
-void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize){
+void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize) {
     msgQueue->poolHead = poolHead;
     msgQueue->queueHead = 0;
 }
 
-void MsgQueue_send(MsgQueue* msgQueue, Message* msg){
+Message* MsgQueue_obtain(MsgQueue* msgQueue) {
+    //if the pool is emtpy, we will get a nullpointer, everything will fail, but this should never happen
+    Message *msg = msgQueue->poolHead;
+    msgQueue->poolHead->next;
+    return msg;
+}
+
+void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
     //TODO
     DISABLE_INTERRUPTS;
-    if (msgQueue->qTop < QUEUE_MAX_LEN - 1)
-        msgQueue->qTop++;
-    else
-        msgQueue->qTop = 0;
-    msgQueue->MsgArray[msgQueue->qTop].what = msg->what;
-    msgQueue->MsgArray[msgQueue->qTop].handler = msg->handler;
-    msgQueue->MsgArray[msgQueue->qTop].ptr = msg->ptr;
-    msgQueue->MsgArray[msgQueue->qTop].arg1 = msg->arg1;
-    msgQueue->MsgArray[msgQueue->qTop].arg2 = msg->arg2;
+    //allright this is tricky and not for an old guy like me.
+    //Besides my wife makes one hell of a LongIslandIcedTea :-)
+    //so I only put todos
+    Message *before;
+    Message *after;
+    //TODO loop through the queue to find an insertion placer using msg->due
+    //after this we will have 2 pointers: Message *before and Message *after
+    //one of these can be 0
+    if (before == 0) {
+        msgQueue->queueHead = msg;
+    } else {
+        before->next = msg;
+    }
+
+    if (after == 0) {
+        msg->next = 0;
+    } else {
+        msg->next = after;
+    }
     ENABLE_INTERRUPTS;
 }
 
-
-Message* MsgQueue_obtain(MsgQueue* msgQueue){
-    //TODO
-    //
-
-
-
-
-
-
-
-    Message* this;
-    this = &msgQueue->MsgArray[msgQueue->qTop];
-    if (msgQueue->qTop != msgQueue->qTail) {
-        msgQueue->MsgArray[msgQueue->qTail].what = 0;
-        if (msgQueue->qTail < QUEUE_MAX_LEN - 1)
-            msgQueue->qTail++;
-        else
-            msgQueue->qTail = 0;
-    } else
-        msgQueue->MsgArray[msgQueue->qTail].what = NULL_MSG;
-
-    return this;
+void MsgQueue_processNextMessage(MsgQueue* msgQueue) {
+    Message *msg = msgQueue->queueHead;
+    //if there is a message left in the queue
+    if (msg != 0) {
+        //if this is about time to handle
+        if (msg->due <= tick) {
+            //move the head
+            msgQueue->queueHead = msg->next;
+            Handler* handler = msg->handler;
+            //handle the message
+            handler->handleMessage(msg, handler->context, handler);
+            //recycle the message so that it will be placed back into the pool
+            MsgQueue_recycle(msgQueue, msg);
+        }
+    }
 }
 
-
-void MsgQueue_recycle(MsgQueue* msgQueue, Message* msg){
-
-}
-
-
-void MsgQueue_processNextMessage(MsgQueue* msgQueue){
-
+void MsgQueue_recycle(MsgQueue* msgQueue, Message* msg) {
+    //we have to put this mesasge back into the pool
+    //now this message will point to the old head
+    msg->next = msgQueue->poolHead;
+    //and the new head will point to this message
+    msgQueue->poolHead = msg;
 }
