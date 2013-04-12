@@ -16,6 +16,39 @@
  */
 #include "MsgQueue.h"
 
+/*
+ * @startuml
+ * Participant Client
+ * Participant Handler
+ * Participant Queue
+ * Participant main
+ *
+ * note over Queue: pool    head->[m1]->[m2]->[m3]->0\nqueue head->[m4]->[m5]->[m6]->0
+ * Client -> Handler : obtainMessage
+ * Handler -> Queue : obtainMessage
+ * Queue -> Queue : etract head from the pool, move the head
+ * note over Queue: pool    head->[m2]->[m3]->0\nqueue head->[m4]->[m5]->[m6]->0
+ * Queue-->Handler : [m1]
+ * Handler --> Client : [m1]
+ * Client -> Client : assign what, args
+ * Client -> Handler : sendMessage ( [m1] )
+ * Handler -> Handler : set due time to tick (to be handled immedeately)
+ * Handler -> Queue : send( [m1] )
+ * Queue -> Queue : insert the message, update head if required
+ * note over Queue: [m6] is due after the [m1], but [m5] and [m4] are due before
+ * note over Queue: pool    head->[m2]->[m3]->0\nqueue head->[m4]->[m5]-><b>[m1]</b>->[m6]->0
+ * ...some time passed - interrupt ...
+ * main -> Queue : processNextMessage
+ * Queue -> Queue : remove head from the queue
+ * note over Queue: pool    head->[m2]->[m3]->0\nqueue <b>head->[m5]</b>->[m1]->[m6]->0
+ * Queue->Handler : handleMessage( [m4] )
+ * Queue -> Queue : recycle the message
+ * note over Queue: pool    <b>head->[m4]</b>->[m2]->[m3]->0\nqueue head->[m5]->[m1]->[m6]->0
+ * Queue --> main
+ * @enduml
+ */
+
+
 void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize){
     msgQueue->poolHead = poolHead;
     msgQueue->queueHead = 0;
@@ -39,6 +72,14 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg){
 
 Message* MsgQueue_obtain(MsgQueue* msgQueue){
     //TODO
+    //
+
+
+
+
+
+
+
     Message* this;
     this = &msgQueue->MsgArray[msgQueue->qTop];
     if (msgQueue->qTop != msgQueue->qTail) {
