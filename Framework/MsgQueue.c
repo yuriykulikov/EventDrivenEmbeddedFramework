@@ -61,26 +61,32 @@ Message* MsgQueue_obtain(MsgQueue* msgQueue) {
 }
 
 void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
-    //TODO
     DISABLE_INTERRUPTS;
-    //allright this is tricky and not for an old guy like me.
-    //Besides my wife makes one hell of a LongIslandIcedTea :-)
-    //so I only put todos
-    Message *before;
-    Message *after;
-    //TODO loop through the queue to find an insertion placer using msg->due
-    //after this we will have 2 pointers: Message *before and Message *after
-    //one of these can be 0
-    if (before == 0) {
+    if (msgQueue->queueHead == 0) {
+        //if queue is empty, simply put the message into the queue
         msgQueue->queueHead = msg;
-    } else {
-        before->next = msg;
-    }
-
-    if (after == 0) {
+        //and there is no next message
         msg->next = 0;
     } else {
-        msg->next = after;
+        //traverse the queue looking for the insertion point
+        //here is a queue, due times in brackets.
+        //we have to put [300] into the [10][11][100][400]
+        //[10][11] previous = [100] next = [400], since next-> is more than 300
+        for (Message *previous = msgQueue->queueHead; previous != 0; previous = previous->next) {
+            Message *next = previous->next;
+            if (next == 0) {
+                //reached the end of queue, but our message is due later than the last message in the queue
+                previous->next = msg;
+                msg->next = 0;
+                break;
+            } else if (next->due > msg->due) {
+                //next message is due later than our message. We have to insert out message between the next and the previous
+                //here we use > and not >=, because of FIFO
+                previous->next = msg;
+                msg->next = next;
+                break;
+            }
+        }
     }
     ENABLE_INTERRUPTS;
 }
