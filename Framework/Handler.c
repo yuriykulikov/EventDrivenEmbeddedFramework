@@ -31,16 +31,16 @@ void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK 
 }
 
 Message * Handler_obtain(Handler *handler, char what) {
-    Message msg = MsgQueue_obtain(handler->messageQueue);
-    msg.handler = handler;
-    msg.what = what;
+    Message* msg = MsgQueue_obtain(handler->messageQueue);
+    msg->handler = handler;
+    msg->what = what;
     return msg;
 }
 
 void Handler_sendMessage(Handler *handler, Message * message) {
-    Handler_sendMessageDelayed(handler, 0);
+    Handler_sendMessageDelayed(handler, message, 0);
 }
-void Handler_sendMessageDelayed(Handler *handler, Message *message, uint16_t delay) {
+void Handler_sendMessageDelayed(Handler *handler, Message *message, unsigned delay) {
     message->due = tick + delay;
     MsgQueue_send(handler->messageQueue, message);
 }
@@ -51,6 +51,6 @@ void Handler_sendMessageDelayed(Handler *handler, Message *message, uint16_t del
  * @param what
  */
 void Handler_sendEmptyMessage(Handler *handler, char what) {
-    Message msg = Handler_obtain(handler, what);
-    Handler_sendMessage(handler, &msg);
+    Message* msg = Handler_obtain(handler, what);
+    Handler_sendMessage(handler, msg);
 }

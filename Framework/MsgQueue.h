@@ -30,7 +30,8 @@ typedef struct MSG_QUEUE MsgQueue;
 /** Pool of messages */
 static Message MsgArray[QUEUE_MAX_LEN];
 
-static uint16_t tick;
+//static unsigned tick;
+extern unsigned tick;
 
 struct MSG_QUEUE {
     Message *poolHead;
@@ -43,7 +44,7 @@ struct MSG_QUEUE {
  * @param poolHead
  * @param poolSize
  */
-void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize);
+void MsgQueue_init(MsgQueue* msgQueue, unsigned poolSize);
 
 /**
  * Put the message into the queue.

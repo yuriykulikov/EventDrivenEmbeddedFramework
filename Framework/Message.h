@@ -16,7 +16,6 @@
  */
 #ifndef MESSAGE_H_
 #define MESSAGE_H_
-typedef struct MESSAGE Message;
 
 typedef struct MESSAGE Message;
 typedef struct HANDLER Handler;
@@ -38,7 +37,7 @@ struct MESSAGE {
      * according to the message.what */
     void *ptr;
     /** Timestamp when the message is due to be handled.*/
-    uint16_t due;
+    unsigned due;
     /** Next message in the pool or in the queue*/
     Message *next;
 };

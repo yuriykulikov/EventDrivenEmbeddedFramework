@@ -17,12 +17,14 @@
 #ifndef HANDLER_H_
 #define HANDLER_H_
 
+#include "Message.h"
+#include "MsgQueue.h"
+
 typedef struct MESSAGE Message;
 typedef struct HANDLER Handler;
 typedef struct MSG_QUEUE MsgQueue;
 
-#include "Message.h"
-#include "MsgQueue.h"
+#define NULL_CONTEXT 0
 
 /**
  * The prototype to which handleMessage functions used to process messages must comply.
@@ -45,8 +47,7 @@ struct HANDLER {
 void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
 Message * Handler_obtain(Handler *handler, char what);
 void Handler_sendMessage(Handler *handler, Message * message);
-void Handler_sendMessageDelayed(Handler *handler, Message * message, uint16_t delay);
-void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
+void Handler_sendMessageDelayed(Handler *handler, Message * message, unsigned delay);
 void Handler_sendEmptyMessage(Handler *handler, char what);
 
 #endif /* HANDLER_H_ */

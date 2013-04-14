@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "MsgQueue.h"
-
+#include "../hal/hal.h"
 /*
  * @startuml
  * Participant Client
@@ -48,15 +48,21 @@
  * @enduml
  */
 
-void MsgQueue_init(MsgQueue* msgQueue, Message* poolHead, uint16_t poolSize) {
-    msgQueue->poolHead = poolHead;
+unsigned tick;
+
+void MsgQueue_init(MsgQueue* msgQueue, unsigned poolSize) {
+    msgQueue->poolHead = MsgArray;
     msgQueue->queueHead = 0;
+    MsgArray[0].next=&MsgArray[1];
+    int i;
+    for( i = 0; i<QUEUE_MAX_LEN-1; i++)
+    	MsgArray[i].next=&MsgArray[i+1];
 }
 
 Message* MsgQueue_obtain(MsgQueue* msgQueue) {
     //if the pool is emtpy, we will get a nullpointer, everything will fail, but this should never happen
     Message *msg = msgQueue->poolHead;
-    msgQueue->poolHead->next;
+    msgQueue->poolHead = msgQueue->poolHead->next;
     return msg;
 }
 
@@ -72,7 +78,8 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
         //here is a queue, due times in brackets.
         //we have to put [300] into the [10][11][100][400]
         //[10][11] previous = [100] next = [400], since next-> is more than 300
-        for (Message *previous = msgQueue->queueHead; previous != 0; previous = previous->next) {
+    	Message *previous;
+        for (previous = msgQueue->queueHead; previous != 0; previous = previous->next) {
             Message *next = previous->next;
             if (next == 0) {
                 //reached the end of queue, but our message is due later than the last message in the queue
@@ -101,7 +108,7 @@ void MsgQueue_processNextMessage(MsgQueue* msgQueue) {
             msgQueue->queueHead = msg->next;
             Handler* handler = msg->handler;
             //handle the message
-            handler->handleMessage(msg, handler->context, handler);
+            handler->handleMessage(*msg, handler->context, handler);
             //recycle the message so that it will be placed back into the pool
             MsgQueue_recycle(msgQueue, msg);
         }
