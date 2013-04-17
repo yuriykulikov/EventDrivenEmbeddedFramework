@@ -16,14 +16,15 @@
  */
 #ifndef HANDLER_H_
 #define HANDLER_H_
-/* Scheduler include files. */
+
+#include "Message.h"
+#include "MsgQueue.h"
 
 typedef struct MESSAGE Message;
 typedef struct HANDLER Handler;
-typedef struct QUEUE Queue;
+typedef struct MSG_QUEUE MsgQueue;
 
-#include "queue.h"
-#include "looper.h"
+#define NULL_CONTEXT 0
 
 /**
  * The prototype to which handleMessage functions used to process messages must comply.
@@ -36,51 +37,17 @@ typedef void (*HANDLE_MESSAGE_CALLBACK)(Message msg, void *context, Handler *han
 /** Struct represents handler */
 struct HANDLER {
     /** Pointer to queue on which handler posts messages */
-    Queue* messageQueue;
-    //Queue messageQueue;
+    MsgQueue* messageQueue;
     /** Function which handles messages*/
     HANDLE_MESSAGE_CALLBACK handleMessage;
     /** Execution context of current handler, handleMessage should cast it to something */
     void *context;
 };
 
-/**
- * This structure represents a message
- */
-struct MESSAGE {
-    /** Handler responsible for handling this message */
-    Handler *handler;
-    /** What message is about */
-    char what;
-    /** First argument */
-    char arg1;
-    /** First argument */
-    char arg2;
-    /** Pointer to the allocated memory. Handler should cast to the proper type,
-     * according to the message.what */
-    void *ptr;
-};
-
-///**
-
-/**
- * This structure represents a queue
- */
-#define QUEUE_MAX_LEN 20
-struct QUEUE {
-    /** Array of messages */
-    Message MsgArray[QUEUE_MAX_LEN];
-    /** Queue top */
-    char qTop;
-    /** Queue tail */
-    char qTail;
-};
-
-/* Prototyping of functions. Documentation is found in source file. */
-
-//Handler * Handler_create(Looper *looper, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
+void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
+Message * Handler_obtain(Handler *handler, char what);
+void Handler_sendMessage(Handler *handler, Message * message);
+void Handler_sendMessageDelayed(Handler *handler, Message * message, unsigned delay);
 void Handler_sendEmptyMessage(Handler *handler, char what);
-void Handler_sendMessage(Handler *handler, char what, char arg1, char arg2);
-void Handler_sendMessageWithPtr(Handler *handler, char what, char arg1, char arg2, void *ptr);
 
 #endif /* HANDLER_H_ */
