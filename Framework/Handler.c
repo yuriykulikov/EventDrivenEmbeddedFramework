@@ -18,12 +18,6 @@
 #include "MsgQueue.h"
 #include "Handler.h"
 
-/**
- * Creates a handler, which has to be bind to the looper task
- * @param looper
- * @param handleMessage
- * @param context
- */
 void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
     handler->messageQueue = msgQueue;
     handler->handleMessage = handleMessage;
@@ -40,17 +34,13 @@ Message * Handler_obtain(Handler *handler, char what) {
 void Handler_sendMessage(Handler *handler, Message * message) {
     Handler_sendMessageDelayed(handler, message, 0);
 }
-void Handler_sendMessageDelayed(Handler *handler, Message *message, unsigned delay) {
+
+void Handler_sendMessageDelayed(Handler *handler, Message *message, portLONG delay) {
     message->due = tick + delay;
     MsgQueue_send(handler->messageQueue, message);
 }
 
-/**
- * Post empty message
- * @param handler
- * @param what
- */
-void Handler_sendEmptyMessage(Handler *handler, char what) {
+void Handler_sendEmptyMessage(Handler *handler, portBASE_TYPE what) {
     Message* msg = Handler_obtain(handler, what);
     Handler_sendMessage(handler, msg);
 }

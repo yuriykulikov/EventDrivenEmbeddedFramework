@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 #include "MsgQueue.h"
-#include "../hal/hal.h"
+#include "portmacro.h"
 /*
  * @startuml
  * Participant Client
@@ -48,14 +48,13 @@
  * @enduml
  */
 
-unsigned tick;
+portLONG tick;
 
-void MsgQueue_init(MsgQueue* msgQueue, unsigned poolSize) {
+void MsgQueue_init(MsgQueue* msgQueue, portBASE_TYPE poolSize) {
     msgQueue->poolHead = MsgArray;
     msgQueue->queueHead = 0;
     MsgArray[0].next=&MsgArray[1];
-    int i;
-    for( i = 0; i<QUEUE_MAX_LEN-1; i++)
+    for(portBASE_TYPE i = 0; i<QUEUE_MAX_LEN-1; i++)
     	MsgArray[i].next=&MsgArray[i+1];
 }
 
@@ -67,7 +66,7 @@ Message* MsgQueue_obtain(MsgQueue* msgQueue) {
 }
 
 void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
-    DISABLE_INTERRUPTS;
+    portDISABLE_INTERRUPTS();
     if (msgQueue->queueHead == 0) {
         //if queue is empty, simply put the message into the queue
         msgQueue->queueHead = msg;
@@ -95,7 +94,7 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
             }
         }
     }
-    ENABLE_INTERRUPTS;
+    portENABLE_INTERRUPTS();
 }
 
 void MsgQueue_processNextMessage(MsgQueue* msgQueue) {

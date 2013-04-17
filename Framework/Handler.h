@@ -45,9 +45,9 @@ struct HANDLER {
 };
 
 void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context);
-Message * Handler_obtain(Handler *handler, char what);
+Message * Handler_obtain(Handler *handler, portBASE_TYPE what);
 void Handler_sendMessage(Handler *handler, Message * message);
-void Handler_sendMessageDelayed(Handler *handler, Message * message, unsigned delay);
-void Handler_sendEmptyMessage(Handler *handler, char what);
+void Handler_sendMessageDelayed(Handler *handler, Message * message, unsigned portLONG);
+void Handler_sendEmptyMessage(Handler *handler, portBASE_TYPE what);
 
 #endif /* HANDLER_H_ */

@@ -28,16 +28,16 @@ struct MESSAGE {
     /** Handler responsible for handling this message */
     Handler *handler;
     /** What message is about */
-    char what;
+    portBASE_TYPE what;
     /** First argument */
-    char arg1;
+    portBASE_TYPE arg1;
     /** First argument */
-    char arg2;
+    portBASE_TYPE arg2;
     /** Pointer to the allocated memory. Handler should cast to the proper type,
      * according to the message.what */
     void *ptr;
     /** Timestamp when the message is due to be handled.*/
-    unsigned due;
+    portLONG due;
     /** Next message in the pool or in the queue*/
     Message *next;
 };
