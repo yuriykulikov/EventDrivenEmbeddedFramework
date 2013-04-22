@@ -53,11 +53,15 @@ struct MESSAGE {
     portBASE_TYPE what;
     /** First argument */
     portBASE_TYPE arg1;
+#ifdef MESSAGE_ARG2
     /** First argument */
     portBASE_TYPE arg2;
+#endif
+#ifdef MESSAGE_PTR
     /** Pointer to the allocated memory. Handler should cast to the proper type,
      * according to the message.what */
     void *ptr;
+#endif
     /** Timestamp when the message is due to be handled.*/
     uint32_t due;
     /** Next message in the pool or in the queue*/
