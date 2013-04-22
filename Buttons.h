@@ -36,8 +36,8 @@ typedef void (*ON_LONG_CLICK_CALLBACK)();
 
 typedef struct Button_struct_defenition
 {
-	int8_t Counter;
-	int8_t * Port;
+	int16_t Counter;
+	uint8_t * Port;
 	uint8_t Mask;
 	ON_CLICK_CALLBACK onClick;
 	ON_LONG_CLICK_CALLBACK onLongClick;
