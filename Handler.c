@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-#include "MsgQueue.h"
 #include "Handler.h"
 
 void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK handleMessage, void *context) {
@@ -24,7 +23,7 @@ void Handler_init(Handler *handler, MsgQueue *msgQueue, HANDLE_MESSAGE_CALLBACK 
     handler->context = context;
 }
 
-Message * Handler_obtain(Handler *handler, char what) {
+Message * Handler_obtain(Handler *handler, portBASE_TYPE what) {
     Message* msg = MsgQueue_obtain(handler->messageQueue);
     msg->handler = handler;
     msg->what = what;

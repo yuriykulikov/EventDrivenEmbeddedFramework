@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "MsgQueue.h"
-#include "portmacro.h"
+#include "Handler.h"
 /*
  * @startuml
  * Participant Client
@@ -48,14 +47,12 @@
  * @enduml
  */
 
-portLONG tick;
-
-void MsgQueue_init(MsgQueue* msgQueue, portBASE_TYPE poolSize) {
-    msgQueue->poolHead = MsgArray;
+void MsgQueue_init(MsgQueue* msgQueue, Message *msgArray, portBASE_TYPE poolSize) {
+    msgQueue->poolHead = msgArray;
     msgQueue->queueHead = 0;
-    MsgArray[0].next=&MsgArray[1];
-    for(portBASE_TYPE i = 0; i<QUEUE_MAX_LEN-1; i++)
-    	MsgArray[i].next=&MsgArray[i+1];
+    for(portBASE_TYPE i = 0; i<QUEUE_MAX_LEN-1; i++){
+       msgArray[i].next=&msgArray[i+1];
+    }
 }
 
 Message* MsgQueue_obtain(MsgQueue* msgQueue) {
