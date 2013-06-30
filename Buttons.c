@@ -17,10 +17,6 @@
 
 #include "Buttons.h"
 
-//TODO
-#define CLICK_DURATION 5
-#define LONG_CLICK_DURATION 75
-
 /**
  * @param pointer to button structure which should be checked
  */
@@ -28,9 +24,8 @@ void Button_checkButton(Button_struct_t * Button) {
 	/* button is released - we should do nothing if it happened after longclick. And if it was a click
 	 * we should report it.	Think of button as a one-element queue. Counter variable represents how long
 	 *  the button is pressed - it is only cleared when the button is released*/
-	if (((*Button->Port) & Button->Mask) == 0) {  //if button is pressed
-		//if the button is not active at the moment increment counter by one, which is 10 ms
-
+	if (((*(Button->Port)) & Button->Mask) == 0) {  //if button is pressed
+	//if the button is not active at the moment increment counter by one, which is 10 ms
 		if (Button->Counter == LONG_CLICK_DURATION) {//long click state is achieved
 			Button->onLongClick();
 			Button->Counter = -1;
@@ -47,12 +42,11 @@ void Button_checkButton(Button_struct_t * Button) {
 	}
 }
 
-void Button_init(Button_struct_t * Button, uint8_t *inputPort, uint8_t *pullupPort,  uint8_t mask, ON_CLICK_CALLBACK onClick,
+void Button_init(Button_struct_t * Button, uint8_t *inputPort, uint8_t mask, ON_CLICK_CALLBACK onClick,
 		ON_LONG_CLICK_CALLBACK onLongClick) {
 	Button->onClick = onClick;
 	Button->onLongClick = onLongClick;
 	Button->Port = inputPort;
 	Button->Mask = mask;
 	Button->Counter = 0;
-	*pullupPort |= mask;			//pullup
 }

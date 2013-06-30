@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "Leds.h"
 
 /**
@@ -24,19 +23,11 @@
  * This allows to map real leds to different ports and pins, meanwhile the algorithm (sliding light or progress
  * bar) remains unchanged and easy.
  */
-void Led_init(Led *led, uint8_t *port, uint8_t *directionPort, uint8_t bitmask,
+void Led_init(Led *led, uint8_t *port, uint8_t bitmask,
 		uint8_t isActiveLow) {
 	led->bitmask = bitmask;
 	led->port = port;
 	led->isActiveLow = isActiveLow;
-#ifdef XMEGA
-	// Configures pin on the port
-	PORT_ConfigurePins(port, bitmask, false, isActiveLow, PORT_OPC_PULLUP_gc, PORT_ISC_BOTHEDGES_gc );
-	// Configure pin output
-	//PORT_SetDirection(port, bitmask);
-	PORT_SetPinsAsOutput(port, bitmask);
-#endif
-	*directionPort |= bitmask;
 }
 
 void Led_set(Led *led) {

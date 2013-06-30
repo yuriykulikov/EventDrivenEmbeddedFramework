@@ -22,14 +22,9 @@
 
 #include "avr_compiler.h"
 
-#define BUTTON_CHECK_PERIOD 100
-
-#if (CLICK_DURATION>0xFF)
-	#error "hey thats too much!"
-#endif
-#if (LONG_CLICK_DURATION>0xFF)
-	#error "hey thats too much!"
-#endif
+#define CHECK_BUTTON_PERIOD 10
+#define CLICK_DURATION 4
+#define LONG_CLICK_DURATION 75
 
 typedef void (*ON_CLICK_CALLBACK)();
 typedef void (*ON_LONG_CLICK_CALLBACK)();
@@ -44,7 +39,7 @@ typedef struct Button_struct_defenition
 } Button_struct_t;
 
 void Button_checkButton(Button_struct_t * Button);
-void Button_init(Button_struct_t * Button, uint8_t *port, uint8_t *pullupPort, uint8_t mask, ON_CLICK_CALLBACK onClick,
+void Button_init(Button_struct_t * Button, uint8_t *port, uint8_t mask, ON_CLICK_CALLBACK onClick,
 	ON_LONG_CLICK_CALLBACK onLongClick);
 
 #endif /* BUTTONS_H_ */

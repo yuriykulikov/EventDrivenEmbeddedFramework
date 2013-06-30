@@ -37,20 +37,20 @@ typedef struct LED_GROUP {
  * Assume that RGB led is a led group of 3 leds,
  * then colors are bitmasks.
  */
-typedef enum {
-	RED = 0x01,
-	GREEN = 0x02,
-    BLUE= 0x04,
+//typedef enum s{
+//	RED = 0x01,
+//	GREEN = 0x02,
+//    BLUE= 0x04,
+//
+//    ORANGE = 0x03,
+//    PINK = 0x05,
+//    SKY = 0x06,
+//
+//    WHITE = 0x07,
+//    NONE = 0x00,
+//} Color_enum;
 
-    ORANGE = 0x03,
-    PINK = 0x05,
-    SKY = 0x06,
-
-    WHITE = 0x07,
-    NONE = 0x00,
-} Color_enum;
-
-void Led_init(Led *led, uint8_t *port, uint8_t *directionPort, uint8_t bitmask,
+void Led_init(Led *led, uint8_t *port, uint8_t bitmask,
 		uint8_t isActiveLow);
 void Led_set(Led *led);
 void Led_clear(Led *led);
