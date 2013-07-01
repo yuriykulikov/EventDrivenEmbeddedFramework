@@ -27,7 +27,9 @@ void Button_checkButton(Button_struct_t * Button) {
 	if (((*(Button->Port)) & Button->Mask) == 0) {  //if button is pressed
 	//if the button is not active at the moment increment counter by one, which is 10 ms
 		if (Button->Counter == LONG_CLICK_DURATION) {//long click state is achieved
-			Button->onLongClick();
+            if (Button->onLongClick != 0) {
+                Button->onLongClick(Button);
+            }
 			Button->Counter = -1;
 		}
 		if (Button->Counter != -1) {
@@ -36,17 +38,37 @@ void Button_checkButton(Button_struct_t * Button) {
 	} else {
 		//First take a look what do we have in counter
 		if (Button->Counter >= CLICK_DURATION) {
-			Button->onClick();
+		    if (Button->onClick != 0) {
+		        Button->onClick(Button);
+		    }
 		}
 		Button->Counter = 0;		//if button is released - clear counter
 	}
 }
 
-void Button_init(Button_struct_t * Button, uint8_t *inputPort, uint8_t mask, ON_CLICK_CALLBACK onClick,
-		ON_LONG_CLICK_CALLBACK onLongClick) {
-	Button->onClick = onClick;
-	Button->onLongClick = onLongClick;
+void Button_init(Button_struct_t * Button, uint8_t *inputPort, uint8_t mask) {
 	Button->Port = inputPort;
 	Button->Mask = mask;
 	Button->Counter = 0;
+
+	Button->onClick = 0;
+	Button->onLongClick = 0;
+    Button->onDown = 0;
+    Button->onUp = 0;
+}
+
+void Button_setOnClickListener(Button_struct_t * Button, ON_CLICK_CALLBACK onClick){
+    Button->onClick = onClick;
+}
+void Button_setOnLongClickListener(Button_struct_t * Button, ON_CLICK_CALLBACK onLongClick){
+    Button->onLongClick = onLongClick;
+}
+void Button_setOnDownListener(Button_struct_t * Button, ON_CLICK_CALLBACK onDown){
+    Button->onDown = onDown;
+}
+void Button_setOnUpListener(Button_struct_t * Button, ON_CLICK_CALLBACK onUp){
+    Button->onUp = onUp;
+}
+void Button_setName(Button_struct_t * Button, char *name){
+    Button->name = name;
 }

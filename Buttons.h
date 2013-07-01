@@ -26,8 +26,7 @@
 #define CLICK_DURATION 4
 #define LONG_CLICK_DURATION 75
 
-typedef void (*ON_CLICK_CALLBACK)();
-typedef void (*ON_LONG_CLICK_CALLBACK)();
+typedef void (*ON_CLICK_CALLBACK)(void *button);
 
 typedef struct Button_struct_defenition
 {
@@ -35,11 +34,18 @@ typedef struct Button_struct_defenition
 	uint8_t * Port;
 	uint8_t Mask;
 	ON_CLICK_CALLBACK onClick;
-	ON_LONG_CLICK_CALLBACK onLongClick;
+	ON_CLICK_CALLBACK onLongClick;
+	ON_CLICK_CALLBACK onDown;
+	ON_CLICK_CALLBACK onUp;
+	char *name;
 } Button_struct_t;
 
 void Button_checkButton(Button_struct_t * Button);
-void Button_init(Button_struct_t * Button, uint8_t *port, uint8_t mask, ON_CLICK_CALLBACK onClick,
-	ON_LONG_CLICK_CALLBACK onLongClick);
+void Button_init(Button_struct_t * Button, uint8_t *port, uint8_t mask);
+void Button_setOnClickListener(Button_struct_t * Button, ON_CLICK_CALLBACK onClick);
+void Button_setOnLongClickListener(Button_struct_t * Button, ON_CLICK_CALLBACK onLongClick);
+void Button_setOnDownListener(Button_struct_t * Button, ON_CLICK_CALLBACK onDown);
+void Button_setOnUpListener(Button_struct_t * Button, ON_CLICK_CALLBACK onUp);
+void Button_setName(Button_struct_t * Button, char *name);
 
 #endif /* BUTTONS_H_ */
