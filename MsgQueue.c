@@ -69,6 +69,11 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
         msgQueue->queueHead = msg;
         //and there is no next message
         msg->next = 0;
+    } else if (msgQueue->queueHead->due > msg->due){
+        //Our new message will now point at the head
+        msg->next = msgQueue->queueHead;
+        //queue head is due later than our message, so we have a new head
+        msgQueue->queueHead = msg;
     } else {
         //traverse the queue looking for the insertion point
         //here is a queue, due times in brackets.
