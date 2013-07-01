@@ -49,9 +49,7 @@ typedef struct LED_GROUP {
 //    WHITE = 0x07,
 //    NONE = 0x00,
 //} Color_enum;
-
-void Led_init(Led *led, uint8_t *port, uint8_t bitmask,
-		uint8_t isActiveLow);
+void Led_init(Led *led, uint8_t *port, uint8_t bitmask, uint8_t isActiveLow);
 void Led_set(Led *led);
 void Led_clear(Led *led);
 void LedGroup_init(LedGroup *ledGroup, Led *array);

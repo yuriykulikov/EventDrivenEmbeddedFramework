@@ -28,16 +28,15 @@
 
 typedef void (*ON_CLICK_CALLBACK)(void *button);
 
-typedef struct Button_struct_defenition
-{
-	int16_t Counter;
-	uint8_t * Port;
-	uint8_t Mask;
-	ON_CLICK_CALLBACK onClick;
-	ON_CLICK_CALLBACK onLongClick;
-	ON_CLICK_CALLBACK onDown;
-	ON_CLICK_CALLBACK onUp;
-	char *name;
+typedef struct Button_struct_defenition {
+    int16_t Counter;
+    uint8_t * Port;
+    uint8_t Mask;
+    ON_CLICK_CALLBACK onClick;
+    ON_CLICK_CALLBACK onLongClick;
+    ON_CLICK_CALLBACK onDown;
+    ON_CLICK_CALLBACK onUp;
+    char *name;
 } Button_struct_t;
 
 void Button_checkButton(Button_struct_t * Button);

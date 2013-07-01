@@ -50,8 +50,8 @@
 void MsgQueue_init(MsgQueue* msgQueue, Message *msgArray, portBASE_TYPE poolSize) {
     msgQueue->poolHead = msgArray;
     msgQueue->queueHead = 0;
-    for(portBASE_TYPE i = 0; i<QUEUE_MAX_LEN-1; i++){
-       msgArray[i].next=&msgArray[i+1];
+    for (portBASE_TYPE i = 0; i < QUEUE_MAX_LEN - 1; i++) {
+        msgArray[i].next = &msgArray[i + 1];
     }
 }
 
@@ -63,13 +63,14 @@ Message* MsgQueue_obtain(MsgQueue* msgQueue) {
 }
 
 void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
-    portDISABLE_INTERRUPTS();
+    portDISABLE_INTERRUPTS()
+    ;
     if (msgQueue->queueHead == 0) {
         //if queue is empty, simply put the message into the queue
         msgQueue->queueHead = msg;
         //and there is no next message
         msg->next = 0;
-    } else if (msgQueue->queueHead->due > msg->due){
+    } else if (msgQueue->queueHead->due > msg->due) {
         //Our new message will now point at the head
         msg->next = msgQueue->queueHead;
         //queue head is due later than our message, so we have a new head
@@ -79,7 +80,7 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
         //here is a queue, due times in brackets.
         //we have to put [300] into the [10][11][100][400]
         //[10][11] previous = [100] next = [400], since next-> is more than 300
-    	Message *previous;
+        Message *previous;
         for (previous = msgQueue->queueHead; previous != 0; previous = previous->next) {
             Message *next = previous->next;
             if (next == 0) {
@@ -96,7 +97,8 @@ void MsgQueue_send(MsgQueue* msgQueue, Message* msg) {
             }
         }
     }
-    portENABLE_INTERRUPTS();
+    portENABLE_INTERRUPTS()
+    ;
 }
 
 void MsgQueue_processNextMessage(MsgQueue* msgQueue) {

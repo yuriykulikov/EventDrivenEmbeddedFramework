@@ -23,32 +23,31 @@
  * This allows to map real leds to different ports and pins, meanwhile the algorithm (sliding light or progress
  * bar) remains unchanged and easy.
  */
-void Led_init(Led *led, uint8_t *port, uint8_t bitmask,
-		uint8_t isActiveLow) {
-	led->bitmask = bitmask;
-	led->port = port;
-	led->isActiveLow = isActiveLow;
+void Led_init(Led *led, uint8_t *port, uint8_t bitmask, uint8_t isActiveLow) {
+    led->bitmask = bitmask;
+    led->port = port;
+    led->isActiveLow = isActiveLow;
 }
 
 void Led_set(Led *led) {
-	if (led->isActiveLow) {
-		*(led->port) &= ~led->bitmask;
-	} else {
-		*(led->port) |= led->bitmask;
-	}
+    if (led->isActiveLow) {
+        *(led->port) &= ~led->bitmask;
+    } else {
+        *(led->port) |= led->bitmask;
+    }
 }
 
 void Led_clear(Led *led) {
-	if (!led->isActiveLow) {
-		*(led->port) &= ~led->bitmask;
-	} else {
-		*(led->port) |= led->bitmask;
-	}
+    if (!led->isActiveLow) {
+        *(led->port) &= ~led->bitmask;
+    } else {
+        *(led->port) |= led->bitmask;
+    }
 }
 
 void LedGroup_init(LedGroup *ledGroup, Led *array) {
-	ledGroup->amountOfLeds = 0;
-	ledGroup->leds = array;
+    ledGroup->amountOfLeds = 0;
+    ledGroup->leds = array;
 }
 /*
  * Adds new led to group. Note that there is important to add
@@ -58,11 +57,11 @@ void LedGroup_init(LedGroup *ledGroup, Led *array) {
  * Special case for RG - add Red, then Green
  */
 void LedGroup_add(LedGroup *ledGroup, Led *led) {
-	if (ledGroup->amountOfLeds < 8) {
-		ledGroup->leds[ledGroup->amountOfLeds] = led;
-		//we have added one more led to the group
-		ledGroup->amountOfLeds++;
-	}
+    if (ledGroup->amountOfLeds < 8) {
+        ledGroup->leds[ledGroup->amountOfLeds] = led;
+        //we have added one more led to the group
+        ledGroup->amountOfLeds++;
+    }
 }
 
 /*
@@ -72,15 +71,15 @@ void LedGroup_add(LedGroup *ledGroup, Led *led) {
  * in this case R G and B lesa should added in this order - R G B
  */
 void LedGroup_set(LedGroup *ledGroup, uint8_t bitmask) {
-	for (uint8_t i = 0; i < ledGroup->amountOfLeds; i++) {
-		/* bitmask>>i shifts bitmask to the left, effectively placing bit
-		 * number i to the 0x01 position. Than clear all other bits and
-		 * see if this bit was 1
-		 */
-		if (((bitmask >> i) & 0x01)) {
-			Led_set(ledGroup->leds[i]);
-		} else {
-			Led_clear(ledGroup->leds[i]);
-		}
-	}
+    for (uint8_t i = 0; i < ledGroup->amountOfLeds; i++) {
+        /* bitmask>>i shifts bitmask to the left, effectively placing bit
+         * number i to the 0x01 position. Than clear all other bits and
+         * see if this bit was 1
+         */
+        if (((bitmask >> i) & 0x01)) {
+            Led_set(ledGroup->leds[i]);
+        } else {
+            Led_clear(ledGroup->leds[i]);
+        }
+    }
 }
