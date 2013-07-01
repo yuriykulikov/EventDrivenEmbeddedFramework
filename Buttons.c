@@ -34,6 +34,9 @@ void Button_checkButton(Button_struct_t * Button) {
         }
         if (Button->Counter != -1) {
             Button->Counter++;
+            if (Button->onDown != 0 && Button->Counter == 1) {
+                Button->onDown(Button);
+            }
         }
     } else {
         //First take a look what do we have in counter
@@ -41,6 +44,9 @@ void Button_checkButton(Button_struct_t * Button) {
             if (Button->onClick != 0) {
                 Button->onClick(Button);
             }
+        }
+        if (Button->onUp != 0  && Button->Counter != 0) {
+            Button->onUp(Button);
         }
         Button->Counter = 0; //if button is released - clear counter
     }
